@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
@@ -25,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Mojo(name = "build", defaultPhase = LifecyclePhase.PROCESS_SOURCES )
+@Mojo(name = "build", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
 public class BuildMojo extends AbstractMojo {
 
     private static final Path DOCKERFILE = Paths.get("Dockerfile");
@@ -43,7 +44,7 @@ public class BuildMojo extends AbstractMojo {
     /**
      * Location of the file.
      */
-    @Parameter( defaultValue = "${project.build.directory}", property = "outputDir", required = true)
+    @Parameter(defaultValue = "${project.build.directory}", property = "outputDir", required = true)
     private File outputDirectory;
 
     /**
@@ -72,7 +73,7 @@ public class BuildMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if(skipBuild){
+        if (skipBuild) {
             getLog().info("Building container images is skipped.");
             return;
         }
@@ -80,12 +81,12 @@ public class BuildMojo extends AbstractMojo {
         Path projectPath = Paths.get(sourceDirectory.toURI());
         Path dockerFile = projectPath.resolve(DOCKERFILE);
 
-        if(!Files.exists(dockerFile)) {
+        if (!Files.exists(dockerFile)) {
             getLog().info("Project does not have a Dockerfile");
             return;
         }
 
-        if(isDockerfileEmpty(dockerFile)) {
+        if (isDockerfileEmpty(dockerFile)) {
             throw new MojoExecutionException("Dockerfile cannot be empty!");
         }
 
@@ -115,32 +116,29 @@ public class BuildMojo extends AbstractMojo {
             List<String> processOutput = process.getOutput().getLinesAsUTF8();
             imageHash = processOutput.get(processOutput.size() - 1);
         } catch (IOException | InterruptedException | TimeoutException e) {
-            String msg = String.format("Failed to build container image from %s - caught %s",
-                    dockerFile,
-                    e.getMessage());
-
+            String msg = String.format("Failed to build container image from %s - caught %s", dockerFile, e.getMessage());
             getLog().error(msg);
             throw new MojoExecutionException(msg, e);
         }
     }
 
     private void tagContainerImage(Path dockerFile) throws MojoExecutionException {
-        if(skipTag) {
+        if (skipTag) {
             getLog().info("Tagging container images is skipped.");
             return;
         }
 
-        if(tags == null || tags.length == 0) {
+        if (tags == null || tags.length == 0) {
             getLog().info("No tags specified. Skipping tagging of container images.");
             return;
         }
 
-        if(imageHash == null) {
+        if (imageHash == null) {
             getLog().info("No image hash available. Skipping tagging container image.");
         }
 
         try {
-            for(String tag : tags) {
+            for (String tag : tags) {
                 getLog().info("Applying tag: " + tag);
                 ProcessResult process = new ProcessExecutor()
                         .directory(outputDirectory)
@@ -152,10 +150,7 @@ public class BuildMojo extends AbstractMojo {
                         .execute();
             }
         } catch (IOException | InterruptedException | TimeoutException e) {
-            String msg = String.format("Failed to build container image from %s - caught %s",
-                    dockerFile,
-                    e.getMessage());
-
+            String msg = String.format("Failed to build container image from %s - caught %s", dockerFile, e.getMessage());
             getLog().error(msg);
             throw new MojoExecutionException(msg, e);
         }
@@ -164,7 +159,7 @@ public class BuildMojo extends AbstractMojo {
     private boolean isDockerfileEmpty(Path fullDockerFilePath) {
         try {
             return 0 == Files.size(fullDockerFilePath);
-        } catch(IOException e) {
+        } catch (IOException e) {
             getLog().error("Unable to determine if Dockerfile is empty.", e);
             return true;
         }
@@ -172,15 +167,18 @@ public class BuildMojo extends AbstractMojo {
 
     private void filterDockerfile(Path dockerFile, Path targetDockerfilePath) throws MojoExecutionException {
         try {
-            List<String> filteredDockerfileContents = getFilteredDockerfileContents(dockerFile);
-
-            getLog().debug("Using target Dockerfile: " + targetDockerfilePath);
-
-            Path targetDockerfile = Files.createFile(targetDockerfilePath);
-            if(Files.isWritable(targetDockerfile)) {
-                Files.write(targetDockerfile, filteredDockerfileContents);
+            if(Files.exists(targetDockerfilePath)) {
+                getLog().info("Dockerfile already exists in target folder.");
             } else {
-                getLog().error("Could not open temporary Dockerfile for writing...");
+                List<String> filteredDockerfileContents = getFilteredDockerfileContents(dockerFile);
+                getLog().debug("Using target Dockerfile: " + targetDockerfilePath);
+
+                Path targetDockerfile = Files.createFile(targetDockerfilePath);
+                if (Files.isWritable(targetDockerfile)) {
+                    Files.write(targetDockerfile, filteredDockerfileContents);
+                } else {
+                    getLog().error("Could not open temporary Dockerfile for writing...");
+                }
             }
         } catch (IOException e) {
             String msg = "Failed to read contents of Dockerfile";
@@ -198,16 +196,16 @@ public class BuildMojo extends AbstractMojo {
 
         String propertyRegex = "\\$\\{[A-Za-z0-9.].*}";
         Pattern propertyPattern = Pattern.compile(propertyRegex);
-        for(String line : dockerFileContents) {
+        for (String line : dockerFileContents) {
             getLog().debug("Processing line " + line);
             Matcher matcher = propertyPattern.matcher(line);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 matcher.reset();
-                while(matcher.find()) {
+                while (matcher.find()) {
                     String match = matcher.group();
                     Object propertyValue = properties.get(match.substring(2, match.length() - 1));
 
-                    if(propertyValue == null) {
+                    if (propertyValue == null) {
                         propertyValue = mavenPropertyReader.getProperty(match.substring(2, match.length() - 1));
                     }
 
