@@ -1,30 +1,19 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.util.MavenPropertyReader;
+import nl.lexemmens.podman.context.PodmanContext;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Mojo(name = "build", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
 public class BuildMojo extends AbstractMojo {
@@ -42,7 +31,7 @@ public class BuildMojo extends AbstractMojo {
     private MavenProject project;
 
     /**
-     * Location of the file.
+     * Location of the files - usually the project's target folder
      */
     @Parameter(defaultValue = "${project.build.directory}", property = "outputDir", required = true)
     private File outputDirectory;
@@ -60,19 +49,19 @@ public class BuildMojo extends AbstractMojo {
     private boolean skipBuild;
 
     /**
-     * Skip building tags
+     * Indicates if tagging container images should be skipped
      */
     @Parameter(property = "podman.tag.skip", defaultValue = "false")
     private boolean skipTag;
 
+    /**
+     * Array consisting of one or more tags to attach to a container image
+     */
     @Parameter(property = "podman.image.tag")
     private String[] tags;
 
-    private MavenPropertyReader mavenPropertyReader;
-    private String imageHash = null;
-
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         if (skipBuild) {
             getLog().info("Building container images is skipped.");
             return;
@@ -80,7 +69,6 @@ public class BuildMojo extends AbstractMojo {
 
         Path projectPath = Paths.get(sourceDirectory.toURI());
         Path dockerFile = projectPath.resolve(DOCKERFILE);
-
         if (!Files.exists(dockerFile)) {
             getLog().info("Project does not have a Dockerfile");
             return;
@@ -90,39 +78,24 @@ public class BuildMojo extends AbstractMojo {
             throw new MojoExecutionException("Dockerfile cannot be empty!");
         }
 
-        mavenPropertyReader = new MavenPropertyReader(project);
         Path targetDockerfile = Paths.get(outputDirectory.toURI()).resolve(DOCKERFILE);
 
-        filterDockerfile(dockerFile, targetDockerfile);
-        buildContainerImage(targetDockerfile);
-        tagContainerImage(dockerFile);
+        PodmanContext ctx = new PodmanContext(getLog(), project);
+        filterDockerfile(ctx, dockerFile, targetDockerfile);
+        buildContainerImage(ctx);
+        tagContainerImage(ctx);
 
         getLog().info("Built container image.");
     }
 
-    private void buildContainerImage(Path dockerFile) throws MojoExecutionException {
-        try {
-            getLog().info("Building container image...");
-            ProcessResult process = new ProcessExecutor()
-                    .directory(outputDirectory)
-                    .command(PODMAN, BUILD, ".")
-                    .readOutput(true)
-                    .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
-                    .redirectError(Slf4jStream.of(getClass().getSimpleName()).asError())
-                    .exitValueNormal()
-                    .execute();
+    private void buildContainerImage(PodmanContext ctx) throws MojoExecutionException {
+        getLog().info("Building container image...");
 
-            // We can safely assume exit code 0 at this point
-            List<String> processOutput = process.getOutput().getLinesAsUTF8();
-            imageHash = processOutput.get(processOutput.size() - 1);
-        } catch (IOException | InterruptedException | TimeoutException e) {
-            String msg = String.format("Failed to build container image from %s - caught %s", dockerFile, e.getMessage());
-            getLog().error(msg);
-            throw new MojoExecutionException(msg, e);
-        }
+        List<String> processOutput = ctx.getCmdExecutor().runCommand(outputDirectory, PODMAN, BUILD, ".");
+        ctx.setImageHash(processOutput.get(processOutput.size() - 1));
     }
 
-    private void tagContainerImage(Path dockerFile) throws MojoExecutionException {
+    private void tagContainerImage(PodmanContext ctx) throws MojoExecutionException {
         if (skipTag) {
             getLog().info("Tagging container images is skipped.");
             return;
@@ -133,27 +106,18 @@ public class BuildMojo extends AbstractMojo {
             return;
         }
 
-        if (imageHash == null) {
+        if (ctx.getImageHash().isPresent()) {
+            String imageHash = ctx.getImageHash().get();
+            for (String tag : tags) {
+                getLog().info("Tagging OCI " + imageHash + " as " + tag);
+
+                // Ignore output
+                ctx.getCmdExecutor().runCommand(outputDirectory, PODMAN, TAG, imageHash, tag);
+            }
+        } else {
             getLog().info("No image hash available. Skipping tagging container image.");
         }
 
-        try {
-            for (String tag : tags) {
-                getLog().info("Applying tag: " + tag);
-                ProcessResult process = new ProcessExecutor()
-                        .directory(outputDirectory)
-                        .command(PODMAN, TAG, imageHash, tag)
-                        .readOutput(true)
-                        .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
-                        .redirectError(Slf4jStream.of(getClass().getSimpleName()).asError())
-                        .exitValueNormal()
-                        .execute();
-            }
-        } catch (IOException | InterruptedException | TimeoutException e) {
-            String msg = String.format("Failed to build container image from %s - caught %s", dockerFile, e.getMessage());
-            getLog().error(msg);
-            throw new MojoExecutionException(msg, e);
-        }
     }
 
     private boolean isDockerfileEmpty(Path fullDockerFilePath) {
@@ -165,61 +129,12 @@ public class BuildMojo extends AbstractMojo {
         }
     }
 
-    private void filterDockerfile(Path dockerFile, Path targetDockerfilePath) throws MojoExecutionException {
-        try {
-            if(Files.exists(targetDockerfilePath)) {
-                getLog().info("Dockerfile already exists in target folder.");
-            } else {
-                List<String> filteredDockerfileContents = getFilteredDockerfileContents(dockerFile);
-                getLog().debug("Using target Dockerfile: " + targetDockerfilePath);
-
-                Path targetDockerfile = Files.createFile(targetDockerfilePath);
-                if (Files.isWritable(targetDockerfile)) {
-                    Files.write(targetDockerfile, filteredDockerfileContents);
-                } else {
-                    getLog().error("Could not open temporary Dockerfile for writing...");
-                }
-            }
-        } catch (IOException e) {
-            String msg = "Failed to read contents of Dockerfile";
-            getLog().error(msg);
-            throw new MojoExecutionException(msg, e);
+    private void filterDockerfile(PodmanContext ctx, Path dockerFile, Path targetDockerfilePath) throws MojoExecutionException {
+        if (Files.exists(targetDockerfilePath)) {
+            getLog().info("Dockerfile already exists in target folder.");
+        } else {
+            ctx.getFilterSupport().filterDockerfile(dockerFile, targetDockerfilePath, project.getProperties());
         }
-    }
-
-    private List<String> getFilteredDockerfileContents(Path dockerfile) throws IOException {
-        getLog().debug("Filtering Dockerfile contents...");
-
-        Properties properties = project.getProperties();
-        List<String> dockerFileContents = Files.lines(dockerfile).collect(Collectors.toList());
-        List<String> targetDockerFileContents = new ArrayList<>();
-
-        String propertyRegex = "\\$\\{[A-Za-z0-9.].*}";
-        Pattern propertyPattern = Pattern.compile(propertyRegex);
-        for (String line : dockerFileContents) {
-            getLog().debug("Processing line " + line);
-            Matcher matcher = propertyPattern.matcher(line);
-            if (matcher.find()) {
-                matcher.reset();
-                while (matcher.find()) {
-                    String match = matcher.group();
-                    Object propertyValue = properties.get(match.substring(2, match.length() - 1));
-
-                    if (propertyValue == null) {
-                        propertyValue = mavenPropertyReader.getProperty(match.substring(2, match.length() - 1));
-                    }
-
-                    getLog().debug("Replacing '" + match + "' with '" + propertyValue + "'.");
-                    targetDockerFileContents.add(line.replaceAll(propertyRegex, propertyValue.toString()));
-                }
-            } else {
-                getLog().debug("Line has no properties. Skipping.");
-                targetDockerFileContents.add(line);
-            }
-        }
-
-        return targetDockerFileContents;
-
     }
 
 }
