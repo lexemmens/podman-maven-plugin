@@ -49,6 +49,7 @@ public class CommandExecutorService {
                     .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
                     .exitValueNormal();
 
+            // Some processes print regular text on stderror, so make redirecting the error stream configurable.
             if(redirectError) {
                 processExecutor.redirectError(Slf4jStream.of(getClass().getSimpleName()).asError());
             }
