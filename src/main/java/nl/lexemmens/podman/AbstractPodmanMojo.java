@@ -82,6 +82,12 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected boolean createLatestTag;
 
     /**
+     * Whether Podman should verify TLS/SSL certificates. Defaults to true.
+     */
+    @Parameter(property = "podman.tls.verify", defaultValue = "true", required = true)
+    protected boolean tlsVerify;
+
+    /**
      * Skip all podman steps
      */
     @Parameter(property = "podman.skip", defaultValue = "false")
