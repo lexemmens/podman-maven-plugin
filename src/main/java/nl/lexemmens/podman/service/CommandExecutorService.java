@@ -53,8 +53,8 @@ public class CommandExecutorService {
                     .execute();
 
             return process.getOutput().getLinesAsUTF8();
-        } catch (IOException | InterruptedException | TimeoutException e) {
-            String msg = String.format("Failed to execute command %s - caught %s", StringUtils.join(command, " "), e.getMessage());
+        } catch (Exception e) {
+            String msg = String.format("Failed to execute command '%s' - caught %s", StringUtils.join(command, " "), e.getMessage());
             log.error(msg);
             throw new MojoExecutionException(msg, e);
         }
