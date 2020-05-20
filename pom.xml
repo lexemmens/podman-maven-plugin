@@ -31,6 +31,10 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.version>3.6.2</maven.version>
+        <sonar.projectKey>lexemmens_podman-maven-plugin</sonar.projectKey>
+        <sonar.organization>lexemmens</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.login>c243dc9d59f00d9f459fab827cefe80a66609329</sonar.login>
     </properties>
 
     <dependencies>
