@@ -53,3 +53,4 @@ FROM ${container.base.image}
 WORKDIR /application
 COPY piradio-deployment-1.0.0-SNAPSHOT-all.tar ./
 ```
+dfd
