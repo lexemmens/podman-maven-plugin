@@ -8,14 +8,6 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFileFilterRequest;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * FilterSupport class that brings support for accessing properties from a {@link MavenProject}. Both properties
  * specified via the properties tag in a pom file as well as the default Maven properties are supported

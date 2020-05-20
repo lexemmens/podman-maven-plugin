@@ -3,7 +3,6 @@ package nl.lexemmens.podman.service;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.codehaus.plexus.component.annotations.Component;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Factory that allows creation of a new {@link ServiceHub} class

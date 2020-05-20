@@ -8,9 +8,7 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Helper class to execute command line processes
