@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.CommandExecutorService;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -28,8 +29,9 @@ public class PushMojo extends AbstractPodmanMojo {
         } else {
             getLog().info("Pushing container images to registry ...");
 
-            for (String tag : tags) {
-                getLog().info("Pushing image: " + tag);
+            ImageConfiguration imageConfiguration = getImageConfiguration();
+            for (String tag : imageConfiguration.getFullImageNames()) {
+                getLog().info("Pushing image: " + tag + " to " + imageConfiguration.getRegistry());
                 ctx.getCommandExecutorService().runCommand(outputDirectory, PODMAN, PUSH, tag);
             }
         }

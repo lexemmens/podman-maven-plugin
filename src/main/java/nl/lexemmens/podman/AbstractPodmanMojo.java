@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.AbstractMojo;
@@ -26,6 +27,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     /**
      * Maven settings containing authentication information
+     * TODO Figure this out
      */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
@@ -37,28 +39,47 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected File outputDirectory;
 
     /**
-     * The tag version to use. Defaults to the project version. The value of this property takes precedence over versions that are specified in the
-     * tags
+     * Directory containing the Dockerfile
      */
-    @Parameter(property = "podman.image.tag.version", required = true, defaultValue = "${project.version}")
-    protected String tagVersion;
+    @Parameter(property = "podman.dockerfile.dir", required = true, defaultValue = "${project.basedir}")
+    protected File dockerFileDir;
+
+    /**
+     * The registry of the container images
+     */
+    @Parameter(property = "podman.image.registry")
+    protected String registry;
+
+    /**
+     * The repository containing the container images
+     */
+    @Parameter(property = "podman.image.repository")
+    protected String repository;
 
     /**
      * Array consisting of one or more tags to attach to a container image
      */
-    @Parameter(property = "podman.image.tag")
+    @Parameter(property = "podman.image.tags")
     protected String[] tags;
 
     /**
-     * Location of project sources
+     * Specifies whether the version of the container image should be based on the version of this Maven project. Defaults to true.
+     * When set to false, 'podman.image.tag.version' must be specified.
      */
-    @Parameter(property = "podman.basedir", required = true, defaultValue = "${project.basedir}")
-    protected File sourceDirectory;
+    @Parameter(property = "podman.image.version.fromMavenProject", required = true, defaultValue = "true")
+    protected boolean useMavenProjectVersion;
 
+    /**
+     * Specifies the version of the container image. If specified, this parameter takes precedence over 'podman.image.tag.fromMavenProject'
+     */
+    @Parameter(property = "podman.image.version")
+    protected String tagVersion;
 
-    // Default registry to use if no registry is specified
-    @Parameter(property = "podman.registry")
-    protected String registry;
+    /**
+     * Specified whether a container image should *ALSO* be tagged 'latest'. This defaults to false.
+     */
+    @Parameter(property = "podman.image.tag.latest", defaultValue = "false", required = true)
+    protected boolean createLatestTag;
 
     /**
      * Skip all podman steps
@@ -84,4 +105,20 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     }
 
     public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
+
+    protected ImageConfiguration getImageConfiguration() throws MojoExecutionException {
+        String version;
+        if(useMavenProjectVersion) {
+            version = project.getVersion();
+        } else if(tagVersion != null) {
+            version = tagVersion;
+        } else {
+            String msg = "No image version specified. Set 'podman.image.version.fromMavenProject' to true for default project version or" +
+                    " specify a version via 'podman.image.version'";
+            getLog().error(msg);
+            throw new MojoExecutionException(msg);
+        }
+
+        return new ImageConfiguration(registry, repository, tags, version, createLatestTag);
+    }
 }

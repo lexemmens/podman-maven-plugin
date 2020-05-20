@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.ImageConfiguration;
 import nl.lexemmens.podman.context.BuildContext;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -56,7 +57,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         getLog().info("Building container image...");
 
         List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, BUILD, ".");
-        buildContext.setImageHash(processOutput.get(processOutput.size() - 1));
+        buildContext.getImageConfiguration().setImageHash(processOutput.get(processOutput.size() - 1));
     }
 
     private void tagContainerImage(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
@@ -70,9 +71,9 @@ public class BuildMojo extends AbstractPodmanMojo {
             return;
         }
 
-        if (buildContext.getImageHash().isPresent()) {
-            String imageHash = buildContext.getImageHash().get();
-            for (String tag : tags) {
+        if (buildContext.getImageConfiguration().getImageHash().isPresent()) {
+            String imageHash = buildContext.getImageConfiguration().getImageHash().get();
+            for (String tag : buildContext.getImageConfiguration().getFullImageNames()) {
                 getLog().info("Tagging container image " + imageHash + " as " + tag);
 
                 // Ignore output
@@ -83,11 +84,15 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
-    private BuildContext getBuildContext() {
-        Path projectPath = Paths.get(sourceDirectory.toURI());
-        Path sourceDockerfile = projectPath.resolve(DOCKERFILE);
+    private BuildContext getBuildContext() throws MojoExecutionException {
+        Path dockerFileDirPath = Paths.get(dockerFileDir.toURI());
+        Path sourceDockerfile = dockerFileDirPath.resolve(DOCKERFILE);
         Path targetDockerfile = Paths.get(outputDirectory.toURI()).resolve(DOCKERFILE);
 
-        return new BuildContext(sourceDockerfile, targetDockerfile, getLog(), project);
+        ImageConfiguration imageConfiguration = getImageConfiguration();
+
+        return new BuildContext(sourceDockerfile, targetDockerfile, getLog(), project, imageConfiguration);
     }
+
+
 }

@@ -1,5 +1,6 @@
 package nl.lexemmens.podman.context;
 
+import nl.lexemmens.podman.config.ImageConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -7,7 +8,6 @@ import org.apache.maven.project.MavenProject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  * Context class holding all related information for building container images
@@ -19,8 +19,7 @@ public class BuildContext {
     private final Path sourceDockerfile;
     private final Path targetDockerfile;
     private final Log log;
-
-    private String imageHash;
+    private final ImageConfiguration imageConfiguration;
 
     /**
      * Constructs a new instance of this context class.
@@ -30,11 +29,12 @@ public class BuildContext {
      * @param log              Access to the logger
      * @param mavenProject     The Maven project
      */
-    public BuildContext(Path sourceDockerfile, Path targetDockerfile, Log log, MavenProject mavenProject) {
+    public BuildContext(Path sourceDockerfile, Path targetDockerfile, Log log, MavenProject mavenProject, ImageConfiguration imageConfiguration) {
         this.sourceDockerfile = sourceDockerfile;
         this.targetDockerfile = targetDockerfile;
         this.log = log;
         this.mavenProject = mavenProject;
+        this.imageConfiguration = imageConfiguration;
     }
 
     /**
@@ -82,23 +82,13 @@ public class BuildContext {
     }
 
     /**
-     * Returns an Optional of the image hash
-     */
-    public final Optional<String> getImageHash() {
-        return Optional.ofNullable(imageHash);
-    }
-
-    /**
-     * Sets the image hash to a specific value
-     */
-    public final void setImageHash(String imageHash) {
-        this.imageHash = imageHash;
-    }
-
-    /**
      * Returns a reference to the MavenProject
      */
     public MavenProject getMavenProject() {
         return mavenProject;
+    }
+
+    public ImageConfiguration getImageConfiguration() {
+        return imageConfiguration;
     }
 }
