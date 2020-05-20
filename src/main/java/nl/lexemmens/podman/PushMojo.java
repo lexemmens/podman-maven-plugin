@@ -13,6 +13,7 @@ public class PushMojo extends AbstractPodmanMojo {
 
     private static final String PODMAN = "podman";
     private static final String PUSH = "push";
+    private static final String TLS_VERIFY_CMD = "--tls-verify=";
 
     /**
      * Indicates if building container images should be skipped
@@ -21,7 +22,7 @@ public class PushMojo extends AbstractPodmanMojo {
     private boolean skipPush;
 
     @Override
-    public void executeInternal(ServiceHub ctx) throws MojoExecutionException {
+    public void executeInternal(ServiceHub hub) throws MojoExecutionException {
         if (skipPush) {
             getLog().info("Pushing container images is skipped.");
         } else if (tags == null || tags.length == 0) {
@@ -32,8 +33,12 @@ public class PushMojo extends AbstractPodmanMojo {
             ImageConfiguration imageConfiguration = getImageConfiguration();
             for (String tag : imageConfiguration.getFullImageNames()) {
                 getLog().info("Pushing image: " + tag + " to " + imageConfiguration.getRegistry());
-                ctx.getCommandExecutorService().runCommand(outputDirectory, PODMAN, PUSH, tag);
+
+                String tlsVerifyOption = TLS_VERIFY_CMD + tlsVerify;
+                hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, PUSH, tlsVerifyOption, tag);
             }
+
+            getLog().info("Images successfully pushed to " + imageConfiguration.getRegistry());
         }
     }
 }
