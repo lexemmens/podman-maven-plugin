@@ -45,6 +45,19 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected File dockerFileDir;
 
     /**
+     * Configures whether the container image should be exported as a tar.gz
+     */
+    @Parameter(property = "podman.image.export", defaultValue = "false", required = true)
+    protected boolean exportImage;
+
+    /**
+     * Configures the directory to export the container image to. This will be a directory under the target folder.
+     * Requires 'podman.image.export' to be set to true as well.
+     */
+    @Parameter(property = "podman.image.export.dir", defaultValue = "podman", required = true)
+    protected String imageExportDir;
+
+    /**
      * The registry of the container images
      */
     @Parameter(property = "podman.image.registry")

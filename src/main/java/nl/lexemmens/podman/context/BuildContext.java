@@ -14,27 +14,23 @@ import java.nio.file.Path;
  */
 public class BuildContext {
 
-    private final MavenProject mavenProject;
+    private MavenProject mavenProject;
 
-    private final Path sourceDockerfile;
-    private final Path targetDockerfile;
-    private final Log log;
-    private final ImageConfiguration imageConfiguration;
+    private Path sourceDockerfile;
+    private Path targetDockerfile;
+    private Path imageExportDir;
+
+    private boolean exportImage;
+
+    private Log log;
+    private ImageConfiguration imageConfiguration;
 
     /**
-     * Constructs a new instance of this context class.
-     *
-     * @param sourceDockerfile The source Dockerfile
-     * @param targetDockerfile The target Dockerfile
-     * @param log              Access to the logger
-     * @param mavenProject     The Maven project
+     * Constructs an empty new instance of this context class.
+     * Use the builder to set its values
      */
-    public BuildContext(Path sourceDockerfile, Path targetDockerfile, Log log, MavenProject mavenProject, ImageConfiguration imageConfiguration) {
-        this.sourceDockerfile = sourceDockerfile;
-        this.targetDockerfile = targetDockerfile;
-        this.log = log;
-        this.mavenProject = mavenProject;
-        this.imageConfiguration = imageConfiguration;
+    BuildContext(){
+        // Empty
     }
 
     /**
@@ -88,7 +84,115 @@ public class BuildContext {
         return mavenProject;
     }
 
+    /**
+     * Returns the container image configuration
+     */
     public ImageConfiguration getImageConfiguration() {
         return imageConfiguration;
+    }
+
+    /**
+     * Returns the directory to which the container image should be exported
+     */
+    public Path getImageExportDir() {
+        return imageExportDir;
+    }
+
+    /**
+     * Returns true if the container image should be exported.
+     */
+    public boolean isExportImage() {
+        return exportImage;
+    }
+
+    /**
+     * Builder class that can be used to construct a new instance of the BuildContext
+     */
+    public static class Builder {
+
+        /**
+         * The instance to return
+         */
+        private BuildContext ctx = new BuildContext();
+
+        /**
+         * Returns the constructed instance
+         */
+        public BuildContext build() {
+            return ctx;
+        }
+
+        /**
+         * Sets the source Dockerfile
+         * @return This builder instance
+         */
+        public Builder setSourceDockerFile(Path sourceDockerfile) {
+            ctx.sourceDockerfile = sourceDockerfile;
+            return this;
+        }
+
+        /**
+         * Sets the target Dockerfile
+         * @return This builder instance
+         */
+        public Builder setTargetDockerfile(Path targetDockerfile) {
+            ctx.targetDockerfile = targetDockerfile;
+            return this;
+        }
+
+        /**
+         * Sets the image export directory
+         * @return This builder instance
+         */
+        public Builder setImageExportDir(Path imageExportDir) {
+            ctx.imageExportDir = imageExportDir;
+            return this;
+        }
+
+        /**
+         * Sets the logger reference
+         * @return This builder instance
+         */
+        public Builder setLog(Log log) {
+            ctx.log = log;
+            return this;
+        }
+
+        /**
+         * Sets the Maven project
+         * @return This builder instance
+         */
+        public Builder setMavenProject(MavenProject mavenProject) {
+            ctx.mavenProject = mavenProject;
+            return this;
+        }
+
+        /**
+         * Sets the container image configuration
+         * @return This builder instance
+         */
+        public Builder setImageConfiguration(ImageConfiguration imageConfiguration) {
+            ctx.imageConfiguration = imageConfiguration;
+            return this;
+        }
+
+        /**
+         * Sets whether the image should be exported
+         * @return This builder instance
+         */
+        public Builder setExportImage(boolean exportImage) {
+            ctx.exportImage = exportImage;
+            return this;
+        }
+
+        /**
+         * Validates the BuildContext
+         * @return This builder instance
+         * @throws MojoExecutionException When validation doe not succeed.
+         */
+        public Builder validate() throws MojoExecutionException {
+            ctx.validate();
+            return this;
+        }
     }
 }
