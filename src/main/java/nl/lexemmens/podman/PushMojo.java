@@ -35,7 +35,8 @@ public class PushMojo extends AbstractPodmanMojo {
                 getLog().info("Pushing image: " + tag + " to " + imageConfiguration.getRegistry());
 
                 String tlsVerifyOption = TLS_VERIFY_CMD + tlsVerify;
-                hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, PUSH, tlsVerifyOption, tag);
+                hub.getCommandExecutorService().runCommand(outputDirectory, false, PODMAN, PUSH, tlsVerifyOption, tag);
+                // Apparently, actually pushing the blobs to a registry causes some output on stderr.
             }
 
             getLog().info("Images successfully pushed to " + imageConfiguration.getRegistry());
