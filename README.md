@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lexemmens_podman-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=lexemmens_podman-maven-plugin)
+
 # Podman Maven Plugin
 A maven plugin to build, tag and push OCI compliant images configured using a Dockerfile and built with Podman.
 
