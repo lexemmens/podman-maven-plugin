@@ -2,7 +2,6 @@ package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.config.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
-import nl.lexemmens.podman.service.CommandExecutorService;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -39,7 +38,8 @@ public class PushMojo extends AbstractPodmanMojo {
                 // Apparently, actually pushing the blobs to a registry causes some output on stderr.
             }
 
-            getLog().info("Images successfully pushed to " + imageConfiguration.getRegistry());
+            // TODO Images are still stored locally, so clean up?
+            getLog().info("Images successfully pushed to the registry");
         }
     }
 }
