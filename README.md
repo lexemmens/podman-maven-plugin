@@ -53,4 +53,8 @@ FROM ${container.base.image}
 WORKDIR /application
 COPY piradio-deployment-1.0.0-SNAPSHOT-all.tar ./
 ```
-dfd
+## Missing features
+1. Export images as tar gz to target folder
+2. Fix documentation
+3. Code coverage
+4. Handle authentication
