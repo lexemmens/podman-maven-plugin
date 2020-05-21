@@ -18,9 +18,6 @@ public class BuildContext {
 
     private Path sourceDockerfile;
     private Path targetDockerfile;
-    private Path imageExportDir;
-
-    private boolean exportImage;
 
     private Log log;
     private ImageConfiguration imageConfiguration;
@@ -91,19 +88,7 @@ public class BuildContext {
         return imageConfiguration;
     }
 
-    /**
-     * Returns the directory to which the container image should be exported
-     */
-    public Path getImageExportDir() {
-        return imageExportDir;
-    }
 
-    /**
-     * Returns true if the container image should be exported.
-     */
-    public boolean isExportImage() {
-        return exportImage;
-    }
 
     /**
      * Builder class that can be used to construct a new instance of the BuildContext
@@ -141,15 +126,6 @@ public class BuildContext {
         }
 
         /**
-         * Sets the image export directory
-         * @return This builder instance
-         */
-        public Builder setImageExportDir(Path imageExportDir) {
-            ctx.imageExportDir = imageExportDir;
-            return this;
-        }
-
-        /**
          * Sets the logger reference
          * @return This builder instance
          */
@@ -173,15 +149,6 @@ public class BuildContext {
          */
         public Builder setImageConfiguration(ImageConfiguration imageConfiguration) {
             ctx.imageConfiguration = imageConfiguration;
-            return this;
-        }
-
-        /**
-         * Sets whether the image should be exported
-         * @return This builder instance
-         */
-        public Builder setExportImage(boolean exportImage) {
-            ctx.exportImage = exportImage;
             return this;
         }
 

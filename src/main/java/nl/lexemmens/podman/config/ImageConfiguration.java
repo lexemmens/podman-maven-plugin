@@ -4,6 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
  * Holds the configuration for the container images that are being built
  */
 public class ImageConfiguration {
+
+    private static final Pattern REGISTRY_REGEX = Pattern.compile("^(?:https?:\\/\\/)?(?:[^@\\n]+@)?(?:www\\.)?([^:\\/\\n?]+)([:0-9]?){0,6}");
 
     private static final String SLASH = "/";
     private static final String LATEST = "latest";
@@ -36,9 +39,9 @@ public class ImageConfiguration {
     public ImageConfiguration(String registry, String repository, String[] tags, String version, boolean createImageTaggedLatest) {
         this.registry = registry;
         this.repository = repository;
-        this.tags = tags;
         this.version = version;
         this.createImageTaggedLatest = createImageTaggedLatest;
+        this.tags = Objects.requireNonNullElseGet(tags, () -> new String[0]);
     }
 
     /**
@@ -118,6 +121,30 @@ public class ImageConfiguration {
     }
 
     public final String getRegistry() {
-        return registry;
+        String registryToReturn;
+
+        if(registry == null) {
+            registryToReturn = getRegistryFromString(repository);
+            if(registryToReturn == null && tags.length > 0) {
+                registryToReturn = getRegistryFromString(tags[0]);
+            }
+        } else {
+            registryToReturn = registry;
+        }
+
+        return registryToReturn;
+    }
+
+    private String getRegistryFromString(String value) {
+        String registryFromValue = null;
+        if(value != null) {
+            Matcher matcher = REGISTRY_REGEX.matcher(value);
+            while(matcher.find()) {
+                registryFromValue = matcher.group();
+                break;
+            }
+        }
+
+        return registryFromValue;
     }
 }
