@@ -54,7 +54,6 @@ WORKDIR /application
 COPY piradio-deployment-1.0.0-SNAPSHOT-all.tar ./
 ```
 ## Missing features
-1. Export images as tar gz to target folder
-2. Fix documentation
-3. Code coverage
-4. Handle authentication
+1. Fix documentation
+2. Code coverage
+3. Handle authentication

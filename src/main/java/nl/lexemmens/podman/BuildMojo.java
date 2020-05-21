@@ -8,19 +8,18 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * BuildMojo for building container images using Podman
+ */
 @Mojo(name = "build", defaultPhase = LifecyclePhase.INSTALL)
 public class BuildMojo extends AbstractPodmanMojo {
 
-    private static final String PODMAN = "podman";
     private static final String TAG = "tag";
     private static final String BUILD = "build";
-    private static final String SAVE = "save";
 
     /**
      * Indicates if building container images should be skipped
@@ -45,7 +44,6 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         filterDockerfile(buildContext, hub);
         buildContainerImage(buildContext, hub);
-        exportContainerImage(buildContext, hub);
         tagContainerImage(buildContext, hub);
 
         getLog().info("Built container image.");
@@ -61,24 +59,6 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, BUILD, ".");
         buildContext.getImageConfiguration().setImageHash(processOutput.get(processOutput.size() - 1));
-    }
-
-    private void exportContainerImage(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
-        if(buildContext.isExportImage() && buildContext.getImageConfiguration().getImageHash().isPresent()) {
-            String imageHash = buildContext.getImageConfiguration().getImageHash().get();
-            String archiveName = String.format("%s.tar.gz", imageHash);
-            try {
-                getLog().info("Exporting image " + imageHash + " to " + buildContext.getImageExportDir() + "/" + archiveName);
-
-                Files.createDirectories(buildContext.getImageExportDir());
-
-                hub.getCommandExecutorService().runCommand(buildContext.getImageExportDir().toFile(), PODMAN, SAVE, "--format", "oci-archive", "-o", archiveName, imageHash);
-            } catch (IOException e) {
-                String msg = "Failed to export container " + imageHash + ". Caught IOException: " + e.getMessage();
-                getLog().error(msg);
-                throw new MojoExecutionException(msg);
-            }
-        }
     }
 
     private void tagContainerImage(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
@@ -110,21 +90,13 @@ public class BuildMojo extends AbstractPodmanMojo {
         Path sourceDockerfile = dockerFileDirPath.resolve(DOCKERFILE);
         Path targetDockerfile = Paths.get(outputDirectory.toURI()).resolve(DOCKERFILE);
 
-        Path podmanDir = Paths.get(outputDirectory.toURI()).resolve(PODMAN);
-        if(exportImage && !PODMAN.equals(imageExportDir)) {
-            podmanDir = Paths.get(outputDirectory.toURI()).resolve(imageExportDir);
-        }
-
         ImageConfiguration imageConfiguration = getImageConfiguration();
-
         return new BuildContext.Builder()
                 .setMavenProject(project)
                 .setSourceDockerFile(sourceDockerfile)
                 .setTargetDockerfile(targetDockerfile)
-                .setImageExportDir(podmanDir)
                 .setLog(getLog())
                 .setImageConfiguration(imageConfiguration)
-                .setExportImage(exportImage)
                 .validate()
                 .build();
     }

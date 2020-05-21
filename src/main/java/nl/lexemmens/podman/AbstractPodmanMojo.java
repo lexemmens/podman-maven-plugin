@@ -1,14 +1,13 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.config.ImageConfiguration;
-import nl.lexemmens.podman.service.ServiceHubFactory;
 import nl.lexemmens.podman.service.ServiceHub;
+import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
 import java.io.File;
@@ -17,6 +16,7 @@ import java.nio.file.Paths;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
 
+    protected static final String PODMAN = "podman";
     protected static final Path DOCKERFILE = Paths.get("Dockerfile");
 
     /**
@@ -24,13 +24,6 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
-
-    /**
-     * Maven settings containing authentication information
-     * TODO Figure this out
-     */
-    @Parameter(defaultValue = "${settings}", readonly = true)
-    protected Settings settings;
 
     /**
      * Location of the files - usually the project's target folder
@@ -43,19 +36,6 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     @Parameter(property = "podman.dockerfile.dir", required = true, defaultValue = "${project.basedir}")
     protected File dockerFileDir;
-
-    /**
-     * Configures whether the container image should be exported as a tar.gz
-     */
-    @Parameter(property = "podman.image.export", defaultValue = "false", required = true)
-    protected boolean exportImage;
-
-    /**
-     * Configures the directory to export the container image to. This will be a directory under the target folder.
-     * Requires 'podman.image.export' to be set to true as well.
-     */
-    @Parameter(property = "podman.image.export.dir", defaultValue = "podman", required = true)
-    protected String imageExportDir;
 
     /**
      * The registry of the container images
@@ -99,13 +79,6 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     @Parameter(property = "podman.tls.verify", defaultValue = "true", required = true)
     protected boolean tlsVerify;
-
-    /**
-     * Decides whether the local image should be deleted after pushing to the registry. Defaults to false.
-     * Note: When set to true, only the created image is deleted. Cached base images may continue to exist on the operating system
-     */
-    @Parameter(property = "podman.image.deleteAfterPush", defaultValue = "false", required = true)
-    protected boolean deleteLocalImageAfterPush;
 
     /**
      * Skip all podman steps
