@@ -118,8 +118,9 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
         ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), mavenFileFilter, tlsVerify, settings, settingsDecrypter);
         if(skipAuth) {
             getLog().info("Registry authentication is skipped.");
+        } else {
+            hub.getAuthenticationService().authenticate(registries);
         }
-        hub.getAuthenticationService().authenticate(registries);
 
         executeInternal(hub);
     }
