@@ -22,3 +22,5 @@ jobs:
         java-version: 11
     - name: SonarCloud analysis
       run: mvn -B verify sonar:sonar --file pom.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
