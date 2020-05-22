@@ -56,4 +56,3 @@ COPY piradio-deployment-1.0.0-SNAPSHOT-all.tar ./
 ## Missing features
 1. Fix documentation
 2. Code coverage
-3. Handle authentication

@@ -1,6 +1,6 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.ImageConfiguration;
+import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -50,7 +50,15 @@ public class SaveMojo extends AbstractPodmanMojo {
             String archiveName = String.format("%s.tar.gz", normaliseImageName(image));
 
             getLog().info("Exporting image " + image + " to " + targetPodmanDir + "/" + archiveName);
-            hub.getCommandExecutorService().runCommand(targetPodmanDir.toFile(), PODMAN, SAVE_CMD, FORMAT_CMD, OCI_ARCHIVE_CMD, OUTPUT_CMD, archiveName, image);
+            hub.getCommandExecutorService().runCommand(targetPodmanDir.toFile(),
+                    PODMAN,
+                    SAVE_CMD,
+                    tlsVerify.getCommand(),
+                    FORMAT_CMD,
+                    OCI_ARCHIVE_CMD,
+                    OUTPUT_CMD,
+                    archiveName,
+                    image);
         }
 
         getLog().info("Container images exported successfully.");

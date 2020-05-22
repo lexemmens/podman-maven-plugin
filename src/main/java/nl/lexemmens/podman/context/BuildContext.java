@@ -1,6 +1,6 @@
 package nl.lexemmens.podman.context;
 
-import nl.lexemmens.podman.config.ImageConfiguration;
+import nl.lexemmens.podman.image.ImageConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
