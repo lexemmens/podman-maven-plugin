@@ -14,7 +14,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class PushMojo extends AbstractPodmanMojo {
 
     private static final String PUSH = "push";
-    private static final String TLS_VERIFY_CMD = "--tls-verify=";
     private static final String REMOVE_LOCAL = "rmi";
 
     /**

@@ -26,7 +26,6 @@ public class AuthenticationService {
 
     private static final String PODMAN_CMD = "podman";
     private static final String LOGIN_CMD = "login";
-    private static final String TLS_VERIFY_CMD = "--tls-verify=";
 
     private static final String AUTHS_KEY_PODMAN_CFG = "auths";
 
@@ -131,7 +130,7 @@ public class AuthenticationService {
     private Set<String> getAuthenticatedRegistries() throws MojoExecutionException {
         Set<String> authenticatedRegistries = new HashSet<>();
         JSONObject podmanConfigJson = readPodmanConfig();
-        if(podmanConfigJson == null || !podmanConfigJson.has("auths")) {
+        if(podmanConfigJson == null || !podmanConfigJson.has(AUTHS_KEY_PODMAN_CFG)) {
             log.debug("No authenticated registries were found.");
         } else {
             Object auths = podmanConfigJson.get(AUTHS_KEY_PODMAN_CFG);

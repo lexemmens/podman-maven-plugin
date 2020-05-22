@@ -4,10 +4,10 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ImageConfigurationTest {
+class ImageConfigurationTest {
 
     @Test
-    public void testEmptyImageConfiguration() throws MojoExecutionException {
+    void testEmptyImageConfiguration() throws MojoExecutionException {
         ImageConfiguration ic = new ImageConfiguration(null, null, null, false);
         Assertions.assertNull(ic.getRegistry());
         Assertions.assertFalse(ic.getImageHash().isPresent());
@@ -15,7 +15,7 @@ public class ImageConfigurationTest {
     }
 
 //    @Test
-    public void testTagWithoutRegistryCausesException() throws MojoExecutionException {
+    void testTagWithoutRegistryCausesException() throws MojoExecutionException {
         ImageConfiguration ic = new ImageConfiguration(null, new String[]{"exampleTag"}, null, false);
         Assertions.assertNull(ic.getRegistry());
         Assertions.assertFalse(ic.getImageHash().isPresent());
@@ -23,7 +23,7 @@ public class ImageConfigurationTest {
     }
 
     @Test
-    public void testRepoInTagOnly() throws Exception
+    void testRepoInTagOnly() throws Exception
     {
         ImageConfiguration ic = new ImageConfiguration(null, new String[]{"registry.example.org:1234/repo/tag"}, "0.0.1", false);
         Assertions.assertNotNull(ic.getRegistry());
