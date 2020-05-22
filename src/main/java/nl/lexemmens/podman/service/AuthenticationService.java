@@ -29,6 +29,14 @@ public class AuthenticationService {
 
     private static final String AUTHS_KEY_PODMAN_CFG = "auths";
 
+    /**
+     * Environment variable that allows overriding the default credential store location
+     */
+    private static final String REGISTRY_AUTH_FILE = "REGISTRY_AUTH_FILE";
+
+    /**
+     * Default credential location for Podman
+     */
     private static final Path PODMAN_CREDENTIAL_LOCATION = Paths.get("/run/user/1000/containers/auth.json");
 
     private final Log log;
@@ -40,11 +48,11 @@ public class AuthenticationService {
     /**
      * Constructs a new instance of this service
      *
-     * @param log Access to MAven's log system
+     * @param log                Access to MAven's log system
      * @param cmdExecutorService The command executor service
-     * @param mavenSetings The Maven Settings
-     * @param settingsDecrypter The SettingsDecrypter service from Maven core
-     * @param tlsVerify Whether TLS verification should be used.
+     * @param mavenSetings       The Maven Settings
+     * @param settingsDecrypter  The SettingsDecrypter service from Maven core
+     * @param tlsVerify          Whether TLS verification should be used.
      */
     public AuthenticationService(Log log, CommandExecutorService cmdExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter, TlsVerify tlsVerify) {
         this.cmdExecutorService = cmdExecutorService;
@@ -69,15 +77,16 @@ public class AuthenticationService {
      */
     public void authenticate(String[] registries) throws MojoExecutionException {
         log.info("Checking authentication status...");
-        if(registries == null || registries.length == 0) {
+        if (registries == null || registries.length == 0) {
             String msg = "No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true";
             log.error(msg);
             throw new MojoExecutionException(msg);
         }
 
-        if(Files.exists(PODMAN_CREDENTIAL_LOCATION)) {
+        Optional<Path> registryAuthFile = getRegistryAuthFile();
+        if (registryAuthFile.isPresent()) {
             log.debug("Checking unauthenticated registries...");
-            authenticateUnauthenticatedRegistries(registries);
+            authenticateUnauthenticatedRegistries(registries, registryAuthFile.get());
         } else {
             log.info("Authentication file not (yet) present. Authenticating...");
             authenticateRegistries(registries);
@@ -86,11 +95,34 @@ public class AuthenticationService {
         log.info("Authentication status: OK!");
     }
 
-    private void authenticateUnauthenticatedRegistries(String[] registries) throws MojoExecutionException {
-        Set<String> authenticatedRegistries = getAuthenticatedRegistries();
+    /**
+     * Returns a {@link Optional} instance potentially referencing the registry authentication file. This method will first
+     * try the default authentication file, located in /run/user/1000/containers/auth.json. If that file
+     * is not present it will look for an environment variable named REGISTRY_AUTH_FILE, that may possibly
+     * contain an alternative authentication file.
+     * <p>
+     * This method returns an {@link Optional#empty()} when no authentication file could be found
+     *
+     * @return An Optional potentially holding the location of an authentication file.
+     */
+    private Optional<Path> getRegistryAuthFile() {
+        if (Files.exists(PODMAN_CREDENTIAL_LOCATION)) {
+            return Optional.of(PODMAN_CREDENTIAL_LOCATION);
+        } else if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
+            Path customRegistryAuthFile = Paths.get(System.getenv(REGISTRY_AUTH_FILE));
+            if (Files.exists(customRegistryAuthFile)) {
+                return Optional.of(customRegistryAuthFile);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private void authenticateUnauthenticatedRegistries(String[] registries, Path registryAuthFilePath) throws MojoExecutionException {
+        Set<String> authenticatedRegistries = getAuthenticatedRegistries(registryAuthFilePath);
         List<String> unauthenticatedRegistries = new ArrayList<>();
-        for(String registry : registries) {
-            if(!authenticatedRegistries.contains(registry)) {
+        for (String registry : registries) {
+            if (!authenticatedRegistries.contains(registry)) {
                 unauthenticatedRegistries.add(registry);
             }
         }
@@ -99,9 +131,9 @@ public class AuthenticationService {
     }
 
     private void authenticateRegistries(String[] registries) throws MojoExecutionException {
-        for(String registry : registries) {
+        for (String registry : registries) {
             Optional<AuthConfig> authConfigOptional = authConfigFactory.getAuthConfigForRegistry(registry);
-            if(authConfigOptional.isPresent()) {
+            if (authConfigOptional.isPresent()) {
                 AuthConfig authConfig = authConfigOptional.get();
                 authenticate(authConfig.getRegistry(), authConfig.getUsername(), authConfig.getPassword());
             } else {
@@ -127,14 +159,14 @@ public class AuthenticationService {
                 password);
     }
 
-    private Set<String> getAuthenticatedRegistries() throws MojoExecutionException {
+    private Set<String> getAuthenticatedRegistries(Path registryAuthFilePath) throws MojoExecutionException {
         Set<String> authenticatedRegistries = new HashSet<>();
-        JSONObject podmanConfigJson = readPodmanConfig();
-        if(podmanConfigJson == null || !podmanConfigJson.has(AUTHS_KEY_PODMAN_CFG)) {
+        JSONObject podmanConfigJson = readPodmanConfig(registryAuthFilePath);
+        if (podmanConfigJson == null || !podmanConfigJson.has(AUTHS_KEY_PODMAN_CFG)) {
             log.debug("No authenticated registries were found.");
         } else {
             Object auths = podmanConfigJson.get(AUTHS_KEY_PODMAN_CFG);
-            if(auths instanceof JSONObject) {
+            if (auths instanceof JSONObject) {
                 authenticatedRegistries = ((JSONObject) auths).keySet();
             } else {
                 log.warn("Failed to read authenticated registries. Maven might re-authenticate...");
@@ -144,13 +176,13 @@ public class AuthenticationService {
         return authenticatedRegistries;
     }
 
-    private static JSONObject readPodmanConfig() throws MojoExecutionException {
-        Reader reader = getFileReader();
+    private static JSONObject readPodmanConfig(Path registryAuthFilePath) throws MojoExecutionException {
+        Reader reader = getFileReader(registryAuthFilePath);
         return reader != null ? new JSONObject(new JSONTokener(reader)) : null;
     }
 
-    private static Reader getFileReader() throws MojoExecutionException{
-        File file = PODMAN_CREDENTIAL_LOCATION.toFile();
+    private static Reader getFileReader(Path registryAuthFilePath) throws MojoExecutionException {
+        File file = registryAuthFilePath.toFile();
         if (file.exists() && file.length() != 0) {
             try {
                 return new FileReader(file);
