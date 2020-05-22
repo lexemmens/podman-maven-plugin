@@ -55,47 +55,39 @@ public class ImageConfiguration {
      * @throws MojoExecutionException When, due to a confguration issue, the image name is invalid.
      */
     public List<String> getFullImageNames() throws MojoExecutionException {
+        validateProperties();
+
         List<String> imageNames = new ArrayList<>();
 
         for (String tag : tags) {
-            addFullImageName(imageNames, tag, version);
+            imageNames.add(buildImageName(tag, version));
 
             if(createImageTaggedLatest) {
-                addFullImageName(imageNames, tag, LATEST);
+                imageNames.add(buildImageName(tag, LATEST));
             }
         }
 
         return imageNames;
     }
 
-    private void addFullImageName(List<String> imageNames, String tag, String versionToUse) throws MojoExecutionException {
-        String imageName = buildImageName(tag, versionToUse);
-        validateImageName(imageName);
-
-        imageNames.add(imageName);
-    }
-
-    private String buildImageName(String tag, String versionToUse) throws MojoExecutionException {
+    private String buildImageName(String tag, String versionToUse) {
         StringBuilder sb = new StringBuilder();
         if (targetRegistry != null) {
             sb.append(targetRegistry).append(SLASH);
         }
 
-        if (tag == null) {
-            throw new MojoExecutionException("Image tag cannot be empty!");
-        } else {
-            sb.append(tag).append(":").append(versionToUse);
-        }
-
+        sb.append(tag).append(":").append(versionToUse);
 
         return sb.toString();
     }
 
-    private void validateImageName(String imageName) throws MojoExecutionException {
-        Pattern tagPattern = Pattern.compile("^(.+?)(?::([^:/]+))?$");
-        Matcher matcher = tagPattern.matcher(imageName);
-        if (!matcher.matches()) {
-            throw new MojoExecutionException(imageName + " is not a proper image name ([registry/][repo][:port]");
+    private void validateProperties() throws MojoExecutionException {
+        if(tags .length == 0) {
+            throw new MojoExecutionException("Tags cannot be empty!");
+        }
+
+        if(version == null && !createImageTaggedLatest) {
+            throw new MojoExecutionException("Cannot create image without a valid version!");
         }
     }
 

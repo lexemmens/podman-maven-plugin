@@ -79,7 +79,7 @@ public class AuthenticationService {
             log.debug("Checking unauthenticated registries...");
             authenticateUnauthenticatedRegistries(registries);
         } else {
-            log.debug("Authenticating all registries...");
+            log.info("Authentication file not (yet) present. Authenticating...");
             authenticateRegistries(registries);
         }
 
