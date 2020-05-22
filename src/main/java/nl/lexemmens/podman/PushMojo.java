@@ -26,7 +26,7 @@ public class PushMojo extends AbstractPodmanMojo {
      * Decides whether the local image should be deleted after pushing to the registry. Defaults to false.
      * Note: When set to true, only the created image is deleted. Cached base images may continue to exist on the operating system
      */
-    @Parameter(property = "podman.image.deleteAfterPush", defaultValue = "false", required = true)
+    @Parameter(property = "podman.image.delete.after.push", defaultValue = "false", required = true)
     protected boolean deleteLocalImageAfterPush;
 
     @Override
