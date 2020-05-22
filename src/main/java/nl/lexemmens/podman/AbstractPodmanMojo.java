@@ -90,7 +90,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     /**
      * Skip authentication prior to execution
      */
-    @Parameter(property = "podman.auth.skip", defaultValue = "false")
+    @Parameter(property = "podman.skip.auth", defaultValue = "false")
     private boolean skipAuth;
 
     /**
