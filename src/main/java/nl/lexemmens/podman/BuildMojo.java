@@ -1,6 +1,6 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.ImageConfiguration;
+import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.context.BuildContext;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -57,7 +57,7 @@ public class BuildMojo extends AbstractPodmanMojo {
     private void buildContainerImage(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Building container image...");
 
-        List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, BUILD, ".");
+        List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, true, false, PODMAN, BUILD, tlsVerify.getCommand(), ".");
         buildContext.getImageConfiguration().setImageHash(processOutput.get(processOutput.size() - 1));
     }
 

@@ -1,6 +1,6 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.ImageConfiguration;
+import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -51,13 +51,12 @@ public class PushMojo extends AbstractPodmanMojo {
             for (String tag : imageConfiguration.getFullImageNames()) {
                 getLog().info("Pushing image: " + tag + " to " + imageConfiguration.getRegistry());
 
-                String tlsVerifyOption = TLS_VERIFY_CMD + tlsVerify;
-                hub.getCommandExecutorService().runCommand(outputDirectory, false, PODMAN, PUSH, tlsVerifyOption, tag);
+                hub.getCommandExecutorService().runCommand(outputDirectory, true, false, PODMAN, PUSH, tlsVerify.getCommand(), tag);
                 // Apparently, actually pushing the blobs to a registry causes some output on stderr.
 
                 if (deleteLocalImageAfterPush) {
                     getLog().info("Removing image " + tag + " from the local repository");
-                    hub.getCommandExecutorService().runCommand(outputDirectory, false, PODMAN, REMOVE_LOCAL, tag);
+                    hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, REMOVE_LOCAL, tag);
                 }
             }
         }

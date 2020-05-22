@@ -1,6 +1,7 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.ImageConfiguration;
+import nl.lexemmens.podman.enumeration.TlsVerify;
+import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
@@ -8,6 +9,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
 import java.io.File;
@@ -31,6 +34,10 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.directory}", property = "podman.outputdir", required = true)
     protected File outputDirectory;
 
+    // Settings holding authentication info
+    @Parameter(defaultValue = "${settings}", readonly = true)
+    protected Settings settings;
+
     /**
      * Directory containing the Dockerfile
      */
@@ -38,16 +45,16 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected File dockerFileDir;
 
     /**
-     * The registry of the container images
+     * All the source registries that are required to build and push container images. Note that the target registry must be explicitly set!
      */
-    @Parameter(property = "podman.image.registry")
-    protected String registry;
+    @Parameter(property = "podman.registries")
+    protected String[] registries;
 
     /**
-     * The repository containing the container images
+     * The registry of the container images
      */
-    @Parameter(property = "podman.image.repository")
-    protected String repository;
+    @Parameter(property = "podman.image.target.registry")
+    protected String targetRegistry;
 
     /**
      * Array consisting of one or more tags to attach to a container image
@@ -59,7 +66,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      * Specifies whether the version of the container image should be based on the version of this Maven project. Defaults to true.
      * When set to false, 'podman.image.tag.version' must be specified.
      */
-    @Parameter(property = "podman.image.version.fromMavenProject", required = true, defaultValue = "true")
+    @Parameter(property = "podman.image.version.maven", required = true, defaultValue = "true")
     protected boolean useMavenProjectVersion;
 
     /**
@@ -77,8 +84,14 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     /**
      * Whether Podman should verify TLS/SSL certificates. Defaults to true.
      */
-    @Parameter(property = "podman.tls.verify", defaultValue = "true", required = true)
-    protected boolean tlsVerify;
+    @Parameter(property = "podman.tls.verify", defaultValue = "NOT_SPECIFIED", required = true)
+    protected TlsVerify tlsVerify;
+
+    /**
+     * Skip authentication prior to execution
+     */
+    @Parameter(property = "podman.auth.skip", defaultValue = "false")
+    private boolean skipAuth;
 
     /**
      * Skip all podman steps
@@ -92,6 +105,9 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Component
     private ServiceHubFactory serviceHubFactory;
 
+    @Component
+    private SettingsDecrypter settingsDecrypter;
+
     @Override
     public final void execute() throws MojoExecutionException {
         if(skip) {
@@ -99,7 +115,12 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             return;
         }
 
-        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), mavenFileFilter);
+        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), mavenFileFilter, tlsVerify, settings, settingsDecrypter);
+        if(skipAuth) {
+            getLog().info("Registry authentication is skipped.");
+        }
+        hub.getAuthenticationService().authenticate(registries);
+
         executeInternal(hub);
     }
 
@@ -118,6 +139,6 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             throw new MojoExecutionException(msg);
         }
 
-        return new ImageConfiguration(registry, repository, tags, version, createLatestTag);
+        return new ImageConfiguration(targetRegistry, tags, version, createLatestTag);
     }
 }

@@ -38,7 +38,7 @@ public class CommandExecutorService {
      * @return The process output as a list of Strings
      * @throws MojoExecutionException In case the process abnormally terminates
      */
-    public List<String> runCommand(File baseDir, boolean redirectError, String... command) throws MojoExecutionException {
+    public List<String> runCommand(File baseDir, boolean redirectStdOut, boolean redirectError, String... command) throws MojoExecutionException {
         try {
             String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), baseDir);
             log.debug(msg);
@@ -46,8 +46,12 @@ public class CommandExecutorService {
                     .directory(baseDir)
                     .command(command)
                     .readOutput(true)
-                    .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
                     .exitValueNormal();
+
+            // There is no need to always redirect output on stdout to a logger
+            if(redirectStdOut) {
+                processExecutor.redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo());
+            }
 
             // Some processes print regular text on stderror, so make redirecting the error stream configurable.
             if(redirectError) {
@@ -75,7 +79,7 @@ public class CommandExecutorService {
      * @throws MojoExecutionException In case the process abnormally terminates
      */
     public List<String> runCommand(File baseDir, String... command) throws MojoExecutionException {
-        return runCommand(baseDir, true, command);
+        return runCommand(baseDir, true, true, command);
     }
 
 }

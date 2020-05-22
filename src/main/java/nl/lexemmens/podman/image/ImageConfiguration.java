@@ -1,4 +1,4 @@
-package nl.lexemmens.podman.config;
+package nl.lexemmens.podman.image;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -19,8 +19,7 @@ public class ImageConfiguration {
     private static final String SLASH = "/";
     private static final String LATEST = "latest";
 
-    private final String registry;
-    private final String repository;
+    private final String targetRegistry;
     private final String[] tags;
     private final String version;
     private final boolean createImageTaggedLatest;
@@ -30,15 +29,13 @@ public class ImageConfiguration {
     /**
      * Constructs a new instance of this ImageConfiguration class.
      *
-     * @param registry                The registry to use
-     * @param repository              The repository to use
+     * @param targetRegistry                The registry to use
      * @param tags                    The tags to build
      * @param version                 The version to use
      * @param createImageTaggedLatest Whether an image tagged 'latest' should be created
      */
-    public ImageConfiguration(String registry, String repository, String[] tags, String version, boolean createImageTaggedLatest) {
-        this.registry = registry;
-        this.repository = repository;
+    public ImageConfiguration(String targetRegistry, String[] tags, String version, boolean createImageTaggedLatest) {
+        this.targetRegistry = targetRegistry;
         this.version = version;
         this.createImageTaggedLatest = createImageTaggedLatest;
         this.tags = Objects.requireNonNullElseGet(tags, () -> new String[0]);
@@ -80,12 +77,8 @@ public class ImageConfiguration {
 
     private String buildImageName(String tag, String versionToUse) throws MojoExecutionException {
         StringBuilder sb = new StringBuilder();
-        if (registry != null) {
-            sb.append(registry).append(SLASH);
-        }
-
-        if (repository != null) {
-            sb.append(repository).append(SLASH);
+        if (targetRegistry != null) {
+            sb.append(targetRegistry).append(SLASH);
         }
 
         if (tag == null) {
@@ -123,13 +116,10 @@ public class ImageConfiguration {
     public final String getRegistry() {
         String registryToReturn;
 
-        if(registry == null) {
-            registryToReturn = getRegistryFromString(repository);
-            if(registryToReturn == null && tags.length > 0) {
-                registryToReturn = getRegistryFromString(tags[0]);
-            }
+        if(targetRegistry == null && tags.length > 0) {
+            registryToReturn = getRegistryFromString(tags[0]);
         } else {
-            registryToReturn = registry;
+            registryToReturn = targetRegistry;
         }
 
         return registryToReturn;
@@ -139,9 +129,8 @@ public class ImageConfiguration {
         String registryFromValue = null;
         if(value != null) {
             Matcher matcher = REGISTRY_REGEX.matcher(value);
-            while(matcher.find()) {
+            if(matcher.find()) {
                 registryFromValue = matcher.group();
-                break;
             }
         }
 
