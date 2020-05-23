@@ -10,7 +10,11 @@ import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,8 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AuthConfigFactoryTest {
 
     @Mock

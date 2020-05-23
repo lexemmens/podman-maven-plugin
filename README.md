@@ -18,6 +18,7 @@ Also, only a subset of the `podman`s capabilities have been implemented (build, 
 ## Requirements
 - Maven 3.6.2 or later
 - Java 9 or later
+- Podman to be installed on the OS where this plugin will run
 - Registry configuration to be present in Maven settings.
 
 ## Goals

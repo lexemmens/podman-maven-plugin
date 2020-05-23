@@ -13,8 +13,12 @@ import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +33,8 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AuthenticationServiceTest {
 
     @Mock
@@ -71,7 +77,7 @@ public class AuthenticationServiceTest {
     @Test
     public void authenticateNoRegistryAuthFileNoEnvVarNoCredentials() throws IOException, MojoExecutionException {
         // Ensure that /run/user/1000/containers/invalidauth.json is not present
-        Path authFilePath = Paths.get("/run/user/1000/containers/invalidauth.json");
+        Path authFilePath = Paths.get("/run/user/1000/containers/auth.json");
         Files.deleteIfExists(authFilePath);
 
         String[] registries = new String[]{"registry.example.com"};
@@ -100,8 +106,8 @@ public class AuthenticationServiceTest {
         when(settings.getProxies()).thenReturn(new ArrayList<>());
         when(settingsDecrypter.decrypt(isA(SettingsDecryptionRequest.class))).thenReturn(createSettingsDecryptionResult(serverList, new ArrayList<>()));
 
-        // Ensure that /run/user/1000/containers/invalidauth.json is not present
-        Path authFilePath = Paths.get("/run/user/1000/containers/invalidauth.json");
+        // Ensure that /run/user/1000/containers/auth.json is not present
+        Path authFilePath = Paths.get("/run/user/1000/containers/auth.json");
         Files.deleteIfExists(authFilePath);
 
         String[] registries = new String[]{"registry.example.com"};
