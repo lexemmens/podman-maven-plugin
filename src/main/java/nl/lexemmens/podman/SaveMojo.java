@@ -34,10 +34,7 @@ public class SaveMojo extends AbstractPodmanMojo {
         }
 
         ImageConfiguration imageConfiguration = getImageConfiguration();
-        if(imageConfiguration.getFullImageNames().isEmpty()) {
-            getLog().info("There are no container images to export.");
-            return;
-        }
+        // No need to check if the image names are empty here - this is checked by the image configuration.
 
         exportContainerImage(imageConfiguration, hub);
     }
