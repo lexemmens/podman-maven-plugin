@@ -25,13 +25,13 @@ public class BuildMojo extends AbstractPodmanMojo {
      * Indicates if building container images should be skipped
      */
     @Parameter(property = "podman.skip.build", defaultValue = "false")
-    private boolean skipBuild;
+    boolean skipBuild;
 
     /**
      * Indicates if tagging container images should be skipped
      */
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
-    private boolean skipTag;
+    boolean skipTag;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
