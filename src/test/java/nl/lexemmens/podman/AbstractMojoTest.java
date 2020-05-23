@@ -1,6 +1,7 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.service.CommandExecutorService;
+import nl.lexemmens.podman.service.FileFilterService;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.logging.Log;
@@ -10,13 +11,16 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.mockito.Mock;
 
-public class AbstractMojoTest {
+public abstract class AbstractMojoTest {
 
     @Mock
     protected Settings settings;
 
     @Mock
     protected CommandExecutorService commandExecutorService;
+
+    @Mock
+    protected FileFilterService fileFilterService;
 
     @Mock
     protected MavenProject mavenProject;
@@ -35,6 +39,5 @@ public class AbstractMojoTest {
 
     @Mock
     protected Log log;
-
 
 }
