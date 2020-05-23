@@ -9,7 +9,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 /**
  * Context class providing access to runtime requirements, such as support classes, image hash
  */
-public final class ServiceHub {
+public class ServiceHub {
 
     private final CommandExecutorService cmdExecutor;
     private final FileFilterService fileFilterService;
@@ -30,14 +30,14 @@ public final class ServiceHub {
     /**
      * Returns a reference to the CommandExecutorService
      */
-    public final CommandExecutorService getCommandExecutorService() {
+    public CommandExecutorService getCommandExecutorService() {
         return cmdExecutor;
     }
 
     /**
      * Returns a reference to the FileFilterService class
      */
-    public final FileFilterService getFileFilterService() {
+    public FileFilterService getFileFilterService() {
         return fileFilterService;
     }
 

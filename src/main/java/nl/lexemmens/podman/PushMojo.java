@@ -20,14 +20,14 @@ public class PushMojo extends AbstractPodmanMojo {
      * Indicates if building container images should be skipped
      */
     @Parameter(defaultValue = "false", property = "podman.skip.push", required = true)
-    private boolean skipPush;
+    boolean skipPush;
 
     /**
      * Decides whether the local image should be deleted after pushing to the registry. Defaults to false.
      * Note: When set to true, only the created image is deleted. Cached base images may continue to exist on the operating system
      */
     @Parameter(property = "podman.image.delete.after.push", defaultValue = "false", required = true)
-    protected boolean deleteLocalImageAfterPush;
+    boolean deleteLocalImageAfterPush;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
