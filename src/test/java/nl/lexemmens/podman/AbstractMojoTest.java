@@ -1,7 +1,6 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.service.CommandExecutorService;
-import nl.lexemmens.podman.service.FileFilterService;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.logging.Log;
@@ -18,9 +17,6 @@ public abstract class AbstractMojoTest {
 
     @Mock
     protected CommandExecutorService commandExecutorService;
-
-    @Mock
-    protected FileFilterService fileFilterService;
 
     @Mock
     protected MavenProject mavenProject;
