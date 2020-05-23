@@ -146,7 +146,7 @@ public class AuthenticationService {
 
     private void authenticate(String registry, String username, String password) throws MojoExecutionException {
         log.debug("Authenticating " + registry);
-        cmdExecutorService.runCommand(new File("/"),
+        cmdExecutorService.runCommand(new File("."),
                 false,
                 true,
                 PODMAN_CMD,

@@ -20,14 +20,14 @@ public class PushMojo extends AbstractPodmanMojo {
      * Indicates if building container images should be skipped
      */
     @Parameter(defaultValue = "false", property = "podman.skip.push", required = true)
-    private boolean skipPush;
+    boolean skipPush;
 
     /**
      * Decides whether the local image should be deleted after pushing to the registry. Defaults to false.
      * Note: When set to true, only the created image is deleted. Cached base images may continue to exist on the operating system
      */
     @Parameter(property = "podman.image.delete.after.push", defaultValue = "false", required = true)
-    protected boolean deleteLocalImageAfterPush;
+    boolean deleteLocalImageAfterPush;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
@@ -44,19 +44,16 @@ public class PushMojo extends AbstractPodmanMojo {
         getLog().info("Pushing container images to registry ...");
 
         ImageConfiguration imageConfiguration = getImageConfiguration();
-        if(imageConfiguration.getFullImageNames().isEmpty()) {
-            getLog().info("There are no container images to be pushed. Consider running 'mvn install' first.");
-        } else {
-            for (String tag : imageConfiguration.getFullImageNames()) {
-                getLog().info("Pushing image: " + tag + " to " + imageConfiguration.getRegistry());
+        // The image configuration cannot produce an empty list of image names.
+        for (String imageName : imageConfiguration.getFullImageNames()) {
+            getLog().info("Pushing image: " + imageName + " to " + imageConfiguration.getRegistry());
 
-                hub.getCommandExecutorService().runCommand(outputDirectory, true, false, PODMAN, PUSH, tlsVerify.getCommand(), tag);
-                // Apparently, actually pushing the blobs to a registry causes some output on stderr.
+            hub.getCommandExecutorService().runCommand(outputDirectory, true, false, PODMAN, PUSH, tlsVerify.getCommand(), imageName);
+            // Apparently, actually pushing the blobs to a registry causes some output on stderr.
 
-                if (deleteLocalImageAfterPush) {
-                    getLog().info("Removing image " + tag + " from the local repository");
-                    hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, REMOVE_LOCAL, tag);
-                }
+            if (deleteLocalImageAfterPush) {
+                getLog().info("Removing image " + imageName + " from the local repository");
+                hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, REMOVE_LOCAL, imageName);
             }
         }
 

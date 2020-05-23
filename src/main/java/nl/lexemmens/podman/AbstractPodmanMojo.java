@@ -4,6 +4,7 @@ import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -91,13 +92,13 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      * Skip authentication prior to execution
      */
     @Parameter(property = "podman.skip.auth", defaultValue = "false")
-    private boolean skipAuth;
+    protected boolean skipAuth;
 
     /**
      * Skip all podman steps
      */
     @Parameter(property = "podman.skip", defaultValue = "false")
-    private boolean skip;
+    protected boolean skip;
 
     @Component
     private MavenFileFilter mavenFileFilter;
@@ -131,13 +132,13 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
         String version;
         if(useMavenProjectVersion) {
             version = project.getVersion();
-        } else if(tagVersion != null) {
-            version = tagVersion;
-        } else {
+        } else if(StringUtils.isEmpty(tagVersion)) {
             String msg = "No image version specified. Set 'podman.image.version.fromMavenProject' to true for default project version or" +
                     " specify a version via 'podman.image.version'";
             getLog().error(msg);
             throw new MojoExecutionException(msg);
+        } else {
+            version = tagVersion;
         }
 
         return new ImageConfiguration(targetRegistry, tags, version, createLatestTag);
