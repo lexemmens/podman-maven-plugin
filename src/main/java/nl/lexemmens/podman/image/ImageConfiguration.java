@@ -82,7 +82,7 @@ public class ImageConfiguration {
     }
 
     private void validateProperties() throws MojoExecutionException {
-        if(tags .length == 0) {
+        if(tags.length == 0) {
             throw new MojoExecutionException("Tags cannot be empty!");
         }
 

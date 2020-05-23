@@ -24,7 +24,7 @@ public class SaveMojo extends AbstractPodmanMojo {
     private static final String OUTPUT_CMD = "-o";
 
     @Parameter(property = "podman.skip.save", defaultValue = "false")
-    private boolean skipSave;
+    boolean skipSave;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
