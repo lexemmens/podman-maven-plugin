@@ -27,11 +27,13 @@ public class ImageConfiguration {
     private String imageHash;
 
     /**
+     * <p>
      * Constructs a new instance of this ImageConfiguration class.
+     * </p>
      *
-     * @param targetRegistry                The registry to use
-     * @param tags                    The tags to build
-     * @param version                 The version to use
+     * @param targetRegistry          The target registry where images will be pushed to. Used for tagging, pushing and saving images.
+     * @param tags                    The tags to apply to the container images
+     * @param version                 The version used to tag the container images with
      * @param createImageTaggedLatest Whether an image tagged 'latest' should be created
      */
     public ImageConfiguration(String targetRegistry, String[] tags, String version, boolean createImageTaggedLatest) {
@@ -42,10 +44,13 @@ public class ImageConfiguration {
     }
 
     /**
+     * <p>
      * Returns a list of all full image names for this image. As an image can have more then one tag, this will
      * result in multiple image names.
+     * </p>
      * <p>
      * Examples:
+     * </p>
      * <ul>
      * <li>docker.consol.de:5000/jolokia/tomcat-8.0:8.0.9</li>
      * <li>docker.consol.de:5000/jolokia/tomcat-8.0:latest</li>
@@ -62,12 +67,63 @@ public class ImageConfiguration {
         for (String tag : tags) {
             imageNames.add(buildImageName(tag, version));
 
-            if(createImageTaggedLatest) {
+            if (createImageTaggedLatest) {
                 imageNames.add(buildImageName(tag, LATEST));
             }
         }
 
         return imageNames;
+    }
+
+    /**
+     * <p>
+     * Returns an Optional that may or may not hold the image hash
+     * </p>
+     *
+     * @return An {@link Optional} that may hold the image hash
+     */
+    public final Optional<String> getImageHash() {
+        return Optional.ofNullable(imageHash);
+    }
+
+    /**
+     * <p>
+     * Sets the image hash to a specific value
+     * </p>
+     *
+     * @param imageHash The image hash to set. This should be a SHA256 hash.
+     */
+    public final void setImageHash(String imageHash) {
+        this.imageHash = imageHash;
+    }
+
+    /**
+     * <p>
+     * Returns a String representing the target registry. This may either be specified via
+     * the targetRegistry parameter or be part of a tag.
+     * </p>
+     *
+     * @return The target registry.
+     */
+    public final String getTargetRegistry() {
+        String registryToReturn;
+
+        if (targetRegistry == null && tags.length > 0) {
+            registryToReturn = getRegistryFromString(tags[0]);
+        } else {
+            registryToReturn = targetRegistry;
+        }
+
+        return registryToReturn;
+    }
+
+    private String getRegistryFromString(String value) {
+        String registryFromValue = null;
+        Matcher matcher = REGISTRY_REGEX.matcher(value);
+        if (matcher.find()) {
+            registryFromValue = matcher.group();
+        }
+        return registryFromValue;
     }
 
     private String buildImageName(String tag, String versionToUse) {
@@ -82,50 +138,12 @@ public class ImageConfiguration {
     }
 
     private void validateProperties() throws MojoExecutionException {
-        if(tags.length == 0) {
+        if (tags.length == 0) {
             throw new MojoExecutionException("Tags cannot be empty!");
         }
 
-        if(version == null && !createImageTaggedLatest) {
+        if (version == null && !createImageTaggedLatest) {
             throw new MojoExecutionException("Cannot create image without a valid version!");
         }
-    }
-
-    /**
-     * Returns an Optional of the image hash
-     */
-    public final Optional<String> getImageHash() {
-        return Optional.ofNullable(imageHash);
-    }
-
-    /**
-     * Sets the image hash to a specific value
-     */
-    public final void setImageHash(String imageHash) {
-        this.imageHash = imageHash;
-    }
-
-    public final String getRegistry() {
-        String registryToReturn;
-
-        if(targetRegistry == null && tags.length > 0) {
-            registryToReturn = getRegistryFromString(tags[0]);
-        } else {
-            registryToReturn = targetRegistry;
-        }
-
-        return registryToReturn;
-    }
-
-    private String getRegistryFromString(String value) {
-        String registryFromValue = null;
-        if(value != null) {
-            Matcher matcher = REGISTRY_REGEX.matcher(value);
-            if(matcher.find()) {
-                registryFromValue = matcher.group();
-            }
-        }
-
-        return registryFromValue;
     }
 }

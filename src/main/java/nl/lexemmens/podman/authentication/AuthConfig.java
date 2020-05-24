@@ -23,6 +23,7 @@ public class AuthConfig {
 
     /**
      * Returns the registry held by this class
+     * @return The Podman registry held by this class
      */
     public String getRegistry() {
         return registry;
@@ -30,6 +31,7 @@ public class AuthConfig {
 
     /**
      * Returns the username corresponding to this registry
+     * @return The username used to authenticat to the registry
      */
     public String getUsername() {
         return username;
@@ -37,6 +39,7 @@ public class AuthConfig {
 
     /**
      * Returns the password corresponding to this registry
+     * @return The password used to authenticat to the registry
      */
     public String getPassword() {
         return password;

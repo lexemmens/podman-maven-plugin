@@ -11,30 +11,41 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Helper class to execute command line processes
+ * <p>
+ * Service used to execute the <em>podman</em> commands
+ * </p>
  */
 public class CommandExecutorService {
 
     private final Log log;
 
     /**
-     * Constructor
+     * <p>
+     * Creates a new instance of this {@link CommandExecutorService}
+     * </p>
      *
-     * @param log The logger
+     * @param log Access to Maven's log system
      */
     public CommandExecutorService(Log log) {
         this.log = log;
     }
 
     /**
-     * Executes a command in the supplied basedir and returns its output as a {@link List} of {@link String}s. The process
+     * <p>
+     * Executes a command in the provided basedir and returns its output as a {@link List} of {@link String}s. The process
      * is expected to terminate normally (i.e. exit code 0).
-     * <p/>
-     * Throws a MojoExecutionException in case an exception is thrown (i.e. non-zero exit code).
+     * </p>
+     * <p>
+     * This method will throw a {@link MojoExecutionException} in case the process terminates with a non-zero exit code
+     * </p>
+     * <p>
+     * Redirection of standard out and standard error can be configured separately.
+     * </p>
      *
-     * @param baseDir The directory from which the command should be executed
-     * @param redirectError Whether error stream should be redirected to LOGGER.error
-     * @param command The command to execute as a var-args aray
+     * @param baseDir        The directory from which the command should be executed
+     * @param redirectStdOut Whether stdout stream should be redirected to LOGGER.info
+     * @param redirectError  Whether error stream should be redirected to LOGGER.error
+     * @param command        The command to execute as a var-args array
      * @return The process output as a list of Strings
      * @throws MojoExecutionException In case the process abnormally terminates
      */
@@ -49,12 +60,12 @@ public class CommandExecutorService {
                     .exitValueNormal();
 
             // There is no need to always redirect output on stdout to a logger
-            if(redirectStdOut) {
+            if (redirectStdOut) {
                 processExecutor.redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo());
             }
 
             // Some processes print regular text on stderror, so make redirecting the error stream configurable.
-            if(redirectError) {
+            if (redirectError) {
                 processExecutor.redirectError(Slf4jStream.of(getClass().getSimpleName()).asError());
             }
 
@@ -68,15 +79,22 @@ public class CommandExecutorService {
     }
 
     /**
+     * <p>
      * Executes a command in the supplied basedir and returns its output as a {@link List} of {@link String}s. The process
      * is expected to terminate normally (i.e. exit code 0).
-     * <p/>
-     * Throws a MojoExecutionException in case an exception is thrown (i.e. non-zero exit code).
+     * </p>
+     * <p>
+     * This method will throw a {@link MojoExecutionException} in case the process terminates with a non-zero exit code
+     * </p>
+     * <p>
+     * By default, stdout will be redirected to Logger.info and stderr will be redirected to Logger.error
+     * </p>
      *
      * @param baseDir The directory from which the command should be executed
      * @param command The command to execute as a var-args aray
      * @return The process output as a list of Strings
      * @throws MojoExecutionException In case the process abnormally terminates
+     * @see CommandExecutorService#runCommand(File, boolean, boolean, String...)
      */
     public List<String> runCommand(File baseDir, String... command) throws MojoExecutionException {
         return runCommand(baseDir, true, true, command);
