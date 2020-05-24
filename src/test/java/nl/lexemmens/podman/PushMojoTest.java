@@ -29,7 +29,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        configureMojo(true, false,  null,  null, false,false);
+        configureMojo(true, false, null, null, false, false);
 
         pushMojo.execute();
 
@@ -38,7 +38,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAuthenticationAndPush() throws MojoExecutionException {
-        configureMojo(false, true,  null,  null, false, false);
+        configureMojo(false, true, null, null, false, false);
 
         pushMojo.execute();
 
@@ -48,7 +48,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsNull() throws MojoExecutionException {
-        configureMojo(false, false,  null,  null, false, false);
+        configureMojo(false, false, null, null, false, false);
 
         pushMojo.execute();
 
@@ -58,7 +58,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsEmpty() throws MojoExecutionException {
-        configureMojo(false, false,  null,  new String[]{}, false, false);
+        configureMojo(false, false, null, new String[]{}, false, false);
 
         pushMojo.execute();
 
@@ -67,8 +67,19 @@ public class PushMojoTest extends AbstractMojoTest {
     }
 
     @Test
+    public void testPushWithoutVersionFails() throws MojoExecutionException {
+        configureMojo(false, false, null, new String[]{"sampleTag"}, false, false);
+
+        Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
+
+        verify(log, Mockito.times(1)).error(Mockito.eq("No image version specified. Set 'podman.image.version.fromMavenProject' to true for default project version or" +
+                " specify a version via 'podman.image.version'"));
+        verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
+    }
+
+    @Test
     public void testPushWithoutCleaningUpLocalImage() throws MojoExecutionException {
-        configureMojo(false, false,  "registry.example.com",  new String[]{"sampleTag"}, true, false);
+        configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true, false);
 
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
@@ -91,7 +102,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithCleaningUpLocalImage() throws MojoExecutionException {
-        configureMojo(false, false,  "registry.example.com",  new String[]{"sampleTag"}, true, true);
+        configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true, true);
 
         pushMojo.deleteLocalImageAfterPush = true;
 

@@ -20,7 +20,14 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Service used to authenticate and verify authentication for the configured registries.
+ * <p>
+ * Service used to authenticate to configured registries and verify authentication for the configured registries.
+ * </p>
+ * <p>
+ * Note that this service does not check if the credentials are (still) valid for authenticated registries.
+ * It only validates if credentials are present for registries and uses them to authenticate registries that are not yet
+ * in <em>Podman</em>'s authentication file.
+ * </p>
  */
 public class AuthenticationService {
 
@@ -48,11 +55,11 @@ public class AuthenticationService {
     /**
      * Constructs a new instance of this service
      *
-     * @param log                Access to MAven's log system
-     * @param cmdExecutorService The command executor service
-     * @param mavenSetings       The Maven Settings
-     * @param settingsDecrypter  The SettingsDecrypter service from Maven core
-     * @param tlsVerify          Whether TLS verification should be used.
+     * @param log                Provides access to Maven's log system
+     * @param cmdExecutorService The command executor service used to execute the <em>podman</em> command
+     * @param mavenSetings       Provides access to the Maven Settings
+     * @param settingsDecrypter  Provides access to Maven's SettingsDecrypter service from Maven core
+     * @param tlsVerify          Indicates whether TLS Verification should be used.
      */
     public AuthenticationService(Log log, CommandExecutorService cmdExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter, TlsVerify tlsVerify) {
         this.cmdExecutorService = cmdExecutorService;
@@ -62,18 +69,27 @@ public class AuthenticationService {
     }
 
     /**
+     * <p>
      * Ensures that credentials are available for the registries that are configured for this plugin, by executing a series of checks in a particular
      * order.
-     * <p/>
+     * </p>
+     * <p>
      * This method assumes authentication has taken place when the configured registries are also present in Podman's authentication file.
-     * <p/>
-     * This method will throw {@link MojoExecutionException} if there are no registries configured whilst this method is invoked (it means that authentication
-     * is not skipped).
-     * <p/>
+     * </p>
+     * <p>
      * When there are registries configured that are not present in Podman's default authentication file, this method will attempt authentication for those registries.
+     * </p>
+     * <p>
+     * This method will throw a MojoExecutionException in case:
+     * </p>
+     * <ul>
+     *     <li>No registries are passed (it means authentication is not skipped)</li>
+     *     <li>Authentication fails</li>
+     *     <li>Credentials for a certain registry could not be found in the Maven settings.</li>
+     * </ul>
      *
      * @param registries The registries to authenticate to
-     * @throws MojoExecutionException In case authentication failed
+     * @throws MojoExecutionException In case authentication fails, no registries were passed or credentials are missing.
      */
     public void authenticate(String[] registries) throws MojoExecutionException {
         log.info("Checking authentication status...");
@@ -96,12 +112,15 @@ public class AuthenticationService {
     }
 
     /**
+     * <p>
      * Returns a {@link Optional} instance potentially referencing the registry authentication file. This method will first
      * try the default authentication file, located in /run/user/1000/containers/auth.json. If that file
      * is not present it will look for an environment variable named REGISTRY_AUTH_FILE, that may possibly
      * contain an alternative authentication file.
+     * </p>
      * <p>
      * This method returns an {@link Optional#empty()} when no authentication file could be found
+     * </p>
      *
      * @return An Optional potentially holding the location of an authentication file.
      */
@@ -137,7 +156,8 @@ public class AuthenticationService {
                 AuthConfig authConfig = authConfigOptional.get();
                 authenticate(authConfig.getRegistry(), authConfig.getUsername(), authConfig.getPassword());
             } else {
-                String msg = "Credentials are missing for registry " + registry + ". Add credentials by specifying the server in the Maven Settings.";
+                String msg = "Credentials are missing for registry " + registry + ". Add credentials by specifying the server in the " +
+                        "Maven's settings.xml (usually located in ~/.m2/)";
                 log.error(msg);
                 throw new MojoExecutionException(msg);
             }
