@@ -56,6 +56,7 @@ public class AuthConfigFactory {
             }
         }
 
+        // This should never happen
         return null;
     }
 

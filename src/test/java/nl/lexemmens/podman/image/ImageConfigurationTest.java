@@ -11,7 +11,7 @@ class ImageConfigurationTest {
         // Tags cannot be empty. If tagging should not be done it should be skipped by specifying the appropriate parameter
         // For saving and pushing everything is required
         ImageConfiguration ic = new ImageConfiguration(null, null, null, false);
-        Assertions.assertNull(ic.getRegistry());
+        Assertions.assertNull(ic.getTargetRegistry());
         Assertions.assertFalse(ic.getImageHash().isPresent());
         Assertions.assertThrows(MojoExecutionException.class, ic::getFullImageNames);
     }
@@ -21,7 +21,7 @@ class ImageConfigurationTest {
         // No version is specified as well as createImageTaggedLatest is set to false. Should fail because no version at all is available
 
         ImageConfiguration ic = new ImageConfiguration(null, new String[]{"exampleTag"}, null, false);
-        Assertions.assertEquals("exampleTag", ic.getRegistry()); // Registry is allowed to be part of the tag
+        Assertions.assertEquals("exampleTag", ic.getTargetRegistry()); // Registry is allowed to be part of the tag
         Assertions.assertFalse(ic.getImageHash().isPresent());
         Assertions.assertThrows(MojoExecutionException.class, ic::getFullImageNames);
     }
@@ -31,7 +31,7 @@ class ImageConfigurationTest {
         // No version is specified as well as createImageTaggedLatest is set to false. Should fail because no version at all is available
 
         ImageConfiguration ic = new ImageConfiguration(null, new String[]{"exampleTag"}, null, true);
-        Assertions.assertEquals("exampleTag", ic.getRegistry()); // Registry is allowed to be part of the tag
+        Assertions.assertEquals("exampleTag", ic.getTargetRegistry()); // Registry is allowed to be part of the tag
         Assertions.assertFalse(ic.getImageHash().isPresent());
         Assertions.assertDoesNotThrow(ic::getFullImageNames);
     }
@@ -41,19 +41,24 @@ class ImageConfigurationTest {
         // No version is specified as well as createImageTaggedLatest is set to false. Should fail because no version at all is available
 
         ImageConfiguration ic = new ImageConfiguration(null, new String[]{"exampleTag"}, "1.0.0", false);
-        Assertions.assertEquals("exampleTag", ic.getRegistry()); // Registry is allowed to be part of the tag
+        Assertions.assertEquals("exampleTag", ic.getTargetRegistry()); // Registry is allowed to be part of the tag
         Assertions.assertFalse(ic.getImageHash().isPresent());
         Assertions.assertDoesNotThrow(ic::getFullImageNames);
     }
 
     @Test
-    void testRepoInTagOnly() throws Exception
-    {
+    void testRepoInTagOnly() throws Exception {
         ImageConfiguration ic = new ImageConfiguration(null, new String[]{"registry.example.org:1234/repo/tag"}, "0.0.1", false);
-        Assertions.assertNotNull(ic.getRegistry());
-        Assertions.assertEquals("registry.example.org:1234", ic.getRegistry());
+        Assertions.assertNotNull(ic.getTargetRegistry());
+        Assertions.assertEquals("registry.example.org:1234", ic.getTargetRegistry());
         Assertions.assertFalse(ic.getImageHash().isPresent());
 
         Assertions.assertDoesNotThrow(ic::getFullImageNames);
+    }
+
+    @Test
+    void testTargetRegistryNullWithInvalidTag() throws Exception {
+        ImageConfiguration ic = new ImageConfiguration(null, new String[]{"file:///home/user/folder:1234/repo/tag"}, "0.0.1", false);
+        Assertions.assertNotNull(ic.getTargetRegistry());
     }
 }

@@ -46,7 +46,7 @@ public class PushMojo extends AbstractPodmanMojo {
         ImageConfiguration imageConfiguration = getImageConfiguration();
         // The image configuration cannot produce an empty list of image names.
         for (String imageName : imageConfiguration.getFullImageNames()) {
-            getLog().info("Pushing image: " + imageName + " to " + imageConfiguration.getRegistry());
+            getLog().info("Pushing image: " + imageName + " to " + imageConfiguration.getTargetRegistry());
 
             hub.getCommandExecutorService().runCommand(outputDirectory, true, false, PODMAN, PUSH, tlsVerify.getCommand(), imageName);
             // Apparently, actually pushing the blobs to a registry causes some output on stderr.

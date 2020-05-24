@@ -92,6 +92,36 @@ public class AuthConfigFactoryTest {
         Assertions.assertEquals("password", authConfig.getPassword());
     }
 
+    /**
+     * Fair and square: According to the implementation of the SettingsDecrypter, this can never happen.
+     */
+    @Test
+    public void testServerNotInDecryptedSettings() {
+        Server incorrectServer = new Server();
+        incorrectServer.setId("the-incorrect-registry.example.com");
+        incorrectServer.setUsername("username");
+        incorrectServer.setUsername("password");
+        List<Server> incorrectServerList = List.of(incorrectServer);
+
+        Server requestedServer= new Server();
+        requestedServer.setId("registry.example.com");
+        requestedServer.setUsername("username");
+        requestedServer.setUsername("password");
+
+        List<Server> requestedServerList = List.of(requestedServer);
+
+        when(settings.getServers()).thenReturn(requestedServerList);
+        when(settings.getServer(eq("registry.example.com"))).thenReturn(requestedServer);
+        when(settings.getProxies()).thenReturn(new ArrayList<>());
+
+        // This can never happen according to the SettingsDecrypter's implementation, but lets proof we are robust against it anyway.
+        when(settingsDecrypter.decrypt(isA(SettingsDecryptionRequest.class))).thenReturn(createSettingsDecryptionResult(incorrectServerList, new ArrayList<>()));
+
+        AuthConfigFactory authConfigFactory = new AuthConfigFactory(settings, settingsDecrypter);
+        Optional<AuthConfig> authConfigForRegistry = authConfigFactory.getAuthConfigForRegistry("registry.example.com");
+        Assertions.assertFalse(authConfigForRegistry.isPresent());
+    }
+
     private SettingsDecryptionResult createSettingsDecryptionResult(List<Server> servers, List<Proxy> proxies) {
         return new SettingsDecryptionResult() {
             @Override
