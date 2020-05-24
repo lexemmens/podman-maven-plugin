@@ -5,8 +5,8 @@ A maven plugin to build, tag and push OCI compliant images configured using a Do
 
 ## About
 This plugin was created based on the need to build container images with Podman, whilst not having an appropriate plugin to do so. Initially
-using the [docker-maven-plugin](https://github.com/fabric8io/docker-maven-plugin) from fabric8io it quickly became clear that simply swapping
-docking for podman (`alias docker=podman`) did not work as the plugin requires a Docker outlet to communicate with. With other plugins currently 
+using the [docker-maven-plugin](https://github.com/fabric8io/docker-maven-plugin) from `fabric8io` it quickly became clear that simply swapping
+Docker for Podman (`alias docker=podman`) did not work as the plugin requires a Docker outlet to communicate with. With other plugins currently 
 not yet available, the idea was born.
 
 This plugin uses a `ProcessExecutor` from ZeroTurnaround to do its magic under water. Although this plugins' structure is similar to that from the 
@@ -38,6 +38,16 @@ The plugin is currently **NOT** available via Maven Central and can be used as f
     <groupId>nl.lexemmens</groupId>
     <artifactId>podman-maven-plugin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <configuration>
+        <registries>
+            <registry>registry.example.com</registry>
+        </registries>
+        <targetRegistry>registry.example.com</targetRegistry>
+        <tags>
+            <tag>some/tag/${project.artifactId}</tag>
+        </tags>
+        <useMavenProjectVersion>true</useMavenProjectVersion>
+    </configuration>
 </plugin>
 ```
 
@@ -57,7 +67,7 @@ configuration should look like this:
 </server>
 ```
 
-The password may be encrypted. The id of the server **must** match the registry configured in the plugin (see below). The plugin will fail if
+The password may be encrypted. The id of the server **must** match the registries configured in the plugin (see below). The plugin will fail if
 credentials are missing for any of the provided registries.
 
 This plugin will also fail if there are no registries configured, but authentication is not skipped. Please refer to the table below for all configuration
