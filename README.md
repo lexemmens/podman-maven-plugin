@@ -1,4 +1,4 @@
-![Java CI with Maven](https://github.com/lexemmens/podman-maven-plugin/workflows/Java%20CI%20with%20Maven/badge.svg) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lexemmens_podman-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=lexemmens_podman-maven-plugin)
+![Java CI with Maven](https://github.com/lexemmens/podman-maven-plugin/workflows/Java%20CI%20with%20Maven/badge.svg) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lexemmens_podman-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=lexemmens_podman-maven-plugin) [![Maven Central](https://img.shields.io/maven-central/v/nl.lexemmens/podman-maven-plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22nl.lexemmens%22%20AND%20a:%22podman-maven-plugin%22)
 
 # Podman Maven Plugin
 A maven plugin to build, tag and push OCI compliant images configured using a Dockerfile and built with Podman.
@@ -37,7 +37,7 @@ The plugin is currently **NOT** available via Maven Central and can be used as f
 <plugin>
     <groupId>nl.lexemmens</groupId>
     <artifactId>podman-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <configuration>
         <registries>
             <registry>registry.example.com</registry>
