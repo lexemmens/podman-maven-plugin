@@ -60,6 +60,9 @@ configuration should look like this:
 The password may be encrypted. The id of the server **must** match the registry configured in the plugin (see below). The plugin will fail if
 credentials are missing for any of the provided registries.
 
+This plugin will also fail if there are no registries configured, but authentication is not skipped. Please refer to the table below for all configuration
+options.
+
 #### Configuration parameters 
 The following parameters are supported by this plugin:
 
