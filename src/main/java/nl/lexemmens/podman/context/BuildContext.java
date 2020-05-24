@@ -34,26 +34,6 @@ public class BuildContext {
         // Empty
     }
 
-    /**
-     * Validates this BuildContext by ensuring that:
-     * <ul>
-     *     <li>The source Dockerfile exists</li>
-     *     <li>The source Dockerfile is not empty</li>
-     * </ul>
-     *
-     * @throws MojoExecutionException In case validation of the above mentioned steps fails.
-     */
-    private void validate() throws MojoExecutionException {
-        if (!Files.exists(sourceDockerfile)) {
-            log.info("Project does not have a Dockerfile");
-            throw new MojoExecutionException("Project does not have a Dockerfile!");
-        }
-
-        if (isDockerfileEmpty(sourceDockerfile)) {
-            throw new MojoExecutionException("Dockerfile cannot be empty!");
-        }
-    }
-
     private boolean isDockerfileEmpty(Path fullDockerFilePath) throws MojoExecutionException {
         try {
             return 0 == Files.size(fullDockerFilePath);
@@ -230,7 +210,15 @@ public class BuildContext {
          * @throws MojoExecutionException In case validation of the above mentioned steps fails.
          */
         public Builder validate() throws MojoExecutionException {
-            ctx.validate();
+            if (!Files.exists(ctx.sourceDockerfile)) {
+                ctx.log.info("Project does not have a Dockerfile");
+                throw new MojoExecutionException("Project does not have a Dockerfile!");
+            }
+
+            if (ctx.isDockerfileEmpty(ctx.sourceDockerfile)) {
+                throw new MojoExecutionException("Dockerfile cannot be empty!");
+            }
+
             return this;
         }
     }
