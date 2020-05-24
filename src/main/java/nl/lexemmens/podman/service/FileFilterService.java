@@ -9,8 +9,10 @@ import org.apache.maven.shared.filtering.MavenFileFilterRequest;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 
 /**
+ * <p>
  * FilterSupport class that brings support for accessing properties from a {@link MavenProject}. Both properties
  * specified via the properties tag in a pom file as well as the default Maven properties are supported
+ * </p>
  */
 public class FileFilterService {
 
@@ -36,7 +38,9 @@ public class FileFilterService {
     }
 
     /**
+     * <p>
      * Filters a Dockerfile by using the {@link MavenFileFilter} service to filter the file.
+     * </p>
      *
      * @param ctx The BuildContext that contains the source and target Dockerfile paths
      * @throws MojoExecutionException When the Dockerfile cannot be filtered.

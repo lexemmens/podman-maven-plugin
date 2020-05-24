@@ -8,15 +8,23 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.codehaus.plexus.component.annotations.Component;
 
 /**
+ * <p>
  * Factory that allows creation of a new {@link ServiceHub} class
+ * </p>
  */
 @Component(role = ServiceHubFactory.class, hint = "default")
 public class ServiceHubFactory {
 
     /**
+     * <p>
      * Creates a new {@link ServiceHub} instance.
-     * @param log Access to Maven's log
-     * @param mavenFileFilter The MavenFileFilter instance
+     * </p>
+     *
+     * @param log               Access to Maven's log system
+     * @param mavenFileFilter   Access to Maven's file filtering service
+     * @param tlsVerify         Whether TLS verification should be used by any of the services provided by this hub
+     * @param mavenSettings     Access to the Maven Settings
+     * @param settingsDecrypter Access to Maven's {@link SettingsDecrypter} service
      * @return A new instance of the {@link ServiceHub}
      */
     public ServiceHub createServiceHub(Log log, MavenFileFilter mavenFileFilter, TlsVerify tlsVerify, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
