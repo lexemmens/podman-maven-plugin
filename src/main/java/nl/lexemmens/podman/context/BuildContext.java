@@ -34,16 +34,6 @@ public class BuildContext {
         // Empty
     }
 
-    private boolean isDockerfileEmpty(Path fullDockerFilePath) throws MojoExecutionException {
-        try {
-            return 0 == Files.size(fullDockerFilePath);
-        } catch (IOException e) {
-            String msg = "Unable to determine if Dockerfile is empty.";
-            log.error(msg, e);
-            throw new MojoExecutionException(msg, e);
-        }
-    }
-
     /**
      * <p>
      * Returns the path to the source Dockerfile. This is the Dockerfile that optionally may contain
@@ -215,11 +205,21 @@ public class BuildContext {
                 throw new MojoExecutionException("Project does not have a Dockerfile!");
             }
 
-            if (ctx.isDockerfileEmpty(ctx.sourceDockerfile)) {
+            if (isDockerfileEmpty(ctx.sourceDockerfile)) {
                 throw new MojoExecutionException("Dockerfile cannot be empty!");
             }
 
             return this;
+        }
+
+        private boolean isDockerfileEmpty(Path fullDockerFilePath) throws MojoExecutionException {
+            try {
+                return 0 == Files.size(fullDockerFilePath);
+            } catch (IOException e) {
+                String msg = "Unable to determine if Dockerfile is empty.";
+                ctx.log.error(msg, e);
+                throw new MojoExecutionException(msg, e);
+            }
         }
     }
 }
