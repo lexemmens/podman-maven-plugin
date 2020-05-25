@@ -54,8 +54,8 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     /**
      * The registry of the container images
      */
-    @Parameter(property = "podman.image.target.registry")
-    protected String targetRegistry;
+    @Parameter(property = "podman.image.push.registry")
+    protected String pushRegistry;
 
     /**
      * Array consisting of one or more tags to attach to a container image
@@ -141,6 +141,6 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             version = tagVersion;
         }
 
-        return new ImageConfiguration(targetRegistry, tags, version, createLatestTag);
+        return new ImageConfiguration(pushRegistry, tags, version, createLatestTag);
     }
 }

@@ -93,9 +93,9 @@ public class SaveMojoTest extends AbstractMojoTest {
         saveMojo.skipAuth = true;
         saveMojo.skipSave = skipSave;
         saveMojo.outputDirectory = new File("target/podman-test");
-        saveMojo.targetRegistry = targetRegistry;
+        saveMojo.pushRegistry = targetRegistry;
         saveMojo.useMavenProjectVersion = useMavenProjectVersion;
         saveMojo.tags = tags;
-        saveMojo.targetRegistry = "registry.example.com";
+        saveMojo.pushRegistry = "registry.example.com";
     }
 }
