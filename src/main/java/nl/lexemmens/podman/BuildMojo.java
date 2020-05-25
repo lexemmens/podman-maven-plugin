@@ -1,15 +1,12 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.context.BuildContext;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -40,66 +37,55 @@ public class BuildMojo extends AbstractPodmanMojo {
             return;
         }
 
-        BuildContext buildContext = getBuildContext();
+        for(ImageConfiguration image : images) {
+            decorateDockerFile(image, hub);
+            buildContainerImage(image, hub);
+            tagContainerImage(image, hub);
 
-        filterDockerfile(buildContext, hub);
-        buildContainerImage(buildContext, hub);
-        tagContainerImage(buildContext, hub);
-
-        getLog().info("Built container image.");
+            getLog().info("Built container image.");
+        }
     }
 
-    private void filterDockerfile(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
+    private void decorateDockerFile(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().debug("Filtering Dockerfile...");
-        hub.getFileFilterService().filterDockerfile(buildContext);
+        hub.getDockerfileDecorator().decorateDockerfile(image);
     }
 
-    private void buildContainerImage(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
+    private void buildContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Building container image...");
 
-        List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, true, false, PODMAN, BUILD, tlsVerify.getCommand(), ".");
-        buildContext.getImageConfiguration().setImageHash(processOutput.get(processOutput.size() - 1));
+        List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, true, false,
+                PODMAN, BUILD, "--no-cache=" + image.getBuild().isNoCache(), tlsVerify.getCommand(), ".");
+        image.setImageHash(processOutput.get(processOutput.size() - 1));
     }
 
-    private void tagContainerImage(BuildContext buildContext, ServiceHub hub) throws MojoExecutionException {
+    private void tagContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         if (skipTag) {
             getLog().info("Tagging container images is skipped.");
             return;
         }
 
-        if (tags == null || tags.length == 0) {
+        if (image.getBuild().getAllTags().isEmpty()) {
             getLog().info("No tags specified. Skipping tagging of container images.");
             return;
         }
 
-        if (buildContext.getImageConfiguration().getImageHash().isPresent()) {
-            String imageHash = buildContext.getImageConfiguration().getImageHash().get();
-            for (String tag : buildContext.getImageConfiguration().getFullImageNames()) {
-                getLog().info("Tagging container image " + imageHash + " as " + tag);
+        if (image.getImageHash().isPresent()) {
+            String imageHash = image.getImageHash().get();
+            for (String imageNameWithTag : image.getImageNames()) {
+                String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
+
+                getLog().info("Tagging container image " + imageHash + " as " + fullImageName);
 
                 // Ignore output
-                hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, TAG, imageHash, tag);
+                hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, TAG, imageHash, fullImageName);
             }
         } else {
             getLog().info("No image hash available. Skipping tagging container image.");
         }
     }
 
-    private BuildContext getBuildContext() throws MojoExecutionException {
-        Path dockerFileDirPath = Paths.get(dockerFileDir.toURI());
-        Path sourceDockerfile = dockerFileDirPath.resolve(DOCKERFILE);
-        Path targetDockerfile = Paths.get(outputDirectory.toURI()).resolve(DOCKERFILE);
 
-        ImageConfiguration imageConfiguration = getImageConfiguration();
-        return new BuildContext.Builder()
-                .setMavenProject(project)
-                .setSourceDockerFile(sourceDockerfile)
-                .setTargetDockerfile(targetDockerfile)
-                .setLog(getLog())
-                .setImageConfiguration(imageConfiguration)
-                .validate()
-                .build();
-    }
 
 
 }

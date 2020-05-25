@@ -3,6 +3,7 @@ package nl.lexemmens.podman;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -82,7 +83,7 @@ public class PushMojoTest extends AbstractMojoTest {
         configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true, false);
 
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
@@ -109,7 +110,7 @@ public class PushMojoTest extends AbstractMojoTest {
         String imageName = "registry.example.com/sampleTag:1.0.0";
 
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
@@ -140,8 +141,8 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.skipPush = skipPush;
         pushMojo.outputDirectory = new File("target/podman-test");
         pushMojo.pushRegistry = targetRegistry;
-        pushMojo.useMavenProjectVersion = useMavenProjectVersion;
-        pushMojo.tags = tags;
+//        pushMojo.useMavenProjectVersion = useMavenProjectVersion;
+//        pushMojo.tags = tags;
         pushMojo.pushRegistry = "registry.example.com";
         pushMojo.deleteLocalImageAfterPush = deleteLocalImageAfterPush;
     }

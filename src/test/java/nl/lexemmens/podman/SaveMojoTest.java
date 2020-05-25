@@ -3,6 +3,7 @@ package nl.lexemmens.podman;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -61,7 +62,7 @@ public class SaveMojoTest extends AbstractMojoTest {
         configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true);
 
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
@@ -94,8 +95,8 @@ public class SaveMojoTest extends AbstractMojoTest {
         saveMojo.skipSave = skipSave;
         saveMojo.outputDirectory = new File("target/podman-test");
         saveMojo.pushRegistry = targetRegistry;
-        saveMojo.useMavenProjectVersion = useMavenProjectVersion;
-        saveMojo.tags = tags;
+//        saveMojo.useMavenProjectVersion = useMavenProjectVersion;
+//        saveMojo.tags = tags;
         saveMojo.pushRegistry = "registry.example.com";
     }
 }
