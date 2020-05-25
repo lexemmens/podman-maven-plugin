@@ -2,8 +2,6 @@ package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.service.FileFilterService;
-import nl.lexemmens.podman.service.ServiceHub;
-import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Settings;
@@ -226,6 +224,6 @@ public class BuildMojoTest extends AbstractMojoTest {
         buildMojo.outputDirectory = new File("target/podman-test");
         buildMojo.tagVersion = tagVersion;
         buildMojo.tags = tags;
-        buildMojo.targetRegistry = "registry.example.com";
+        buildMojo.pushRegistry = "registry.example.com";
     }
 }

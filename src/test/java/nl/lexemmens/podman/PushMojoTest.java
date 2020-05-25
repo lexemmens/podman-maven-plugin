@@ -139,10 +139,10 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.skipAuth = true;
         pushMojo.skipPush = skipPush;
         pushMojo.outputDirectory = new File("target/podman-test");
-        pushMojo.targetRegistry = targetRegistry;
+        pushMojo.pushRegistry = targetRegistry;
         pushMojo.useMavenProjectVersion = useMavenProjectVersion;
         pushMojo.tags = tags;
-        pushMojo.targetRegistry = "registry.example.com";
+        pushMojo.pushRegistry = "registry.example.com";
         pushMojo.deleteLocalImageAfterPush = deleteLocalImageAfterPush;
     }
 
