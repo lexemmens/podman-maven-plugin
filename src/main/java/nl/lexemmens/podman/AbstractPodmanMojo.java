@@ -4,7 +4,6 @@ import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -15,13 +14,11 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     protected static final String PODMAN = "podman";
-    protected static final Path DOCKERFILE = Paths.get("Dockerfile");
 
     /**
      * The Maven project
@@ -35,15 +32,15 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.directory}", property = "podman.outputdir", required = true)
     protected File outputDirectory;
 
+    /**
+     * This project's base directory
+     */
+    @Parameter(defaultValue = "${project.basedir}", property = "podman.basedir", required = true)
+    protected File baseDir;
+
     // Settings holding authentication info
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
-
-    /**
-     * Directory containing the Dockerfile
-     */
-    @Parameter(property = "podman.dockerfile.dir", required = true, defaultValue = "${project.basedir}")
-    protected File dockerFileDir;
 
     /**
      * All the source registries that are required to build and push container images. Note that the target registry must be explicitly set!
@@ -54,33 +51,11 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     /**
      * The registry of the container images
      */
-    @Parameter(property = "podman.image.push.registry")
+    @Parameter(property = "podman.push.registry")
     protected String pushRegistry;
 
-    /**
-     * Array consisting of one or more tags to attach to a container image
-     */
-    @Parameter(property = "podman.image.tags")
-    protected String[] tags;
-
-    /**
-     * Specifies whether the version of the container image should be based on the version of this Maven project. Defaults to true.
-     * When set to false, 'podman.image.tag.version' must be specified.
-     */
-    @Parameter(property = "podman.image.version.maven", required = true, defaultValue = "true")
-    protected boolean useMavenProjectVersion;
-
-    /**
-     * Specifies the version of the container image. If specified, this parameter takes precedence over 'podman.image.tag.fromMavenProject'
-     */
-    @Parameter(property = "podman.image.version")
-    protected String tagVersion;
-
-    /**
-     * Specified whether a container image should *ALSO* be tagged 'latest'. This defaults to false.
-     */
-    @Parameter(property = "podman.image.tag.latest", defaultValue = "false", required = true)
-    protected boolean createLatestTag;
+    @Parameter
+    protected List<ImageConfiguration> images;
 
     /**
      * Whether Podman should verify TLS/SSL certificates. Defaults to true.
@@ -111,36 +86,49 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     @Override
     public final void execute() throws MojoExecutionException {
-        if(skip) {
+        if (skip) {
             getLog().info("Podman actions are skipped.");
             return;
         }
 
-        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), mavenFileFilter, tlsVerify, settings, settingsDecrypter);
-        if(skipAuth) {
-            getLog().info("Registry authentication is skipped.");
-        } else {
-            hub.getAuthenticationService().authenticate(registries);
-        }
+        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, tlsVerify, settings, settingsDecrypter);
+
+        checkAuthentication(hub);
+        initImageConfigurations();
 
         executeInternal(hub);
     }
 
+    private void checkAuthentication(ServiceHub hub) throws MojoExecutionException {
+        if (skipAuth) {
+            getLog().info("Registry authentication is skipped.");
+        } else {
+            hub.getAuthenticationService().authenticate(registries);
+        }
+    }
+
+    private void initImageConfigurations() throws MojoExecutionException {
+        getLog().info("Initializing image configurations.");
+        for(ImageConfiguration image : images) {
+            image.initAndValidate(project, getLog());
+        }
+    }
+
     public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
 
-    protected ImageConfiguration getImageConfiguration() throws MojoExecutionException {
-        String version;
-        if(useMavenProjectVersion) {
-            version = project.getVersion();
-        } else if(StringUtils.isEmpty(tagVersion)) {
-            String msg = "No image version specified. Set 'podman.image.version.fromMavenProject' to true for default project version or" +
-                    " specify a version via 'podman.image.version'";
-            getLog().error(msg);
-            throw new MojoExecutionException(msg);
-        } else {
-            version = tagVersion;
+    /**
+     * <p>
+     * If the pushRegistry property is set, this method prepends the image name with the value of the pushRegistry
+     * </p>
+     *
+     * @param imageNameWithTag The image name with tag, such as repository/some/image:1.0.0
+     * @return The tull image name with the push registry, such as: registry.example.com/repository/some/image:1.0.0
+     */
+    protected String getFullImageNameWithPushRegistry(String imageNameWithTag) {
+        String fullImageName = imageNameWithTag;
+        if (pushRegistry != null) {
+            fullImageName = String.format("%s/%s", pushRegistry, imageNameWithTag);
         }
-
-        return new ImageConfiguration(pushRegistry, tags, version, createLatestTag);
+        return fullImageName;
     }
 }

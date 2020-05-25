@@ -2,6 +2,7 @@ package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -29,13 +30,16 @@ public class ServiceHubFactoryTest {
     @Mock
     private SettingsDecrypter settingsDecrypter;
 
+    @Mock
+    private MavenProject mavenProject;
+
     @Test
     public void testServiceHubFactory() {
         ServiceHubFactory serviceHubFactory = new ServiceHubFactory();
-        ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenFileFilter, TlsVerify.FALSE, mavenSettings, settingsDecrypter);
+        ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenProject, mavenFileFilter, TlsVerify.FALSE, mavenSettings, settingsDecrypter);
 
         Assertions.assertNotNull(serviceHub.getCommandExecutorService());
-        Assertions.assertNotNull(serviceHub.getFileFilterService());
+        Assertions.assertNotNull(serviceHub.getDockerfileDecorator());
         Assertions.assertNotNull(serviceHub.getAuthenticationService());
     }
 

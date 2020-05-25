@@ -2,6 +2,7 @@ package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -14,7 +15,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 public class ServiceHub {
 
     private final CommandExecutorService cmdExecutor;
-    private final FileFilterService fileFilterService;
+    private final DockerfileDecorator dockerfileDecorator;
     private final AuthenticationService authenticationService;
 
     /**
@@ -25,9 +26,9 @@ public class ServiceHub {
      * @param log             Access to Maven's log system
      * @param mavenFileFilter The {@link MavenFileFilter} service
      */
-    ServiceHub(Log log, MavenFileFilter mavenFileFilter, TlsVerify tlsVerify, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
+    ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, TlsVerify tlsVerify, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
         this.cmdExecutor = new CommandExecutorService(log);
-        this.fileFilterService = new FileFilterService(log, mavenFileFilter);
+        this.dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
         this.authenticationService = new AuthenticationService(log, cmdExecutor, mavenSettings, settingsDecrypter, tlsVerify);
     }
 
@@ -43,10 +44,10 @@ public class ServiceHub {
     /**
      * Returns a reference to the FileFilterService class
      *
-     * @return The {@link FileFilterService}
+     * @return The {@link DockerfileDecorator}
      */
-    public FileFilterService getFileFilterService() {
-        return fileFilterService;
+    public DockerfileDecorator getDockerfileDecorator() {
+        return dockerfileDecorator;
     }
 
     /**

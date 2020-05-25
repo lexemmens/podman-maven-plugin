@@ -1,9 +1,10 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
-import nl.lexemmens.podman.service.FileFilterService;
+import nl.lexemmens.podman.service.DockerfileDecorator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -31,16 +32,17 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class BuildMojoTest extends AbstractMojoTest {
 
     public static final String DEFAULT_DOCKERFILE_DIR = "src/test/resources";
+
     @InjectMocks
     private BuildMojo buildMojo;
 
-    private FileFilterService fileFilterService;
+    private DockerfileDecorator dockerfileDecorator;
 
     @Before
     public void setup() {
         initMocks(this);
 
-        fileFilterService = new FileFilterService(log, mavenFileFilter);
+        dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
     }
 
     @Test
@@ -68,8 +70,8 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         List<String> processOutput = List.of("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
-        when(serviceHub.getFileFilterService()).thenReturn(fileFilterService);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
         when(commandExecutorService.runCommand(
                 isA(File.class),
@@ -100,8 +102,8 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         List<String> processOutput = List.of("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
-        when(serviceHub.getFileFilterService()).thenReturn(fileFilterService);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
         when(commandExecutorService.runCommand(
                 isA(File.class),
@@ -133,8 +135,8 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         List<String> processOutput = List.of("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
-        when(serviceHub.getFileFilterService()).thenReturn(fileFilterService);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
         when(commandExecutorService.runCommand(
                 isA(File.class),
@@ -167,8 +169,8 @@ public class BuildMojoTest extends AbstractMojoTest {
         String imageHash = "ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76";
         List<String> processOutput = List.of(imageHash);
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
-        when(serviceHub.getFileFilterService()).thenReturn(fileFilterService);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
         when(commandExecutorService.runCommand(
                 isA(File.class),
@@ -200,7 +202,7 @@ public class BuildMojoTest extends AbstractMojoTest {
     public void testBuildContextNoDockerfile() throws MojoExecutionException {
         configureMojo(false, false, false, "src/test", "1.0.0", new String[]{"sampleTag"});
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
@@ -209,7 +211,7 @@ public class BuildMojoTest extends AbstractMojoTest {
     public void testBuildContextWithEmptyDockerfile() throws MojoExecutionException {
         configureMojo(false, false, false, "src/test/resources/emptydockerfile", "1.0.0", new String[]{"sampleTag"});
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
@@ -220,10 +222,10 @@ public class BuildMojoTest extends AbstractMojoTest {
         buildMojo.skipAuth = true;
         buildMojo.skipBuild = skipBuild;
         buildMojo.skipTag = skipTag;
-        buildMojo.dockerFileDir = dockerFileDir == null ? null : new File(dockerFileDir);
+//        buildMojo.dockerFileDir = dockerFileDir == null ? null : new File(dockerFileDir);
         buildMojo.outputDirectory = new File("target/podman-test");
-        buildMojo.tagVersion = tagVersion;
-        buildMojo.tags = tags;
+//        buildMojo.tagVersion = tagVersion;
+//        buildMojo.tags = tags;
         buildMojo.pushRegistry = "registry.example.com";
     }
 }
