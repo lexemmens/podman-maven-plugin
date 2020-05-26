@@ -50,9 +50,9 @@ public class PushMojo extends AbstractPodmanMojo {
             } else {
                 pushContainerImages(image, hub);
             }
-
-            getLog().info("Successfully pushed container image " + image.getImageName());
         }
+
+        getLog().info("All tags have been successfully pushed to the registry");
     }
 
     private void pushContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
@@ -71,8 +71,8 @@ public class PushMojo extends AbstractPodmanMojo {
                 getLog().info("Removing image " + fullImageName + " from the local repository");
                 hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), PODMAN, REMOVE_LOCAL, fullImageName);
             }
-        }
 
-        getLog().info("All images have been successfully pushed to the registry");
+            getLog().info("Successfully pushed container image " + fullImageName + " to " + pushRegistry);
+        }
     }
 }
