@@ -52,7 +52,7 @@ public class PushMojo extends AbstractPodmanMojo {
             }
         }
 
-        getLog().info("All tags have been successfully pushed to the registry");
+        getLog().info("All images have been successfully pushed to the registry");
     }
 
     private void pushContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
