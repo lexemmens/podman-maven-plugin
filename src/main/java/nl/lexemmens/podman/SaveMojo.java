@@ -21,32 +21,35 @@ public class SaveMojo extends AbstractPodmanMojo {
     private static final String SAVE_CMD = "save";
     private static final String FORMAT_CMD = "--format";
     private static final String OCI_ARCHIVE_CMD = "oci-archive";
-    private static final String OUTPUT_CMD = "-o";
+    private static final String OUTPUT_CMD = "--output";
 
     @Parameter(property = "podman.skip.save", defaultValue = "false")
     boolean skipSave;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if(skipSave){
+        if (skipSave) {
             getLog().info("Saving container images is skipped.");
             return;
         }
 
-        ImageConfiguration imageConfiguration = getImageConfiguration();
-        // No need to check if the image names are empty here - this is checked by the image configuration.
+        for (ImageConfiguration image : images) {
+            // No need to check if the image names are empty here - this is checked by the image configuration.
 
-        exportContainerImage(imageConfiguration, hub);
+            exportContainerImage(image, hub);
+        }
     }
 
-    private void exportContainerImage(ImageConfiguration imageConfiguration, ServiceHub hub) throws MojoExecutionException {
-        Path targetPodmanDir = Paths.get(outputDirectory.toURI()).resolve(PODMAN);
+    private void exportContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+        Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN);
         createTargetFolder(targetPodmanDir);
 
-        for(String image : imageConfiguration.getFullImageNames()) {
-            String archiveName = String.format("%s.tar.gz", normaliseImageName(image));
+        for (String imageName : image.getImageNames()) {
+            String fullImageName = getFullImageNameWithPushRegistry(imageName);
 
-            getLog().info("Exporting image " + image + " to " + targetPodmanDir + "/" + archiveName);
+            String archiveName = String.format("%s.tar.gz", normaliseImageName(fullImageName));
+
+            getLog().info("Exporting image " + fullImageName + " to " + targetPodmanDir + "/" + archiveName);
             hub.getCommandExecutorService().runCommand(targetPodmanDir.toFile(),
                     PODMAN,
                     SAVE_CMD,
@@ -55,7 +58,7 @@ public class SaveMojo extends AbstractPodmanMojo {
                     OCI_ARCHIVE_CMD,
                     OUTPUT_CMD,
                     archiveName,
-                    image);
+                    fullImageName);
         }
 
         getLog().info("Container images exported successfully.");
@@ -65,7 +68,7 @@ public class SaveMojo extends AbstractPodmanMojo {
         try {
             // Does not fail if folder already exists
             Files.createDirectories(targetPodmanDir);
-        } catch(IOException e) {
+        } catch (IOException e) {
             String msg = "Failed to create directory '" + targetPodmanDir + "'. An IOException occurred: " + e.getMessage();
             getLog().error(msg, e);
             throw new MojoExecutionException(msg, e);
