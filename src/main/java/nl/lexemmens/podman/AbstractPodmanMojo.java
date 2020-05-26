@@ -13,7 +13,6 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
-import java.io.File;
 import java.util.List;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
