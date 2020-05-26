@@ -45,7 +45,7 @@ public class TestImageConfigurationBuilder {
     }
 
     public TestImageConfigurationBuilder setUseMavenProjectVersion(boolean useMavenProjectVersion) {
-        image.build.useMavenProjectVersion = useMavenProjectVersion;
+        image.build.tagWithMavenProjectVersion = useMavenProjectVersion;
         return this;
     }
 
