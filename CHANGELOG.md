@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.2.1 (26-05-2020)
+#### Security
+* Removed accidental publication of passphrase. Tag 0.2.0 has therefore been removed from Github.
+
 ### 0.2.0 (26-05-2020)
 #### Improvements
 * Refactored the iamge build configuration for more flexibility
