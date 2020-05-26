@@ -45,11 +45,11 @@ public class BuildImageConfiguration {
     protected Map<String, String> labels;
 
     /**
-     * Specifies whether the version of the container image should be based on the version of this Maven project. Defaults to true.
+     * Specifies whether a version of the container image should be based on the version of this Maven project. Defaults to true.
      * When set to false, 'podman.image.tag.version' must be specified.
      */
     @Parameter
-    protected boolean useMavenProjectVersion;
+    protected boolean tagWithMavenProjectVersion;
 
     /**
      * The Maven project version to use (only when useMavenProjectVersion is set to true)
@@ -99,7 +99,7 @@ public class BuildImageConfiguration {
             allTags.add("latest");
         }
 
-        if (useMavenProjectVersion) {
+        if (tagWithMavenProjectVersion) {
             allTags.add(mavenProjectVersion);
         }
         return allTags;
