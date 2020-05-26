@@ -26,18 +26,6 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
 
-    /**
-     * Location of the files - usually the project's target folder
-     */
-    @Parameter(defaultValue = "${project.build.directory}", property = "podman.outputdir", required = true)
-    protected File outputDirectory;
-
-    /**
-     * This project's base directory
-     */
-    @Parameter(defaultValue = "${project.basedir}", property = "podman.basedir", required = true)
-    protected File baseDir;
-
     // Settings holding authentication info
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
@@ -109,12 +97,10 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     private void initImageConfigurations() throws MojoExecutionException {
         getLog().info("Initializing image configurations.");
-        for(ImageConfiguration image : images) {
+        for (ImageConfiguration image : images) {
             image.initAndValidate(project, getLog());
         }
     }
-
-    public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
 
     /**
      * <p>
@@ -131,4 +117,12 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
         }
         return fullImageName;
     }
+
+    /**
+     * Executes this Mojo internally.
+     *
+     * @param hub A {@link ServiceHub} instance providing access to relevant services
+     * @throws MojoExecutionException In case anything happens during execution which prevents execution from continuing
+     */
+    public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
 }

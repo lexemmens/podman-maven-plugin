@@ -16,13 +16,13 @@ import java.util.Optional;
 public class ImageConfiguration {
 
     /**
-     * The name of the image without the target registry. May contain the repository.
+     * The name of the image without the target registry. May contain the repository. Must be all lowercase and no special characters
      */
-    @Parameter(property = "podman.image.name")
-    private String name;
+    @Parameter(required = true)
+    protected String name;
 
     @Parameter
-    private BuildImageConfiguration build;
+    protected BuildImageConfiguration build;
 
     /**
      * Set after the image is built.
@@ -61,7 +61,9 @@ public class ImageConfiguration {
     }
 
     /**
+     * <p>
      * Returns the build configuration
+     * </p>
      *
      * @return the configuration used for building the image
      */
@@ -90,7 +92,9 @@ public class ImageConfiguration {
     }
 
     /**
+     * <p>
      * Returns the name of the image without the tag and registry
+     * </p>
      *
      * @return The name of the image
      */
@@ -106,6 +110,12 @@ public class ImageConfiguration {
      * @throws MojoExecutionException In case validation fails.
      */
     public void initAndValidate(MavenProject mavenProject, Log log) throws MojoExecutionException {
+        if (name == null) {
+            String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
+            log.error(msg);
+            throw new MojoExecutionException(msg);
+        }
+
         build.validate(mavenProject, log);
     }
 }

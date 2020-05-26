@@ -21,7 +21,7 @@ public class SaveMojo extends AbstractPodmanMojo {
     private static final String SAVE_CMD = "save";
     private static final String FORMAT_CMD = "--format";
     private static final String OCI_ARCHIVE_CMD = "oci-archive";
-    private static final String OUTPUT_CMD = "-o";
+    private static final String OUTPUT_CMD = "--output";
 
     @Parameter(property = "podman.skip.save", defaultValue = "false")
     boolean skipSave;
@@ -41,7 +41,7 @@ public class SaveMojo extends AbstractPodmanMojo {
     }
 
     private void exportContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
-        Path targetPodmanDir = Paths.get(outputDirectory.toURI()).resolve(PODMAN);
+        Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN);
         createTargetFolder(targetPodmanDir);
 
         for (String imageName : image.getImageNames()) {

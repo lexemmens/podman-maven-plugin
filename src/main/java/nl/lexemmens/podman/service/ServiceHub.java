@@ -23,8 +23,12 @@ public class ServiceHub {
      * Constructs a new instance of this class
      * </p>
      *
-     * @param log             Access to Maven's log system
-     * @param mavenFileFilter The {@link MavenFileFilter} service
+     * @param log               Access to Maven's log system
+     * @param mavenProject      The MavenProject that is being built
+     * @param mavenFileFilter   The {@link MavenFileFilter} service
+     * @param tlsVerify         Whether TLS Verification should be used
+     * @param mavenSettings     Access to Maven's settings file
+     * @param settingsDecrypter Access to Maven's settings decryption service
      */
     ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, TlsVerify tlsVerify, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
         this.cmdExecutor = new CommandExecutorService(log);

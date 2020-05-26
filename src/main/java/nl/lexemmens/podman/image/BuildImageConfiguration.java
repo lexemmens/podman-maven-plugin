@@ -6,6 +6,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -14,58 +16,57 @@ public class BuildImageConfiguration {
 
     private static final String DEFAULT_DOCKERFILE = "Dockerfile";
 
-    @Parameter(property = "podman.nocache")
-    private boolean noCache;
+    @Parameter
+    protected boolean noCache;
 
     /**
      * Array consisting of one or more tags to attach to a container image.
      * Tags will be appended at the end of the image name
      */
-    @Parameter(property = "podman.image.tags")
-    private String[] tags;
+    @Parameter
+    protected String[] tags;
 
     /**
      * Name of the Dockerfile to use. Defaults to Dockerfile
      */
-    @Parameter(property = "podman.dockerfile")
-    private String dockerFile;
+    @Parameter
+    protected String dockerFile;
 
     /**
      * Directory containing the Dockerfile
      */
-    @Parameter(property = "podman.dockerfile.dir", defaultValue = "${project.basedir}")
-    private File dockerFileDir;
+    @Parameter
+    protected File dockerFileDir;
 
     /**
      * Specify any labels to be applied to the image
      */
-    @Parameter(property = "podman.image.labels")
-    private Map<String, String> labels;
+    @Parameter
+    protected Map<String, String> labels;
 
     /**
      * Specifies whether the version of the container image should be based on the version of this Maven project. Defaults to true.
      * When set to false, 'podman.image.tag.version' must be specified.
      */
-    @Parameter(property = "podman.image.tag.maven")
-    private boolean useMavenProjectVersion;
+    @Parameter
+    protected boolean useMavenProjectVersion;
 
     /**
      * The Maven project version to use (only when useMavenProjectVersion is set to true)
      */
-    @Parameter(property = "")
-    private String mavenProjectVersion;
+    @Parameter
+    protected String mavenProjectVersion;
 
     /**
      * Specified whether a container image should *ALSO* be tagged 'latest'. This defaults to false.
      */
-    @Parameter(property = "podman.image.tag.latest", defaultValue = "false", required = true)
-    private boolean createLatestTag;
+    @Parameter
+    protected boolean createLatestTag;
 
     /**
-     * Will be set by
+     * Will be set when this class is validated using the #initAndValidate() method
      */
     private File outputDirectory;
-
 
     /**
      * Constructor
@@ -105,15 +106,6 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Returns the name of the Dockerfile to be used
-     *
-     * @return The name of the Dockerfile to be used. Returns 'Dockerfile' when not explicitly configured
-     */
-    public String getDockerFile() {
-        return dockerFile;
-    }
-
-    /**
      * Returns the directory containing the original raw Dockerfile
      *
      * @return A {@link File} object referencing the location of the Dockerfile
@@ -126,7 +118,7 @@ public class BuildImageConfiguration {
     /**
      * Returns the path to the target Dockerfile
      *
-     * @return
+     * @return Returns a path to the target Dockerfile
      */
     public Path getTargetDockerfile() {
         return Paths.get(outputDirectory.toURI()).resolve(dockerFile);
@@ -147,23 +139,21 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Specifies whether a tag should be added with the current version of the Maven project
+     * Returns the project's output directory
      *
-     * @return Tags the image with the current version of the Maven project
+     * @return The configured output directory
      */
-    public boolean isUseMavenProjectVersion() {
-        return useMavenProjectVersion;
+    public File getOutputDirectory() {
+        return outputDirectory;
     }
 
     /**
-     * Specifies whether an image should get a tag 'latest'
+     * Validates this class by giving all null properties a default value.
      *
-     * @return Tags an image with 'latest' when set to true.
+     * @param project The MavenProject used to derive some of the default values from.
+     * @param log     Access to Maven's log system for writing errors
+     * @throws MojoExecutionException In case there is no Dockerfile at the specified source location or the Dockerfile is empty
      */
-    public boolean isCreateLatestTag() {
-        return createLatestTag;
-    }
-
     public void validate(MavenProject project, Log log) throws MojoExecutionException {
         if (dockerFile == null) {
             dockerFile = DEFAULT_DOCKERFILE;
@@ -177,10 +167,30 @@ public class BuildImageConfiguration {
             labels = new HashMap<>();
         }
 
-        if (mavenProjectVersion == null) {
-            mavenProjectVersion = project.getVersion();
+        this.mavenProjectVersion = project.getVersion();
+        this.outputDirectory = new File(project.getBuild().getDirectory());
+
+        Path sourceDockerfile = getSourceDockerfile();
+        if (!Files.exists(sourceDockerfile)) {
+            String msg = "No Dockerfile found at " + sourceDockerfile + ". Check your the dockerFileDir and dockerFile parameters in the configuration.";
+            log.error(msg);
+            throw new MojoExecutionException(msg);
         }
 
-        this.outputDirectory = new File(project.getBuild().getDirectory());
+        if (isDockerfileEmpty(log, sourceDockerfile)) {
+            String msg = "The specified Dockerfile at " + sourceDockerfile + " is empty!";
+            log.error(msg);
+            throw new MojoExecutionException(msg);
+        }
+    }
+
+    private boolean isDockerfileEmpty(Log log, Path fullDockerFilePath) throws MojoExecutionException {
+        try {
+            return 0 == Files.size(fullDockerFilePath);
+        } catch (IOException e) {
+            String msg = "Unable to determine if Dockerfile is empty.";
+            log.error(msg, e);
+            throw new MojoExecutionException(msg, e);
+        }
     }
 }

@@ -16,7 +16,9 @@ import java.util.List;
 public class BuildMojo extends AbstractPodmanMojo {
 
     private static final String TAG = "tag";
-    private static final String BUILD = "build";
+    private static final String BUILD_CMD = "build";
+    private static final String DOCKERFILE_CMD = "--file=";
+    public static final String NO_CACHE_CMD = "--no-cache=";
 
     /**
      * Indicates if building container images should be skipped
@@ -54,8 +56,14 @@ public class BuildMojo extends AbstractPodmanMojo {
     private void buildContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Building container image...");
 
-        List<String> processOutput = hub.getCommandExecutorService().runCommand(outputDirectory, true, false,
-                PODMAN, BUILD, "--no-cache=" + image.getBuild().isNoCache(), tlsVerify.getCommand(), ".");
+        List<String> processOutput = hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), true, false,
+                PODMAN,
+                BUILD_CMD,
+                DOCKERFILE_CMD + image.getBuild().getTargetDockerfile(),
+                NO_CACHE_CMD + image.getBuild().isNoCache(),
+                tlsVerify.getCommand(),
+                ".");
+
         image.setImageHash(processOutput.get(processOutput.size() - 1));
     }
 
@@ -78,7 +86,7 @@ public class BuildMojo extends AbstractPodmanMojo {
                 getLog().info("Tagging container image " + imageHash + " as " + fullImageName);
 
                 // Ignore output
-                hub.getCommandExecutorService().runCommand(outputDirectory, PODMAN, TAG, imageHash, fullImageName);
+                hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), PODMAN, TAG, imageHash, fullImageName);
             }
         } else {
             getLog().info("No image hash available. Skipping tagging container image.");
