@@ -15,11 +15,21 @@ import java.util.Map;
 
 /**
  * <p>
- * FilterSupport class that brings support for accessing properties from a {@link MavenProject}. Both properties
- * specified via the properties tag in a pom file as well as the default Maven properties are supported
+ * Class that brings support for decorating Dockerfiles. This means that it can:
+ * </p>
+ * <ul>
+ *     <li>Decorate a specified source Dockerfile by resolving properties configured in the {@link MavenProject}</li>
+ *     <li>Decorate a specified source Dockerfile by adding one or more label commands to the Dockerfile</li>
+ * </ul>
+ *
+ * <p>
+ *     With respect to properties: Both properties specified via the properties tag in a pom
+ *     file as well as the default Maven properties are supported
  * </p>
  */
 public class DockerfileDecorator {
+
+    private static final String LABEL_ATTRIBUTE = "LABEL ";
 
     /**
      * Logger instance
@@ -40,7 +50,8 @@ public class DockerfileDecorator {
      * Constructs a new instance of this FilterSupport class.
      *
      * @param log             The logger
-     * @param mavenFileFilter The MavenProject
+     * @param mavenFileFilter Maven's File Filtering service
+     * @param mavenProject    The MavenProject
      */
     public DockerfileDecorator(Log log, MavenFileFilter mavenFileFilter, MavenProject mavenProject) {
         this.log = log;
@@ -50,8 +61,12 @@ public class DockerfileDecorator {
 
     /**
      * <p>
-     * Filters a Dockerfile by using the {@link MavenFileFilter} service to filter the file.
+     * Decorates a Dockerfile by executing a series of actions to get to the final Dockerfile:
      * </p>
+     * <ul>
+     *     <li>Use the {@link MavenFileFilter} service to filter the source Dockerfile and copy it to the target location.</li>
+     *     <li>Add labels to the target Dockerfile using the LABELS command.</li>
+     * </ul>
      *
      * @param image The BuildContext that contains the source and target Dockerfile paths
      * @throws MojoExecutionException When the Dockerfile cannot be filtered.
@@ -85,7 +100,7 @@ public class DockerfileDecorator {
             return;
         }
 
-        StringBuilder labelBuilder = new StringBuilder("LABEL ");
+        StringBuilder labelBuilder = new StringBuilder(LABEL_ATTRIBUTE);
         for (Map.Entry<String, String> label : image.getBuild().getLabels().entrySet()) {
             labelBuilder.append(label.getKey()).append("=").append(label.getValue()).append(" ");
         }

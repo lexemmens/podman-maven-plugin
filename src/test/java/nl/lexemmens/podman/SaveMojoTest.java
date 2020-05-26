@@ -1,6 +1,8 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
+import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -17,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
@@ -30,7 +33,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        configureMojo(true, false, null, null, false);
+        configureMojo(true, false, null,  false);
 
         saveMojo.execute();
 
@@ -39,7 +42,10 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAuthenticationAndSave() throws MojoExecutionException {
-        configureMojo(false, true, null, null, false);
+        configureMojo(false, true, null,  false);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
 
         saveMojo.execute();
 
@@ -48,10 +54,13 @@ public class SaveMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testSaveNoTagVersionAndNoMavenProjectVersion() {
-        configureMojo(false, false, null, null, true);
+    public void testSaveNoTags() {
+        configureMojo(false, false, null,  false);
 
-        Assertions.assertThrows(MojoExecutionException.class, saveMojo::execute);
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
+
+        Assertions.assertDoesNotThrow(saveMojo::execute);
 
         verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
         verify(log, times(0)).info(Mockito.eq("Saving container images is skipped."));
@@ -59,8 +68,10 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveWithMavenProjectVersion() throws MojoExecutionException {
-        configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true);
+        configureMojo(false, false, "registry.example.com",  true);
 
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
@@ -77,26 +88,51 @@ public class SaveMojoTest extends AbstractMojoTest {
                 "",
                 "--format",
                 "oci-archive",
-                "-o",
-                "sampleTag_1_0_0.tar.gz",
-                "registry.example.com/sampleTag:1.0.0");
+                "--output",
+                "sample_1_0_0.tar.gz",
+                "registry.example.com/sample:1.0.0");
     }
 
-    private String normaliseImageName(String fullImageName) {
-        String[] imageNameParts = fullImageName.split("\\/");
-        String tagAndVersion = imageNameParts[imageNameParts.length - 1];
-        return tagAndVersion.replaceAll("[\\.\\/\\-\\*:]", "_");
+    @Test
+    public void testSaveImageFromLocalRegistry() throws MojoExecutionException {
+        configureMojo(false, false, null,  true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
+        when(mavenProject.getVersion()).thenReturn("1.0.0");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
+
+        Assertions.assertDoesNotThrow(saveMojo::execute);
+
+        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
+        verify(log, times(0)).info(Mockito.eq("Saving container images is skipped."));
+
+        File targetTestPodmanDir = new File("target/podman-test/podman");
+        verify(commandExecutorService, times(1)).runCommand(new File(targetTestPodmanDir.getAbsolutePath()),
+                "podman",
+                "save",
+                "",
+                "--format",
+                "oci-archive",
+                "--output",
+                "sample_1_0_0.tar.gz",
+                "sample:1.0.0");
     }
 
-    private void configureMojo(boolean skipAll, boolean skipSave, String targetRegistry, String[] tags, boolean useMavenProjectVersion) {
+    private void configureMojo(boolean skipAll, boolean skipSave, String pushRegistry, boolean useMavenProjectVersion) {
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setUseMavenProjectVersion(useMavenProjectVersion)
+                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
+                .build();
+
+        List<ImageConfiguration> images = List.of(image);
+
         saveMojo.tlsVerify = TlsVerify.NOT_SPECIFIED;
         saveMojo.skip = skipAll;
         saveMojo.skipAuth = true;
         saveMojo.skipSave = skipSave;
-        saveMojo.outputDirectory = new File("target/podman-test");
-        saveMojo.pushRegistry = targetRegistry;
-//        saveMojo.useMavenProjectVersion = useMavenProjectVersion;
-//        saveMojo.tags = tags;
-        saveMojo.pushRegistry = "registry.example.com";
+        saveMojo.pushRegistry = pushRegistry;
+        saveMojo.images = images;
     }
 }

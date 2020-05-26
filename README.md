@@ -42,11 +42,19 @@ The plugin is currently **NOT** available via Maven Central and can be used as f
         <registries>
             <registry>registry.example.com</registry>
         </registries>
-        <targetRegistry>registry.example.com</targetRegistry>
-        <tags>
-            <tag>some/tag/${project.artifactId}</tag>
-        </tags>
-        <useMavenProjectVersion>true</useMavenProjectVersion>
+        <pushRegistry>registry.example.com</pushRegistry>
+        <build>
+            <name>your/image/name</name>
+            <tags>
+                <tag>${project.artifactId}</tag>
+            </tags>
+            
+            <useMavenProjectVersion>true</useMavenProjectVersion>
+            
+            <labels>
+                <label-x>label-x-value</label-x>
+            </labels>
+        </build>
     </configuration>
 </plugin>
 ```
@@ -74,17 +82,12 @@ This plugin will also fail if there are no registries configured, but authentica
 options.
 
 #### Configuration parameters 
-The following parameters are supported by this plugin:
+The following command line parameters are supported by this plugin:
 
 | Parameter                 | Command line alias             | Type    | Required | Required by                                  | Default value      | Description                                    |
 | ------------------------- | ------------------------------ | ------- | -------- | -------------------------------------------- | ------------------ | ---------------------------------------------- |
-| dockerFileDir             | podman.dockerfile.dir          | String  | N        | `podman:build`                               | ${project.basedir} | Source directory of the (raw) Dockerfile       |
 | registries                | podman.registries              | Array   | Y        | `podman:build`, `podman:save`, `podman:push` | -                  | All registries this plugin might reach out to during execution (for building (i.e. pulling), pushing and saving) |
-| targetRegistry            | podman.image.target.registry   | String  | Y        | `podman:build`, `podman:push`                | -                  | The target registry where the container image will be pushed to |
-| tags                      | podman.image.tags              | Array   | Y        | `podman:build`, `podman:save`, `podman:push` | -                  | The tags of the container image, used for tagging (build), saving and pushing the image |
-| useMavenProjectVersion    | podman.image.version.maven     | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | true               | Specified whether the version of the Maven project should be used for tagging the container image (default: yes). When set to false, it requires `tagVersion` or `podman.image.version` to be specified. |
-| tagVersion                | podman.image.version           | String  | N        | `podman:build`, `podman:save`, `podman:push` | -                  | When set, this is the version the container image |
-| createLatestTag           | podman.image.tag.latest        | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Specified whether an image should be tagged 'latest'. The built image will receive a normal version nonetheless |
+| pushRegistry              | podman.image.target.registry   | String  | Y        | `podman:build`, `podman:push`                | -                  | The target registry where the container image will be pushed to |
 | tlsVerify                 | podman.tls.verify              | Enum    | N        | `podman:build`, `podman:save`, `podman:push` | NOT_SPECIFIED      | Allows setting of the --tls-verify command when building, pushing or saving container images. When not specified this will fallback to default `Podman` behavior |
 | skip                      | podman.skip                    | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip all actions. |
 | skipBuild                 | podman.skip.build              | Boolean | N        | `podman:build`                               | false              | Skip building container image |
@@ -92,7 +95,10 @@ The following parameters are supported by this plugin:
 | skipPush                  | podman.skip.push               | Boolean | N        | `podman:push`                                | false              | Will skip pushing the container image to the `targetRegistry` |
 | deleteLocalImageAfterPush | podman.image.delete.after.push | Boolean | N        | `podman:push`                                | false              | Will delete the final image from the local registry. **NOTE:** All other pulled images (such as base images) will continue to exist. |
 | skipSave                  | podman.skip.save               | Boolean | N        | `podman:save`                                | false              | Will skip saving the container image |
-| skipAuth                  | podman.skip.auth               | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip registry authentication check at the beginning. **NOTE:** This may cause access denied errors when building, pushing or saving container images. | 
+| skipAuth                  | podman.skip.auth               | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip registry authentication check at the beginning. **NOTE:** This may cause access denied errors when building, pushing or saving container images. |
+
+#### Configuration options in the pom file
+dfdfdfdf 
 
 ### Using parameters in your Dockerfile
 It is possible to specify properties in your pom file and use those properties in the Dockerfile, just like you would in a pom file:

@@ -1,6 +1,8 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
+import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -17,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
@@ -30,7 +33,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        configureMojo(true, false, null, null, false, false);
+        configureMojo(true, false, null, null, null, false, false);
 
         pushMojo.execute();
 
@@ -39,7 +42,10 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAuthenticationAndPush() throws MojoExecutionException {
-        configureMojo(false, true, null, null, false, false);
+        configureMojo(false, true, null, "sample", null, false, false);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
 
         pushMojo.execute();
 
@@ -49,39 +55,54 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsNull() throws MojoExecutionException {
-        configureMojo(false, false, null, null, false, false);
+        configureMojo(false, false, "registry.example.com", "sample", null, false, false);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
 
         pushMojo.execute();
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, Mockito.times(1)).info(Mockito.eq("No tags specified. Will not push container images."));
+        verify(log, Mockito.times(1)).info(Mockito.eq("No tags specified. Will not push container image named sample"));
     }
 
     @Test
     public void testSkipPushWhenTagsEmpty() throws MojoExecutionException {
-        configureMojo(false, false, null, new String[]{}, false, false);
+        configureMojo(false, false, "registry.example.com", "sample", new String[]{}, false, false);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
 
         pushMojo.execute();
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, Mockito.times(1)).info(Mockito.eq("No tags specified. Will not push container images."));
+        verify(log, Mockito.times(1)).info(Mockito.eq("No tags specified. Will not push container image named sample"));
     }
 
     @Test
-    public void testPushWithoutVersionFails() throws MojoExecutionException {
-        configureMojo(false, false, null, new String[]{"sampleTag"}, false, false);
+    public void testPushWithoutTargetRegistryFails() throws MojoExecutionException {
+        configureMojo(false, false, null, "sample", new String[]{}, true, false);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
+        when(mavenProject.getVersion()).thenReturn("1.0.0");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
-        verify(log, Mockito.times(1)).error(Mockito.eq("No image version specified. Set 'podman.image.version.fromMavenProject' to true for default project version or" +
-                " specify a version via 'podman.image.version'"));
-        verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
+        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
+        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
+        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
+        verify(log, times(1)).error(Mockito.eq("Failed to push container images. No registry specified. Configure the registry by adding the <pushRegistry><!-- registry --></pushRegistry> tag to your configuration."));
+
     }
 
     @Test
     public void testPushWithoutCleaningUpLocalImage() throws MojoExecutionException {
-        configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true, false);
+        configureMojo(false, false, "registry.example.com", "sample", new String[]{}, true, false);
 
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
@@ -92,23 +113,53 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
         verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
 
-        verify(commandExecutorService, times(1)).runCommand(pushMojo.outputDirectory,
+        verify(commandExecutorService, times(1)).runCommand(new File("target/podman-test"),
                 true,
                 false,
                 "podman",
                 "push",
                 "",
-                "registry.example.com/sampleTag:1.0.0");
+                "registry.example.com/sample:1.0.0");
+    }
+
+    @Test
+    public void testPushWithValidAuthentication() throws MojoExecutionException {
+        configureMojo(false, false, "registry.example.com", "sample", new String[]{}, true, false);
+        pushMojo.registries = new String[]{"registries.example.com"};
+        pushMojo.skipAuth = false;
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
+        when(mavenProject.getVersion()).thenReturn("1.0.0");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
+        when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
+
+        Assertions.assertDoesNotThrow(pushMojo::execute);
+
+        verify(log, times(0)).info(Mockito.eq("Registry authentication is skipped."));
+        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
+        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
+
+        verify(commandExecutorService, times(1)).runCommand(new File("target/podman-test"),
+                true,
+                false,
+                "podman",
+                "push",
+                "",
+                "registry.example.com/sample:1.0.0");
     }
 
     @Test
     public void testPushWithCleaningUpLocalImage() throws MojoExecutionException {
-        configureMojo(false, false, "registry.example.com", new String[]{"sampleTag"}, true, true);
+        configureMojo(false, false, "registry.example.com", "sample", new String[]{}, true, true);
 
         pushMojo.deleteLocalImageAfterPush = true;
 
-        String imageName = "registry.example.com/sampleTag:1.0.0";
+        String imageName = "registry.example.com/sample:1.0.0";
 
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getCommandExecutorService()).thenReturn(commandExecutorService);
@@ -120,7 +171,8 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
         verify(log, times(1)).info(Mockito.eq("Removing image " + imageName + " from the local repository"));
 
-        verify(commandExecutorService, times(1)).runCommand(pushMojo.outputDirectory,
+        File outputDir = new File("target/podman-test");
+        verify(commandExecutorService, times(1)).runCommand(outputDir,
                 true,
                 false,
                 "podman",
@@ -128,23 +180,27 @@ public class PushMojoTest extends AbstractMojoTest {
                 "",
                 imageName);
 
-        verify(commandExecutorService, times(1)).runCommand(pushMojo.outputDirectory,
+        verify(commandExecutorService, times(1)).runCommand(outputDir,
                 "podman",
                 "rmi",
                 imageName);
     }
 
-    private void configureMojo(boolean skipAll, boolean skipPush, String targetRegistry, String[] tags, boolean useMavenProjectVersion, boolean deleteLocalImageAfterPush) {
+    private void configureMojo(boolean skipAll, boolean skipPush, String targetRegistry, String name, String[] tags, boolean useMavenProjectVersion, boolean deleteLocalImageAfterPush) {
+        ImageConfiguration image = new TestImageConfigurationBuilder(name)
+                .setTags(tags)
+                .setUseMavenProjectVersion(useMavenProjectVersion)
+                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
+                .build();
+
         pushMojo.tlsVerify = TlsVerify.NOT_SPECIFIED;
         pushMojo.skip = skipAll;
         pushMojo.skipAuth = true;
         pushMojo.skipPush = skipPush;
-        pushMojo.outputDirectory = new File("target/podman-test");
         pushMojo.pushRegistry = targetRegistry;
-//        pushMojo.useMavenProjectVersion = useMavenProjectVersion;
-//        pushMojo.tags = tags;
-        pushMojo.pushRegistry = "registry.example.com";
+        pushMojo.registries = new String[]{targetRegistry};
         pushMojo.deleteLocalImageAfterPush = deleteLocalImageAfterPush;
+        pushMojo.images = List.of(image);
     }
 
 }
