@@ -1,6 +1,7 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
+import nl.lexemmens.podman.executor.CommandExecutorDelegateImpl;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
@@ -31,7 +32,7 @@ public class ServiceHub {
      * @param settingsDecrypter Access to Maven's settings decryption service
      */
     ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, TlsVerify tlsVerify, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
-        this.podmanExecutorService = new PodmanExecutorService(log, tlsVerify);
+        this.podmanExecutorService = new PodmanExecutorService(log, tlsVerify, new CommandExecutorDelegateImpl());
         this.dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
         this.authenticationService = new AuthenticationService(log, podmanExecutorService, mavenSettings, settingsDecrypter);
     }

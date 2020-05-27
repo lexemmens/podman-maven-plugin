@@ -2,12 +2,12 @@ package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.enumeration.PodmanCommand;
 import nl.lexemmens.podman.enumeration.TlsVerify;
+import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import nl.lexemmens.podman.image.ImageConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.File;
@@ -25,10 +25,12 @@ public class PodmanExecutorService {
 
     private final Log log;
     private final TlsVerify tlsVerify;
+    private final CommandExecutorDelegate delegate;
 
-    public PodmanExecutorService(Log log, TlsVerify tlsVerify) {
+    public PodmanExecutorService(Log log, TlsVerify tlsVerify, CommandExecutorDelegate delegate) {
         this.log = log;
         this.tlsVerify = tlsVerify;
+        this.delegate = delegate;
     }
 
     public String build(ImageConfiguration image) throws MojoExecutionException {
@@ -37,7 +39,7 @@ public class PodmanExecutorService {
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 
-        List<String> processOutput = runCommand(image.getBuild().getOutputDirectory(), true, false, PodmanCommand.BUILD, subCommand);
+        List<String> processOutput = runCommand(image.getBuild().getOutputDirectory(), false, PodmanCommand.BUILD, subCommand);
         return processOutput.get(processOutput.size() - 1);
     }
 
@@ -59,7 +61,7 @@ public class PodmanExecutorService {
     public void push(String fullImageName) throws MojoExecutionException {
         // Apparently, actually pushing the blobs to a registry causes some output on stderr.
         // Ignore output
-        runCommand(BASE_DIR, true, false, PodmanCommand.PUSH, List.of(fullImageName));
+        runCommand(BASE_DIR, false, PodmanCommand.PUSH, List.of(fullImageName));
     }
 
     public void login(String registry, String username, String password) throws MojoExecutionException {
@@ -70,7 +72,15 @@ public class PodmanExecutorService {
         subCommand.add("-p");
         subCommand.add(password);
 
-        runCommand(PodmanCommand.LOGIN, subCommand);
+        try {
+            runCommand(PodmanCommand.LOGIN, subCommand);
+        } catch (MojoExecutionException e) {
+            // When the command fails, the whole command is put in the error message, possibly exposing passwords.
+            // Therefore we catch the exception, remove the password and throw a new exception with an updated message.
+            String message = e.getMessage().replaceAll(String.format("-p %s", password), "-p *****");
+            log.error(message);
+            throw new MojoExecutionException(message);
+        }
     }
 
     public void removeLocalImage(String fullImageName) throws MojoExecutionException {
@@ -84,6 +94,7 @@ public class PodmanExecutorService {
 
         if (!PodmanCommand.TAG.equals(podmanCommand)
                 && !PodmanCommand.SAVE.equals(podmanCommand)
+                && !PodmanCommand.RMI.equals(podmanCommand)
                 && tlsVerify != null) {
             fullCommand.add(tlsVerify.getCommand());
         }
@@ -93,37 +104,27 @@ public class PodmanExecutorService {
         return fullCommand;
     }
 
-    private List<String> runCommand(File baseDir, boolean redirectStdOut, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        try {
-            String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), baseDir);
-            log.debug(msg);
-            ProcessExecutor processExecutor = new ProcessExecutor()
-                    .directory(baseDir)
-                    .command(decorateCommands(command, subCommands))
-                    .readOutput(true)
-                    .exitValueNormal();
+    private List<String> runCommand(File baseDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
+        String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), baseDir);
+        log.debug(msg);
+        ProcessExecutor processExecutor = new ProcessExecutor()
+                .directory(baseDir)
+                .command(decorateCommands(command, subCommands))
+                .readOutput(true)
+                .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
+                .exitValueNormal();
 
-            // There is no need to always redirect output on stdout to a logger
-            if (redirectStdOut) {
-                processExecutor.redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo());
-            }
-
-            // Some processes print regular text on stderror, so make redirecting the error stream configurable.
-            if (redirectError) {
-                processExecutor.redirectError(Slf4jStream.of(getClass().getSimpleName()).asError());
-            }
-
-            ProcessResult process = processExecutor.execute();
-            return process.getOutput().getLinesAsUTF8();
-        } catch (Exception e) {
-            String msg = String.format("Failed to execute command '%s' - caught %s", StringUtils.join(command, " "), e.getMessage());
-            log.error(msg);
-            throw new MojoExecutionException(msg);
+        // Some processes print regular text on stderror, so make redirecting the error stream configurable.
+        if (redirectError) {
+            processExecutor.redirectError(Slf4jStream.of(getClass().getSimpleName()).asError());
         }
+
+        return delegate.executeCommand(processExecutor);
+
     }
 
     private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
         // Ignore output
-        runCommand(BASE_DIR, true, true, command, subCommands);
+        runCommand(BASE_DIR, true, command, subCommands);
     }
 }
