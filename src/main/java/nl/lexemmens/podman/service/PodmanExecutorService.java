@@ -77,7 +77,7 @@ public class PodmanExecutorService {
         } catch (MojoExecutionException e) {
             // When the command fails, the whole command is put in the error message, possibly exposing passwords.
             // Therefore we catch the exception, remove the password and throw a new exception with an updated message.
-            String message = e.getMessage().replaceAll(String.format("-p %s", password), "-p *****");
+            String message = e.getMessage().replaceAll(String.format("-p[, ]+%s", password), "-p *****");
             log.error(message);
             throw new MojoExecutionException(message);
         }
