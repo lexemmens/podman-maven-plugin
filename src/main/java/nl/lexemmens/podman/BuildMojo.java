@@ -39,6 +39,8 @@ public class BuildMojo extends AbstractPodmanMojo {
             return;
         }
 
+        checkAuthentication(hub);
+
         for(ImageConfiguration image : images) {
             decorateDockerFile(image, hub);
             buildContainerImage(image, hub);

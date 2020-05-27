@@ -36,6 +36,8 @@ public class PushMojo extends AbstractPodmanMojo {
             return;
         }
 
+        checkAuthentication(hub);
+
         if (pushRegistry == null) {
             String msg = "Failed to push container images. No registry specified. Configure the registry by adding the " +
                     "<pushRegistry><!-- registry --></pushRegistry> tag to your configuration.";

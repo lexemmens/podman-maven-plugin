@@ -33,6 +33,8 @@ public class SaveMojo extends AbstractPodmanMojo {
             return;
         }
 
+        checkAuthentication(hub);
+
         for (ImageConfiguration image : images) {
             // No need to check if the image names are empty here - this is checked by the image configuration.
 
