@@ -58,22 +58,6 @@ public class BuildMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testSkipAuthenticationAndBuild() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
-                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
-                .build();
-        configureMojo(image, false, true, false);
-
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target");
-
-        buildMojo.execute();
-
-        verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, Mockito.times(1)).info(Mockito.eq("Building container images is skipped."));
-    }
-
-    @Test
     public void testBuildWithoutTag() throws MojoExecutionException, MavenFilteringException {
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)

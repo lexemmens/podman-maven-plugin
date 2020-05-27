@@ -1,5 +1,13 @@
 ## Changelog
 
+### 0.3.0 (27-05-2020)
+#### Bugs
+* AuthenticationService now checks the default credential file based on the XDG_RUNTIME_DIR environment variable
+* When TLS Verify is not set, it will no longer be used when running Podman.
+
+#### Improvements
+* Moved authentication to the different Mojo's, such that `skipBuild`, `skipPush`, `skipSave` can be configured separately. 
+
 ### 0.2.1 (26-05-2020)
 #### Security
 * Removed accidental publication of passphrase. Tag 0.2.0 has therefore been removed from Github.

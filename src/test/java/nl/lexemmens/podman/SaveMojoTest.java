@@ -41,19 +41,6 @@ public class SaveMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testSkipAuthenticationAndSave() throws MojoExecutionException {
-        configureMojo(false, true, null,  false);
-
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target/podman-test");
-
-        saveMojo.execute();
-
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(1)).info(Mockito.eq("Saving container images is skipped."));
-    }
-
-    @Test
     public void testSaveNoTags() {
         configureMojo(false, false, null,  false);
 

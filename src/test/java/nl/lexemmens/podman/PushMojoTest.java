@@ -41,19 +41,6 @@ public class PushMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testSkipAuthenticationAndPush() throws MojoExecutionException {
-        configureMojo(false, true, null, "sample", null, false, false);
-
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target/podman-test");
-
-        pushMojo.execute();
-
-        verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, Mockito.times(1)).info(Mockito.eq("Pushing container images is skipped."));
-    }
-
-    @Test
     public void testSkipPushWhenTagsNull() throws MojoExecutionException {
         configureMojo(false, false, "registry.example.com", "sample", null, false, false);
 
