@@ -105,7 +105,7 @@ public class AuthenticationService {
             authenticateRegistries(registries);
         }
 
-        log.info("Authentication status: OK!");
+        log.debug("Authentication status: OK!");
     }
 
     /**
