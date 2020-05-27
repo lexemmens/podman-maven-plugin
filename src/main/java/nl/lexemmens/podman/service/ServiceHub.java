@@ -14,7 +14,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
  */
 public class ServiceHub {
 
-    private final CommandExecutorService cmdExecutor;
+    private final PodmanExecutorService podmanExecutorService;
     private final DockerfileDecorator dockerfileDecorator;
     private final AuthenticationService authenticationService;
 
@@ -31,18 +31,9 @@ public class ServiceHub {
      * @param settingsDecrypter Access to Maven's settings decryption service
      */
     ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, TlsVerify tlsVerify, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
-        this.cmdExecutor = new CommandExecutorService(log);
+        this.podmanExecutorService = new PodmanExecutorService(log, tlsVerify);
         this.dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
-        this.authenticationService = new AuthenticationService(log, cmdExecutor, mavenSettings, settingsDecrypter, tlsVerify);
-    }
-
-    /**
-     * Returns a reference to the CommandExecutorService
-     *
-     * @return The {@link CommandExecutorService}
-     */
-    public CommandExecutorService getCommandExecutorService() {
-        return cmdExecutor;
+        this.authenticationService = new AuthenticationService(log, podmanExecutorService, mavenSettings, settingsDecrypter);
     }
 
     /**
@@ -61,5 +52,14 @@ public class ServiceHub {
      */
     public AuthenticationService getAuthenticationService() {
         return authenticationService;
+    }
+
+    /**
+     * Returns a reference to the {@link PodmanExecutorService}
+     *
+     * @return The {@link PodmanExecutorService}
+     */
+    public PodmanExecutorService getPodmanExecutorService() {
+        return podmanExecutorService;
     }
 }

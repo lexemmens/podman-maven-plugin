@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,7 +40,7 @@ public class AuthenticationServiceTest {
     private Log log;
 
     @Mock
-    private CommandExecutorService commandExecutorService;
+    private PodmanExecutorService podmanExecutorService;
 
     @Mock
     private Settings settings;
@@ -58,7 +57,7 @@ public class AuthenticationServiceTest {
 
     @Test
     public void authenticateNullRegistries() {
-        AuthenticationService authenticationService = new AuthenticationService(log, commandExecutorService, settings, settingsDecrypter, tlsVerify);
+        AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(null));
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
@@ -67,7 +66,7 @@ public class AuthenticationServiceTest {
 
     @Test
     public void authenticateNoRegistries() {
-        AuthenticationService authenticationService = new AuthenticationService(log, commandExecutorService, settings, settingsDecrypter, tlsVerify);
+        AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(new String[]{}));
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
@@ -82,7 +81,7 @@ public class AuthenticationServiceTest {
 
         String[] registries = new String[]{"registry.example.com"};
 
-        AuthenticationService authenticationService = new AuthenticationService(log, commandExecutorService, settings, settingsDecrypter, tlsVerify);
+        AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(registries));
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
@@ -112,23 +111,13 @@ public class AuthenticationServiceTest {
 
         String[] registries = new String[]{"registry.example.com"};
 
-        AuthenticationService authenticationService = new AuthenticationService(log, commandExecutorService, settings, settingsDecrypter, tlsVerify);
+        AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         authenticationService.authenticate(registries);
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
         verify(log, Mockito.times(1)).info(Mockito.eq("Authentication file not (yet) present. Authenticating..."));
         verify(log, Mockito.times(0)).error(Mockito.eq("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true"));
-        verify(commandExecutorService, times(1)).runCommand(new File("."),
-                false,
-                true,
-                "podman",
-                "login",
-                "--tls-verify=true",
-                registryName,
-                "-u",
-                "username",
-                "-p",
-                "password");
+        verify(podmanExecutorService, times(1)).login(registryName, "username", "password");
     }
 
     private SettingsDecryptionResult createSettingsDecryptionResult(List<Server> servers, List<Proxy> proxies) {

@@ -13,9 +13,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY)
 public class PushMojo extends AbstractPodmanMojo {
 
-    private static final String PUSH = "push";
-    private static final String REMOVE_LOCAL = "rmi";
-
     /**
      * Indicates if building container images should be skipped
      */
@@ -66,12 +63,11 @@ public class PushMojo extends AbstractPodmanMojo {
 
             getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
 
-            hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), true, false, PODMAN, PUSH, tlsVerify.getCommand(), fullImageName);
-            // Apparently, actually pushing the blobs to a registry causes some output on stderr.
+            hub.getPodmanExecutorService().push(fullImageName);
 
             if (deleteLocalImageAfterPush) {
                 getLog().info("Removing image " + fullImageName + " from the local repository");
-                hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), PODMAN, REMOVE_LOCAL, fullImageName);
+                hub.getPodmanExecutorService().removeLocalImage(fullImageName);
             }
 
             getLog().info("Successfully pushed container image " + fullImageName + " to " + pushRegistry);

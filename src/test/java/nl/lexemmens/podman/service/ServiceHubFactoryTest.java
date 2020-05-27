@@ -38,7 +38,7 @@ public class ServiceHubFactoryTest {
         ServiceHubFactory serviceHubFactory = new ServiceHubFactory();
         ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenProject, mavenFileFilter, TlsVerify.FALSE, mavenSettings, settingsDecrypter);
 
-        Assertions.assertNotNull(serviceHub.getCommandExecutorService());
+        Assertions.assertNotNull(serviceHub.getPodmanExecutorService());
         Assertions.assertNotNull(serviceHub.getDockerfileDecorator());
         Assertions.assertNotNull(serviceHub.getAuthenticationService());
     }

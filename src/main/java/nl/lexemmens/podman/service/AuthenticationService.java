@@ -2,7 +2,6 @@ package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.authentication.AuthConfig;
 import nl.lexemmens.podman.authentication.AuthConfigFactory;
-import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Settings;
@@ -31,9 +30,6 @@ import java.util.*;
  */
 public class AuthenticationService {
 
-    private static final String PODMAN_CMD = "podman";
-    private static final String LOGIN_CMD = "login";
-
     private static final String AUTHS_KEY_PODMAN_CFG = "auths";
 
     /**
@@ -52,24 +48,20 @@ public class AuthenticationService {
     private static final String AUTH_JSON_SUB_PATH = "containers/auth.json";
 
     private final Log log;
-    private final CommandExecutorService cmdExecutorService;
+    private final PodmanExecutorService podmanExecutorService;
     private final AuthConfigFactory authConfigFactory;
-
-    private final TlsVerify tlsVerify;
 
     /**
      * Constructs a new instance of this service
      *
      * @param log                Provides access to Maven's log system
-     * @param cmdExecutorService The command executor service used to execute the <em>podman</em> command
+     * @param podmanExecutorService Service for executing commands with Podman
      * @param mavenSetings       Provides access to the Maven Settings
      * @param settingsDecrypter  Provides access to Maven's SettingsDecrypter service from Maven core
-     * @param tlsVerify          Indicates whether TLS Verification should be used.
      */
-    public AuthenticationService(Log log, CommandExecutorService cmdExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter, TlsVerify tlsVerify) {
-        this.cmdExecutorService = cmdExecutorService;
+    public AuthenticationService(Log log, PodmanExecutorService podmanExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter) {
+        this.podmanExecutorService = podmanExecutorService;
         this.log = log;
-        this.tlsVerify = tlsVerify;
         this.authConfigFactory = new AuthConfigFactory(mavenSetings, settingsDecrypter);
     }
 
@@ -177,17 +169,7 @@ public class AuthenticationService {
 
     private void authenticate(String registry, String username, String password) throws MojoExecutionException {
         log.debug("Authenticating " + registry);
-        cmdExecutorService.runCommand(new File("."),
-                false,
-                true,
-                PODMAN_CMD,
-                LOGIN_CMD,
-                tlsVerify.getCommand(),
-                registry,
-                "-u",
-                username,
-                "-p",
-                password);
+        podmanExecutorService.login(registry, username, password);
     }
 
     private Set<String> getAuthenticatedRegistries(Path registryAuthFilePath) throws MojoExecutionException {
