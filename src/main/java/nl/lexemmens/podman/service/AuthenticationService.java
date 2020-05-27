@@ -37,14 +37,19 @@ public class AuthenticationService {
     private static final String AUTHS_KEY_PODMAN_CFG = "auths";
 
     /**
+     * Environment variable pointing to the XDG_RUNTIME_DIR, where the authentication credentials are stored by default
+     */
+    private static final String XDG_RUNTIME_DIR = "XDG_RUNTIME_DIR";
+
+    /**
      * Environment variable that allows overriding the default credential store location
      */
     private static final String REGISTRY_AUTH_FILE = "REGISTRY_AUTH_FILE";
 
     /**
-     * Default credential location for Podman
+     * Default file under the REGISTRY_AUTH_FILE folder containing the user credentials
      */
-    private static final Path PODMAN_CREDENTIAL_LOCATION = Paths.get("/run/user/1000/containers/auth.json");
+    private static final String AUTH_JSON_SUB_PATH = "containers/auth.json";
 
     private final Log log;
     private final CommandExecutorService cmdExecutorService;
@@ -125,13 +130,19 @@ public class AuthenticationService {
      * @return An Optional potentially holding the location of an authentication file.
      */
     private Optional<Path> getRegistryAuthFile() {
-        if (Files.exists(PODMAN_CREDENTIAL_LOCATION)) {
-            return Optional.of(PODMAN_CREDENTIAL_LOCATION);
-        } else if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
+        if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
             Path customRegistryAuthFile = Paths.get(System.getenv(REGISTRY_AUTH_FILE));
             if (Files.exists(customRegistryAuthFile)) {
                 return Optional.of(customRegistryAuthFile);
             }
+        } else if(System.getenv().containsKey(XDG_RUNTIME_DIR)){
+            Path xdgRuntimeDir = Paths.get(System.getenv(XDG_RUNTIME_DIR));
+            Path defaultAuthFile = xdgRuntimeDir.resolve(AUTH_JSON_SUB_PATH);
+            if (Files.exists(defaultAuthFile)) {
+                return Optional.of(defaultAuthFile);
+            }
+        } else {
+            log.warn("Could not locate Podman's default credential storage location. If this error persists, try running with <skipAuth>true</skipAuth>.");
         }
 
         return Optional.empty();
