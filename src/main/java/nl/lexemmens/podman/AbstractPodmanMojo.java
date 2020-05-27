@@ -80,24 +80,23 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
         ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, tlsVerify, settings, settingsDecrypter);
 
-        checkAuthentication(hub);
         initImageConfigurations();
 
         executeInternal(hub);
-    }
-
-    private void checkAuthentication(ServiceHub hub) throws MojoExecutionException {
-        if (skipAuth) {
-            getLog().info("Registry authentication is skipped.");
-        } else {
-            hub.getAuthenticationService().authenticate(registries);
-        }
     }
 
     private void initImageConfigurations() throws MojoExecutionException {
         getLog().info("Initializing image configurations.");
         for (ImageConfiguration image : images) {
             image.initAndValidate(project, getLog());
+        }
+    }
+
+    protected void checkAuthentication(ServiceHub hub) throws MojoExecutionException {
+        if (skipAuth) {
+            getLog().info("Registry authentication is skipped.");
+        } else {
+            hub.getAuthenticationService().authenticate(registries);
         }
     }
 

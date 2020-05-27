@@ -7,18 +7,11 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.util.List;
-
 /**
  * BuildMojo for building container images using Podman
  */
 @Mojo(name = "build", defaultPhase = LifecyclePhase.INSTALL)
 public class BuildMojo extends AbstractPodmanMojo {
-
-    private static final String TAG = "tag";
-    private static final String BUILD_CMD = "build";
-    private static final String DOCKERFILE_CMD = "--file=";
-    public static final String NO_CACHE_CMD = "--no-cache=";
 
     /**
      * Indicates if building container images should be skipped
@@ -39,6 +32,8 @@ public class BuildMojo extends AbstractPodmanMojo {
             return;
         }
 
+        checkAuthentication(hub);
+
         for(ImageConfiguration image : images) {
             decorateDockerFile(image, hub);
             buildContainerImage(image, hub);
@@ -56,15 +51,8 @@ public class BuildMojo extends AbstractPodmanMojo {
     private void buildContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Building container image...");
 
-        List<String> processOutput = hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), true, false,
-                PODMAN,
-                BUILD_CMD,
-                DOCKERFILE_CMD + image.getBuild().getTargetDockerfile(),
-                NO_CACHE_CMD + image.getBuild().isNoCache(),
-                tlsVerify.getCommand(),
-                ".");
-
-        image.setImageHash(processOutput.get(processOutput.size() - 1));
+        String imageHash = hub.getPodmanExecutorService().build(image);
+        image.setImageHash(imageHash);
     }
 
     private void tagContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
@@ -85,8 +73,7 @@ public class BuildMojo extends AbstractPodmanMojo {
 
                 getLog().info("Tagging container image " + imageHash + " as " + fullImageName);
 
-                // Ignore output
-                hub.getCommandExecutorService().runCommand(image.getBuild().getOutputDirectory(), PODMAN, TAG, imageHash, fullImageName);
+                hub.getPodmanExecutorService().tag(imageHash, fullImageName);
             }
         } else {
             getLog().info("No image hash available. Skipping tagging container image.");

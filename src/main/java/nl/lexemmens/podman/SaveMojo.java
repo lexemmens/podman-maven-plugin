@@ -18,11 +18,6 @@ import java.nio.file.Paths;
 @Mojo(name = "save", defaultPhase = LifecyclePhase.NONE)
 public class SaveMojo extends AbstractPodmanMojo {
 
-    private static final String SAVE_CMD = "save";
-    private static final String FORMAT_CMD = "--format";
-    private static final String OCI_ARCHIVE_CMD = "oci-archive";
-    private static final String OUTPUT_CMD = "--output";
-
     @Parameter(property = "podman.skip.save", defaultValue = "false")
     boolean skipSave;
 
@@ -32,6 +27,8 @@ public class SaveMojo extends AbstractPodmanMojo {
             getLog().info("Saving container images is skipped.");
             return;
         }
+
+        checkAuthentication(hub);
 
         for (ImageConfiguration image : images) {
             // No need to check if the image names are empty here - this is checked by the image configuration.
@@ -50,15 +47,7 @@ public class SaveMojo extends AbstractPodmanMojo {
             String archiveName = String.format("%s.tar.gz", normaliseImageName(fullImageName));
 
             getLog().info("Exporting image " + fullImageName + " to " + targetPodmanDir + "/" + archiveName);
-            hub.getCommandExecutorService().runCommand(targetPodmanDir.toFile(),
-                    PODMAN,
-                    SAVE_CMD,
-                    tlsVerify.getCommand(),
-                    FORMAT_CMD,
-                    OCI_ARCHIVE_CMD,
-                    OUTPUT_CMD,
-                    archiveName,
-                    fullImageName);
+            hub.getPodmanExecutorService().save(archiveName, fullImageName);
         }
 
         getLog().info("Container images exported successfully.");

@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.service.AuthenticationService;
-import nl.lexemmens.podman.service.CommandExecutorService;
+import nl.lexemmens.podman.service.PodmanExecutorService;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.model.Build;
@@ -23,7 +23,7 @@ public abstract class AbstractMojoTest {
     protected Settings settings;
 
     @Mock
-    protected CommandExecutorService commandExecutorService;
+    protected PodmanExecutorService podmanExecutorService;
 
     @Mock
     protected AuthenticationService authenticationService;

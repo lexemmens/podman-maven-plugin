@@ -2,7 +2,6 @@ package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.authentication.AuthConfig;
 import nl.lexemmens.podman.authentication.AuthConfigFactory;
-import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Settings;
@@ -31,10 +30,12 @@ import java.util.*;
  */
 public class AuthenticationService {
 
-    private static final String PODMAN_CMD = "podman";
-    private static final String LOGIN_CMD = "login";
-
     private static final String AUTHS_KEY_PODMAN_CFG = "auths";
+
+    /**
+     * Environment variable pointing to the XDG_RUNTIME_DIR, where the authentication credentials are stored by default
+     */
+    private static final String XDG_RUNTIME_DIR = "XDG_RUNTIME_DIR";
 
     /**
      * Environment variable that allows overriding the default credential store location
@@ -42,29 +43,25 @@ public class AuthenticationService {
     private static final String REGISTRY_AUTH_FILE = "REGISTRY_AUTH_FILE";
 
     /**
-     * Default credential location for Podman
+     * Default file under the REGISTRY_AUTH_FILE folder containing the user credentials
      */
-    private static final Path PODMAN_CREDENTIAL_LOCATION = Paths.get("/run/user/1000/containers/auth.json");
+    private static final String AUTH_JSON_SUB_PATH = "containers/auth.json";
 
     private final Log log;
-    private final CommandExecutorService cmdExecutorService;
+    private final PodmanExecutorService podmanExecutorService;
     private final AuthConfigFactory authConfigFactory;
-
-    private final TlsVerify tlsVerify;
 
     /**
      * Constructs a new instance of this service
      *
      * @param log                Provides access to Maven's log system
-     * @param cmdExecutorService The command executor service used to execute the <em>podman</em> command
+     * @param podmanExecutorService Service for executing commands with Podman
      * @param mavenSetings       Provides access to the Maven Settings
      * @param settingsDecrypter  Provides access to Maven's SettingsDecrypter service from Maven core
-     * @param tlsVerify          Indicates whether TLS Verification should be used.
      */
-    public AuthenticationService(Log log, CommandExecutorService cmdExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter, TlsVerify tlsVerify) {
-        this.cmdExecutorService = cmdExecutorService;
+    public AuthenticationService(Log log, PodmanExecutorService podmanExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter) {
+        this.podmanExecutorService = podmanExecutorService;
         this.log = log;
-        this.tlsVerify = tlsVerify;
         this.authConfigFactory = new AuthConfigFactory(mavenSetings, settingsDecrypter);
     }
 
@@ -108,7 +105,7 @@ public class AuthenticationService {
             authenticateRegistries(registries);
         }
 
-        log.info("Authentication status: OK!");
+        log.debug("Authentication status: OK!");
     }
 
     /**
@@ -125,13 +122,19 @@ public class AuthenticationService {
      * @return An Optional potentially holding the location of an authentication file.
      */
     private Optional<Path> getRegistryAuthFile() {
-        if (Files.exists(PODMAN_CREDENTIAL_LOCATION)) {
-            return Optional.of(PODMAN_CREDENTIAL_LOCATION);
-        } else if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
+        if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
             Path customRegistryAuthFile = Paths.get(System.getenv(REGISTRY_AUTH_FILE));
             if (Files.exists(customRegistryAuthFile)) {
                 return Optional.of(customRegistryAuthFile);
             }
+        } else if(System.getenv().containsKey(XDG_RUNTIME_DIR)){
+            Path xdgRuntimeDir = Paths.get(System.getenv(XDG_RUNTIME_DIR));
+            Path defaultAuthFile = xdgRuntimeDir.resolve(AUTH_JSON_SUB_PATH);
+            if (Files.exists(defaultAuthFile)) {
+                return Optional.of(defaultAuthFile);
+            }
+        } else {
+            log.warn("Could not locate Podman's default credential storage location. If this error persists, try running with <skipAuth>true</skipAuth>.");
         }
 
         return Optional.empty();
@@ -166,17 +169,7 @@ public class AuthenticationService {
 
     private void authenticate(String registry, String username, String password) throws MojoExecutionException {
         log.debug("Authenticating " + registry);
-        cmdExecutorService.runCommand(new File("."),
-                false,
-                true,
-                PODMAN_CMD,
-                LOGIN_CMD,
-                tlsVerify.getCommand(),
-                registry,
-                "-u",
-                username,
-                "-p",
-                password);
+        podmanExecutorService.login(registry, username, password);
     }
 
     private Set<String> getAuthenticatedRegistries(Path registryAuthFilePath) throws MojoExecutionException {
