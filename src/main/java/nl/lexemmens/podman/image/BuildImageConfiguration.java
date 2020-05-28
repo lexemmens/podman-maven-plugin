@@ -170,7 +170,7 @@ public class BuildImageConfiguration {
         }
 
         if (dockerFileDir == null) {
-            dockerFileDir = new File("");
+            dockerFileDir = project.getBasedir();
         }
 
         if (labels == null) {

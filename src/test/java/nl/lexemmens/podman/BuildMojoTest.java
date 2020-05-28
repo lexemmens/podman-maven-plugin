@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -244,6 +245,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         configureMojo(image, true, false, false, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
+        when(mavenProject.getBasedir()).thenReturn(new File("."));
         when(build.getDirectory()).thenReturn("target");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
