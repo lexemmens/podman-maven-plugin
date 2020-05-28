@@ -7,6 +7,7 @@
 
 #### Improvements
 * Changed the log line that says 'Initializing image configurations.' to debug.
+* Explicitly set `dockerFileDir` to value of `${project.baseDir}` rather then `new File(".")`
 
 ### 0.3.0 (27-05-2020)
 #### Bugs
