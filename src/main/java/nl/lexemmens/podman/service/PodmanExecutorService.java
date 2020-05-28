@@ -62,7 +62,7 @@ public class PodmanExecutorService {
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 
-        List<String> processOutput = runCommand(image.getBuild().getOutputDirectory(), false, PodmanCommand.BUILD, subCommand);
+        List<String> processOutput = runCommand(false, PodmanCommand.BUILD, subCommand);
         return processOutput.get(processOutput.size() - 1);
     }
 
@@ -114,7 +114,7 @@ public class PodmanExecutorService {
     public void push(String fullImageName) throws MojoExecutionException {
         // Apparently, actually pushing the blobs to a registry causes some output on stderr.
         // Ignore output
-        runCommand(BASE_DIR, false, PodmanCommand.PUSH, List.of(fullImageName));
+        runCommand(false, PodmanCommand.PUSH, List.of(fullImageName));
     }
 
     /**
@@ -182,11 +182,11 @@ public class PodmanExecutorService {
         return fullCommand;
     }
 
-    private List<String> runCommand(File baseDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), baseDir);
+    private List<String> runCommand(boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
+        String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), BASE_DIR);
         log.debug(msg);
         ProcessExecutor processExecutor = new ProcessExecutor()
-                .directory(baseDir)
+                .directory(BASE_DIR)
                 .command(decorateCommands(command, subCommands))
                 .readOutput(true)
                 .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
@@ -203,6 +203,6 @@ public class PodmanExecutorService {
 
     private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
         // Ignore output
-        runCommand(BASE_DIR, true, command, subCommands);
+        runCommand(true, command, subCommands);
     }
 }
