@@ -86,7 +86,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     }
 
     private void initImageConfigurations() throws MojoExecutionException {
-        getLog().info("Initializing image configurations.");
+        getLog().debug("Initializing image configurations.");
         for (ImageConfiguration image : images) {
             image.initAndValidate(project, getLog());
         }
