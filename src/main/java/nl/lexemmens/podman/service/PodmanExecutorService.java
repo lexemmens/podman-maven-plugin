@@ -64,7 +64,7 @@ public class PodmanExecutorService {
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 
-        List<String> processOutput = runCommand(false, PodmanCommand.BUILD, subCommand);
+        List<String> processOutput = runCommand(image.getBuild().getDockerFileDir(), false, PodmanCommand.BUILD, subCommand);
         return processOutput.get(processOutput.size() - 1);
     }
 
@@ -116,7 +116,7 @@ public class PodmanExecutorService {
     public void push(String fullImageName) throws MojoExecutionException {
         // Apparently, actually pushing the blobs to a registry causes some output on stderr.
         // Ignore output
-        runCommand(false, PodmanCommand.PUSH, List.of(fullImageName));
+        runCommand(BASE_DIR, false, PodmanCommand.PUSH, List.of(fullImageName));
     }
 
     /**
@@ -187,12 +187,14 @@ public class PodmanExecutorService {
                 && !PodmanCommand.RMI.equals(podmanCommand);
     }
 
-    private List<String> runCommand(boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), BASE_DIR);
+    private List<String> runCommand(File workDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
+        List<String> fullCommand = decorateCommands(command, subCommands);
+
+        String msg = String.format("Executing command '%s' from basedir %s", StringUtils.join(fullCommand, " "), BASE_DIR.getAbsolutePath());
         log.debug(msg);
         ProcessExecutor processExecutor = new ProcessExecutor()
-                .directory(BASE_DIR)
-                .command(decorateCommands(command, subCommands))
+                .directory(workDir)
+                .command(fullCommand)
                 .readOutput(true)
                 .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
                 .exitValueNormal();
@@ -208,6 +210,6 @@ public class PodmanExecutorService {
 
     private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
         // Ignore output
-        runCommand(true, command, subCommands);
+        runCommand(BASE_DIR, true, command, subCommands);
     }
 }
