@@ -14,6 +14,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
+
 /**
  * Class that allows very specific execution of Podman related commands.
  */
@@ -170,16 +172,19 @@ public class PodmanExecutorService {
         fullCommand.add(PodmanCommand.PODMAN.getCommand());
         fullCommand.add(podmanCommand.getCommand());
 
-        if (!PodmanCommand.TAG.equals(podmanCommand)
-                && !PodmanCommand.SAVE.equals(podmanCommand)
-                && !PodmanCommand.RMI.equals(podmanCommand)
-                && tlsVerify != null) {
+        if (isTlsSupported(podmanCommand) && tlsVerify != null && !NOT_SPECIFIED.equals(tlsVerify)) {
             fullCommand.add(tlsVerify.getCommand());
         }
 
         fullCommand.addAll(subCommands);
 
         return fullCommand;
+    }
+
+    private boolean isTlsSupported(PodmanCommand podmanCommand) {
+        return !PodmanCommand.TAG.equals(podmanCommand)
+                && !PodmanCommand.SAVE.equals(podmanCommand)
+                && !PodmanCommand.RMI.equals(podmanCommand);
     }
 
     private List<String> runCommand(boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
