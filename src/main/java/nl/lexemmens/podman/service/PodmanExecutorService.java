@@ -14,6 +14,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
+
 /**
  * Class that allows very specific execution of Podman related commands.
  */
@@ -62,7 +64,7 @@ public class PodmanExecutorService {
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 
-        List<String> processOutput = runCommand(image.getBuild().getOutputDirectory(), false, PodmanCommand.BUILD, subCommand);
+        List<String> processOutput = runCommand(image.getBuild().getDockerFileDir(), false, PodmanCommand.BUILD, subCommand);
         return processOutput.get(processOutput.size() - 1);
     }
 
@@ -170,10 +172,7 @@ public class PodmanExecutorService {
         fullCommand.add(PodmanCommand.PODMAN.getCommand());
         fullCommand.add(podmanCommand.getCommand());
 
-        if (!PodmanCommand.TAG.equals(podmanCommand)
-                && !PodmanCommand.SAVE.equals(podmanCommand)
-                && !PodmanCommand.RMI.equals(podmanCommand)
-                && tlsVerify != null) {
+        if (isTlsSupported(podmanCommand) && tlsVerify != null && !NOT_SPECIFIED.equals(tlsVerify)) {
             fullCommand.add(tlsVerify.getCommand());
         }
 
@@ -182,12 +181,20 @@ public class PodmanExecutorService {
         return fullCommand;
     }
 
-    private List<String> runCommand(File baseDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        String msg = String.format("Executing command %s from basedir %s", StringUtils.join(command, " "), baseDir);
+    private boolean isTlsSupported(PodmanCommand podmanCommand) {
+        return !PodmanCommand.TAG.equals(podmanCommand)
+                && !PodmanCommand.SAVE.equals(podmanCommand)
+                && !PodmanCommand.RMI.equals(podmanCommand);
+    }
+
+    private List<String> runCommand(File workDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
+        List<String> fullCommand = decorateCommands(command, subCommands);
+
+        String msg = String.format("Executing command '%s' from basedir %s", StringUtils.join(fullCommand, " "), BASE_DIR.getAbsolutePath());
         log.debug(msg);
         ProcessExecutor processExecutor = new ProcessExecutor()
-                .directory(baseDir)
-                .command(decorateCommands(command, subCommands))
+                .directory(workDir)
+                .command(fullCommand)
                 .readOutput(true)
                 .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
                 .exitValueNormal();

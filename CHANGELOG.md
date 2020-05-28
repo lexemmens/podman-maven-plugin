@@ -1,5 +1,14 @@
 ## Changelog
 
+### 0.4.0 (28-05-2020)
+#### Bugs
+* Podman used the wrong base dir for building container images
+* When TLS Verify is not set, this sometimes caused an '... takes only 1 argument' error, due to an empty subcommand being passed.
+
+#### Improvements
+* Changed the log line that says 'Initializing image configurations.' to debug.
+* Explicitly set `dockerFileDir` to value of `${project.baseDir}` rather then `new File(".")`
+
 ### 0.3.0 (27-05-2020)
 #### Bugs
 * AuthenticationService now checks the default credential file based on the XDG_RUNTIME_DIR environment variable

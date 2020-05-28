@@ -21,8 +21,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.lexemmens.podman.enumeration.TlsVerify.FALSE;
-import static nl.lexemmens.podman.enumeration.TlsVerify.TRUE;
+import static nl.lexemmens.podman.enumeration.TlsVerify.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -57,6 +56,15 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService.login("registry.example.com", "username", "password");
 
         Assertions.assertEquals("podman login --tls-verify=false registry.example.com -u username -p password", delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testLoginWithTlsNotSpecified() throws MojoExecutionException {
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
+        podmanExecutorService = new PodmanExecutorService(log, NOT_SPECIFIED, delegate);
+        podmanExecutorService.login("registry.example.com", "username", "password");
+
+        Assertions.assertEquals("podman login registry.example.com -u username -p password", delegate.getCommandAsString());
     }
 
     @Test

@@ -148,6 +148,16 @@ public class BuildImageConfiguration {
     }
 
     /**
+     * Returns the location of the raw Dockerfile. This location is used
+     * as the context dir when running podman.
+     *
+     * @return The location of the raw Dockerfile as a File.
+     */
+    public File getDockerFileDir() {
+        return dockerFileDir;
+    }
+
+    /**
      * Validates this class by giving all null properties a default value.
      *
      * @param project The MavenProject used to derive some of the default values from.
@@ -160,7 +170,7 @@ public class BuildImageConfiguration {
         }
 
         if (dockerFileDir == null) {
-            dockerFileDir = new File("");
+            dockerFileDir = project.getBasedir();
         }
 
         if (labels == null) {
