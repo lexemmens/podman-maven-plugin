@@ -106,7 +106,7 @@ public class DockerfileDecoratorTest {
         verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Dockerfile. Source: " + image.getBuild().getSourceDockerfile() + ", target: " + image.getBuild().getTargetDockerfile()));
 
         List<String> collect = Files.lines(Paths.get("target/podman-test/Dockerfile")).collect(Collectors.toList());
-        String lastLine = collect.get(collect.size() - 1);
+        String lastLine = collect.get(1);
 
         Assertions.assertEquals("LABEL testLabelKey=testLabelValue ", lastLine);
     }
