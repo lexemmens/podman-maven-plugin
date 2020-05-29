@@ -34,7 +34,7 @@ NOTE: This Plugin only works when a Dockerfile is in your module's folder. You c
 | `podman:save`                                    | Save image to a file       |                         |
 
 ## Usage
-The plugin is currently **NOT** available via Maven Central and can be used as follows:
+The plugin is available via Maven Central and can be used as follows:
 
 1. Ensure that there is a `Dockerfile` places in the module's root directory
 2. Configure the plugin in your pom file, like so: 

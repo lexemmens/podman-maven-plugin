@@ -11,7 +11,11 @@ import org.apache.maven.shared.filtering.MavenFilteringException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -30,6 +34,7 @@ import java.util.Map;
 public class DockerfileDecorator {
 
     private static final String LABEL_ATTRIBUTE = "LABEL ";
+    private static final String BASE_IMAGE_ATTRIBUTE = "FROM";
 
     /**
      * Logger instance
@@ -106,8 +111,22 @@ public class DockerfileDecorator {
         }
         String targetLabels = labelBuilder.toString();
 
-        try {
-            Files.write(image.getBuild().getTargetDockerfile(), targetLabels.getBytes(), StandardOpenOption.APPEND);
+        try (Stream<String> dockerFileStream = Files.lines(image.getBuild().getTargetDockerfile())) {
+            List<String> dockerFileContents = dockerFileStream.collect(Collectors.toList());
+            List<String> targetDockerfileContents = new ArrayList<>();
+
+            for(String line : dockerFileContents) {
+                targetDockerfileContents.add(line);
+
+                // LABEL declaration after an entry point or run declaration are not always supported.
+                // Therefore, we add the labels directly after the base image declaration
+                // Lines are never <null> at this point
+                if(line.startsWith(BASE_IMAGE_ATTRIBUTE)) {
+                    targetDockerfileContents.add(targetLabels);
+                }
+            }
+
+            Files.write(image.getBuild().getTargetDockerfile(), targetDockerfileContents, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             String msg = "Failed to add labels (" + targetLabels + ") to Dockerfile: " + e.getMessage();
             log.error(msg, e);
