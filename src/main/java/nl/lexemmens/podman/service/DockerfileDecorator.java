@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -110,8 +111,8 @@ public class DockerfileDecorator {
         }
         String targetLabels = labelBuilder.toString();
 
-        try {
-            List<String> dockerFileContents = Files.lines(image.getBuild().getTargetDockerfile()).collect(Collectors.toList());
+        try (Stream<String> dockerFileStream = Files.lines(image.getBuild().getTargetDockerfile())) {
+            List<String> dockerFileContents = dockerFileStream.collect(Collectors.toList());
             List<String> targetDockerfileContents = new ArrayList<>();
 
             for(String line : dockerFileContents) {
