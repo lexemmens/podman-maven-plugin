@@ -1,5 +1,13 @@
 ## Changelog
 
+### 0.5.0 (29-05-2020)
+#### Bugs
+* Labels were not always added on a new line
+* Labels after an `ENTRYPOINT` command were sometimes ignored. Labels are now put on the line after the base image declaration (`FROM` command)
+
+#### Improvements
+* Documentation no longer states that this plugin is **not** in Maven Central. 
+
 ### 0.4.0 (28-05-2020)
 #### Bugs
 * Podman used the wrong base dir for building container images
