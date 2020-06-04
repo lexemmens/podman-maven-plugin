@@ -48,6 +48,10 @@ The plugin is available via Maven Central and can be used as follows:
             <registry>registry.example.com</registry>
         </registries>
         <pushRegistry>registry.example.com</pushRegistry>
+        <podman>
+            <tlsVerify>true</tlsVerify>   
+            <root>/path/to/a/folder</root>   
+        </podman>
         <build>
             <name>your/image/name</name>
             <tags>
@@ -93,7 +97,6 @@ The following command line parameters are supported by this plugin. It is also p
 | ------------------------- | ------------------------------ | ------- | -------- | -------------------------------------------- | ------------------ | ---------------------------------------------- |
 | registries                | podman.registries              | Array   | Y        | `podman:build`, `podman:save`, `podman:push` | -                  | All registries this plugin might reach out to during execution (for building (i.e. pulling), pushing and saving) |
 | pushRegistry              | podman.image.push.registry     | String  | Y        | `podman:build`, `podman:push`                | -                  | The target registry where the container image will be pushed to |
-| tlsVerify                 | podman.tls.verify              | Enum    | N        | `podman:build`, `podman:save`, `podman:push` | NOT_SPECIFIED      | Allows setting of the --tls-verify command when building, pushing or saving container images. When not specified this will fallback to default `Podman` behavior |
 | skip                      | podman.skip                    | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip all actions. |
 | skipBuild                 | podman.skip.build              | Boolean | N        | `podman:build`                               | false              | Skip building container image |
 | skipTag                   | podman.skip.tag                | Boolean | N        | `podman:build`                               | false              | Skip tagging container image after build |
@@ -114,6 +117,11 @@ The example in XML below lists all the other configuration options that are poss
     <artifactId>podman-maven-plugin</artifactId>
     <configuration>
         <!-- See previous section for properties at this level -->
+        <podman>
+            <tlsVerify>NOT_SPEFICIED</tlsVerify>    
+            <root>/path/to/a/folder</root>    
+        </podman>
+
         <images>
             <image>
                 <name>my/podman/image</name>
@@ -142,7 +150,16 @@ The example in XML below lists all the other configuration options that are poss
 </plugin>
 ```
 
-The table below explains the configuration options that were used in the example above:
+##### Podman Configuration Options
+The tables below explains the global configuration options for podman that were used in the example above:
+
+| Parameter                | Type    | Required | Default value      | Description |
+|--------------------------|---------|----------|--------------------|-------------|
+| tlsVerify                | Boolean | N        | -                  | Allows explicit control of TLS Verification |
+| root                     | String  | N        | -                  | Controls the storage location that Podman should use when building containers |
+
+##### Image Configuration Options
+The tables below explains the configuration options for container images that were used in the example above:
 
 | Parameter                | Type    | Required | Default value      | Description |
 |--------------------------|---------|----------|--------------------|-------------|

@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.6.0 (04-06-2020)
+#### Improvements
+* Added option to set a custom root directory when running Podman (equivalent of running `podman --root=/some/custom/directory`)
+
 ### 0.5.0 (29-05-2020)
 #### Bugs
 * Labels were not always added on a new line
