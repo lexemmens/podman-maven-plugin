@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.PodmanConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
@@ -41,14 +41,17 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(property = "podman.push.registry")
     protected String pushRegistry;
 
+    /**
+     * Image configuration
+     */
     @Parameter
     protected List<ImageConfiguration> images;
 
     /**
-     * Whether Podman should verify TLS/SSL certificates. Defaults to true.
+     * Podman specific configuration
      */
-    @Parameter(property = "podman.tls.verify", defaultValue = "NOT_SPECIFIED", required = true)
-    protected TlsVerify tlsVerify;
+    @Parameter
+    protected PodmanConfiguration podman;
 
     /**
      * Skip authentication prior to execution
@@ -78,15 +81,17 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             return;
         }
 
-        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, tlsVerify, settings, settingsDecrypter);
+        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, podman, settings, settingsDecrypter);
 
-        initImageConfigurations();
+        initConfigurations();
 
         executeInternal(hub);
     }
 
-    private void initImageConfigurations() throws MojoExecutionException {
-        getLog().debug("Initializing image configurations.");
+    private void initConfigurations() throws MojoExecutionException {
+        getLog().debug("Initializing configurations.");
+
+        podman.initAndValidate(getLog());
         for (ImageConfiguration image : images) {
             image.initAndValidate(project, getLog());
         }

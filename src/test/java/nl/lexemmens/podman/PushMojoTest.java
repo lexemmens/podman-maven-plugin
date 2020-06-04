@@ -2,7 +2,9 @@ package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.PodmanConfiguration;
 import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
+import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -84,7 +86,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
@@ -103,7 +105,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(targetRegistry));
 
@@ -125,7 +127,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(targetRegistry));
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
@@ -149,7 +151,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(imageName));
         doNothing().when(podmanExecutorService).removeLocalImage(eq(imageName));
@@ -171,7 +173,7 @@ public class PushMojoTest extends AbstractMojoTest {
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .build();
 
-        pushMojo.tlsVerify = TlsVerify.NOT_SPECIFIED;
+        pushMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         pushMojo.skip = skipAll;
         pushMojo.skipAuth = skipAuth;
         pushMojo.skipPush = skipPush;

@@ -1,6 +1,7 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
+import nl.lexemmens.podman.image.PodmanConfiguration;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
@@ -33,10 +34,13 @@ public class ServiceHubFactoryTest {
     @Mock
     private MavenProject mavenProject;
 
+    @Mock
+    private PodmanConfiguration podmanConfiguration;
+
     @Test
     public void testServiceHubFactory() {
         ServiceHubFactory serviceHubFactory = new ServiceHubFactory();
-        ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenProject, mavenFileFilter, TlsVerify.FALSE, mavenSettings, settingsDecrypter);
+        ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenProject, mavenFileFilter, podmanConfiguration, mavenSettings, settingsDecrypter);
 
         Assertions.assertNotNull(serviceHub.getPodmanExecutorService());
         Assertions.assertNotNull(serviceHub.getDockerfileDecorator());

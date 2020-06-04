@@ -4,6 +4,7 @@ import nl.lexemmens.podman.enumeration.PodmanCommand;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.PodmanConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -25,24 +26,28 @@ public class PodmanExecutorService {
     private static final String OUTPUT_CMD = "--output";
     private static final String DOCKERFILE_CMD = "--file=";
     private static final String NO_CACHE_CMD = "--no-cache=";
+    private static final String ROOT_CMD = "--root=";
 
     private static final File BASE_DIR = new File(".");
 
     private final Log log;
     private final TlsVerify tlsVerify;
     private final CommandExecutorDelegate delegate;
+    private final File podmanRoot;
+
 
     /**
      * Constructs a new instance of this class.
      *
-     * @param log       Used to access Maven's log system
-     * @param tlsVerify Whether TLS Verification should be used
-     * @param delegate  A delegate executor that executed the actual command
+     * @param log          Used to access Maven's log system
+     * @param podmanConfig Contains Podman specific configuration, such as tlsVerify and podman's root directory
+     * @param delegate     A delegate executor that executed the actual command
      */
-    public PodmanExecutorService(Log log, TlsVerify tlsVerify, CommandExecutorDelegate delegate) {
+    public PodmanExecutorService(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
         this.log = log;
-        this.tlsVerify = tlsVerify;
         this.delegate = delegate;
+        this.tlsVerify = podmanConfig.getTlsVerify();
+        this.podmanRoot = podmanConfig.getRoot();
     }
 
     /**
@@ -145,7 +150,7 @@ public class PodmanExecutorService {
         } catch (MojoExecutionException e) {
             // When the command fails, the whole command is put in the error message, possibly exposing passwords.
             // Therefore we catch the exception, remove the password and throw a new exception with an updated message.
-            String message = e.getMessage().replaceAll(String.format("-p[, ]+%s", password), "-p *****");
+            String message = e.getMessage().replaceAll(String.format("-p[, ]+%s", password), "-p **********");
             log.error(message);
             throw new MojoExecutionException(message);
         }
@@ -170,6 +175,12 @@ public class PodmanExecutorService {
     private List<String> decorateCommands(PodmanCommand podmanCommand, List<String> subCommands) {
         List<String> fullCommand = new ArrayList<>();
         fullCommand.add(PodmanCommand.PODMAN.getCommand());
+
+        // Path to the root directory in which data, including images, is stored. Must be *before* build, push or any other operation
+        if (podmanRoot != null) {
+            fullCommand.add(ROOT_CMD + podmanRoot.getAbsolutePath());
+        }
+
         fullCommand.add(podmanCommand.getCommand());
 
         if (isTlsSupported(podmanCommand) && tlsVerify != null && !NOT_SPECIFIED.equals(tlsVerify)) {
