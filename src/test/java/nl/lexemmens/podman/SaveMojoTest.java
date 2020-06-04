@@ -2,7 +2,9 @@ package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.PodmanConfiguration;
 import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
+import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -32,7 +34,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        configureMojo(true, false, null,  false);
+        configureMojo(true, false, null, false);
 
         saveMojo.execute();
 
@@ -41,7 +43,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipSave() throws MojoExecutionException {
-        configureMojo(false, true, null,  false);
+        configureMojo(false, true, null, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -53,7 +55,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveNoTags() {
-        configureMojo(false, false, null,  false);
+        configureMojo(false, false, null, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -66,12 +68,12 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveWithMavenProjectVersion() throws MojoExecutionException {
-        configureMojo(false, false, "registry.example.com",  true);
+        configureMojo(false, false, "registry.example.com", true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
@@ -83,12 +85,12 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveImageFromLocalRegistry() throws MojoExecutionException {
-        configureMojo(false, false, null,  true);
+        configureMojo(false, false, null, true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(TlsVerify.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
@@ -106,7 +108,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
         List<ImageConfiguration> images = List.of(image);
 
-        saveMojo.tlsVerify = TlsVerify.NOT_SPECIFIED;
+        saveMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         saveMojo.skip = skipAll;
         saveMojo.skipAuth = true;
         saveMojo.skipSave = skipSave;

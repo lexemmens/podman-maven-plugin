@@ -38,7 +38,7 @@ public class SaveMojo extends AbstractPodmanMojo {
     }
 
     private void exportContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
-        Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN);
+        Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN_DIRECTORY);
         createTargetFolder(targetPodmanDir);
 
         for (String imageName : image.getImageNames()) {
