@@ -17,7 +17,7 @@ import java.util.List;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
 
-    protected static final String PODMAN = "podman";
+    protected static final String PODMAN_DIRECTORY = "podman";
 
     /**
      * The Maven project
