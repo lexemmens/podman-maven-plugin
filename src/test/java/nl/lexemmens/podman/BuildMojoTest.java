@@ -49,10 +49,11 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .build();
-        configureMojo(image, false, true, false, false);
+        configureMojo(podman, image, false, true, false, false);
 
         buildMojo.execute();
 
@@ -61,10 +62,11 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipBuild() throws MojoExecutionException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .build();
-        configureMojo(image, false, false, true, false);
+        configureMojo(podman, image, false, false, true, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
@@ -76,10 +78,11 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildWithoutTag() throws MojoExecutionException, MavenFilteringException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .build();
-        configureMojo(image, true, false, false, true);
+        configureMojo(podman, image, true, false, false, true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
@@ -96,12 +99,34 @@ public class BuildMojoTest extends AbstractMojoTest {
     }
 
     @Test
+    public void testBuildWithoutPodmanConfigurationDoesNotThrowException() throws MojoExecutionException, MavenFilteringException {
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
+                .build();
+        configureMojo(null, image, true, false, false, true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
+
+        Assertions.assertDoesNotThrow(() -> buildMojo.execute());
+
+        verify(log, Mockito.times(1)).info(Mockito.eq("Tagging container images is skipped."));
+        verify(mavenFileFilter, Mockito.times(1)).copyFile(isA(MavenFileFilterRequest.class));
+        verify(podmanExecutorService, times(1)).build(isA(ImageConfiguration.class));
+    }
+
+    @Test
     public void testBuildCustomDockerfileWithoutTag() throws MojoExecutionException, MavenFilteringException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfile("CustomDockerfile")
                 .setDockerfileDir("src/test/resources/customdockerfile")
                 .build();
-        configureMojo(image, true, false, false, true);
+        configureMojo(podman, image, true, false, false, true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
@@ -119,10 +144,11 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildAndTaggingWithNullTags() throws MojoExecutionException, MavenFilteringException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
@@ -141,11 +167,12 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildAndTaggingWithEmptyTags() throws MojoExecutionException, MavenFilteringException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .setTags(new String[]{})
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
@@ -164,12 +191,13 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildWithTag() throws MojoExecutionException, MavenFilteringException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         String imageHash = "ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76";
         String expectedFullImageName = "registry.example.com/sample:1.0.0";
@@ -193,12 +221,13 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildWithLatestTag() throws MojoExecutionException, MavenFilteringException {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
                 .setTags(new String[]{})
                 .setCreateLatestTag(true)
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         String imageHash = "ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76";
         String expectedFullImageName = "registry.example.com/sample:latest";
@@ -223,32 +252,32 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildContextNoDockerfile() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir("src/test")
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
 
     @Test
     public void testBuildContextWithDefaultDockerfileDir() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(mavenProject.getBasedir()).thenReturn(new File("."));
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         // No Dockerfile present at root level
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
@@ -256,22 +285,22 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Test
     public void testBuildContextWithEmptyDockerfile() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setDockerfileDir("src/test/resources/emptydockerfile")
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
                 .build();
-        configureMojo(image, true, false, false, false);
+        configureMojo(podman, image, true, false, false, false);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
 
-    private void configureMojo(ImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipBuild, boolean skipTag) {
-        buildMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+    private void configureMojo(PodmanConfiguration podman, ImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipBuild, boolean skipTag) {
+        buildMojo.podman = podman;
         buildMojo.skip = skipAll;
         buildMojo.skipBuild = skipBuild;
         buildMojo.skipAuth = skipAuth;

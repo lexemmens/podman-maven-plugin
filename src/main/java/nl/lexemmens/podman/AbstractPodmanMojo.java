@@ -81,15 +81,20 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             return;
         }
 
-        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, podman, settings, settingsDecrypter);
-
         initConfigurations();
+
+        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, podman, settings, settingsDecrypter);
 
         executeInternal(hub);
     }
 
     private void initConfigurations() throws MojoExecutionException {
         getLog().debug("Initializing configurations.");
+
+        if(podman == null) {
+            getLog().debug("Using default Podman configuration.");
+            podman = new PodmanConfiguration();
+        }
 
         podman.initAndValidate(getLog());
         for (ImageConfiguration image : images) {
