@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.6.1 (05-06-2020)
+#### Bugs
+* Fixed a `NullPointerException` that could occur when no `<podman/>` configuration was specified. 
+
 ### 0.6.0 (04-06-2020)
 #### Improvements
 * Added option to set a custom root directory when running Podman (equivalent of running `podman --root=/some/custom/directory`)
