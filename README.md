@@ -141,11 +141,11 @@ The example in XML below lists all the other configuration options that are poss
                     <labels>
                         <label-one>value-one</label-one>
                     </labels>
+
+                    <format>OCI</format>
                 </build>
             </image>
         </images>
-
-        <tlsVerify>FALSE</tlsVerify>
     </configuration>
 </plugin>
 ```
@@ -170,6 +170,7 @@ The tables below explains the configuration options for container images that we
 | tagAsMavenProjectVersion | Boolean | N        | false              | When set to true, the container image will automatically be tagged with the version of the Maven project. Note that a container can receive one or more tags whilst maintaining the same name. |
 | createLatestTag          | Boolean | N        | false              | When set to true, the container image will automatically be tagged 'latest'. Note that a container can receive one or more tags whilst maintaining the same name. |
 | labels                   | Map     | N        | -                  | When set, the Dockerfile will be decorated with the specified labels. Useful when adding metadata to your images |
+| format                   | Enum    | N        | OCI                | Controls the format of the built image's manifest and configuration data. Recognised options: OCI (default) or DOCKER |
 
 ### Using parameters in your Dockerfile
 It is possible to specify properties in your pom file and use those properties in the Dockerfile, just like you would in a pom file:

@@ -1,5 +1,12 @@
 ## Changelog
 
+### 0.7.0 (26-06-2020)
+#### Bugs
+* Fixed a NullPointerException that occurred when no image configuration was present in the pom. A normal exception with more information is now raised instead.
+
+#### Improvements
+* Added possibility to build container images with docker manifest and configuration data (`podman build --format=<oci/docker>` equivalent).
+
 ### 0.6.1 (05-06-2020)
 #### Bugs
 * Fixed a `NullPointerException` that could occur when no `<podman/>` configuration was specified. 

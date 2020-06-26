@@ -5,6 +5,7 @@ import nl.lexemmens.podman.image.PodmanConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -97,8 +98,12 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
         }
 
         podman.initAndValidate(getLog());
-        for (ImageConfiguration image : images) {
-            image.initAndValidate(project, getLog());
+        if(images == null || images.isEmpty()) {
+            throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
+        } else {
+            for (ImageConfiguration image : images) {
+                image.initAndValidate(project, getLog());
+            }
         }
     }
 
