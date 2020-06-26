@@ -82,9 +82,6 @@ public class BuildMojoTest extends AbstractMojoTest {
         PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         configureMojo(podman, null, true, false, false, true);
 
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target");
-
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
 
@@ -94,9 +91,6 @@ public class BuildMojoTest extends AbstractMojoTest {
         configureMojo(podman, null, true, false, false, true);
 
         buildMojo.images = new ArrayList<>();
-
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target");
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
