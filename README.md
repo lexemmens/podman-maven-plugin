@@ -141,11 +141,11 @@ The example in XML below lists all the other configuration options that are poss
                     <labels>
                         <label-one>value-one</label-one>
                     </labels>
+
+                    <format>OCI</format>
                 </build>
             </image>
         </images>
-
-        <tlsVerify>FALSE</tlsVerify>
     </configuration>
 </plugin>
 ```
