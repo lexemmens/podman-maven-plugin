@@ -1,5 +1,6 @@
 package nl.lexemmens.podman.image;
 
+import nl.lexemmens.podman.enumeration.ContainerFormat;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -11,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
 public class BuildImageConfiguration {
 
@@ -62,6 +65,9 @@ public class BuildImageConfiguration {
      */
     @Parameter
     protected boolean createLatestTag;
+
+    @Parameter
+    protected ContainerFormat format;
 
     /**
      * Will be set when this class is validated using the #initAndValidate() method
@@ -158,6 +164,14 @@ public class BuildImageConfiguration {
     }
 
     /**
+     * Returns the format for the built image's manifest and configuration data.
+     * @return The format for the built image's manifest and configuration data
+     */
+    public ContainerFormat getFormat() {
+        return format;
+    }
+
+    /**
      * Validates this class by giving all null properties a default value.
      *
      * @param project The MavenProject used to derive some of the default values from.
@@ -175,6 +189,10 @@ public class BuildImageConfiguration {
 
         if (labels == null) {
             labels = new HashMap<>();
+        }
+
+        if(format == null) {
+            format = OCI;
         }
 
         this.mavenProjectVersion = project.getVersion();

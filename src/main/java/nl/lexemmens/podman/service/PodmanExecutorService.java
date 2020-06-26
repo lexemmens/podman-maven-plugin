@@ -22,6 +22,7 @@ import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
  */
 public class PodmanExecutorService {
 
+    private static final String BUILD_FORMAT_CMD = "--format=";
     private static final String SAVE_FORMAT_CMD = "--format=oci-archive";
     private static final String OUTPUT_CMD = "--output";
     private static final String DOCKERFILE_CMD = "--file=";
@@ -65,6 +66,7 @@ public class PodmanExecutorService {
      */
     public String build(ImageConfiguration image) throws MojoExecutionException {
         List<String> subCommand = new ArrayList<>();
+        subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
         subCommand.add(DOCKERFILE_CMD + image.getBuild().getTargetDockerfile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");

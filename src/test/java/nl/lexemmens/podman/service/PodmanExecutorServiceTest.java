@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;
+import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 import static nl.lexemmens.podman.enumeration.TlsVerify.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
@@ -157,7 +159,7 @@ public class PodmanExecutorServiceTest {
     }
 
     @Test
-    public void testBuild() throws MojoExecutionException {
+    public void testBuildOciFormat() throws MojoExecutionException {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
 
@@ -173,7 +175,29 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
+                delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildDockerFormat() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+                .setFormat(DOCKER)
+                .setDockerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=docker --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
                 delegate.getCommandAsString());
     }
 
@@ -190,6 +214,7 @@ public class PodmanExecutorServiceTest {
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setDockerfileDir("src/test/resources")
+                .setFormat(OCI)
                 .initAndValidate(mavenProject, log)
                 .build();
 
@@ -199,7 +224,7 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman --root=/some/custom/root/dir build --tls-verify=true --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
+        Assertions.assertEquals("podman --root=/some/custom/root/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
                 delegate.getCommandAsString());
     }
 

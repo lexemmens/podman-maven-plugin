@@ -1,5 +1,6 @@
 package nl.lexemmens.podman.image;
 
+import nl.lexemmens.podman.enumeration.ContainerFormat;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -56,6 +57,11 @@ public class TestImageConfigurationBuilder {
 
     public TestImageConfigurationBuilder setCreateLatestTag(boolean createLatestTag) {
         image.build.createLatestTag = createLatestTag;
+        return this;
+    }
+
+    public TestImageConfigurationBuilder setFormat(ContainerFormat format) {
+        image.build.format = format;
         return this;
     }
 
