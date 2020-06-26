@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -74,6 +75,30 @@ public class BuildMojoTest extends AbstractMojoTest {
         buildMojo.execute();
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Building container images is skipped."));
+    }
+
+    @Test
+    public void testBuildWithoutConfigThrowsException() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        configureMojo(podman, null, true, false, false, true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
+    }
+
+    @Test
+    public void testBuildWithEmptyConfigsThrowsException() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        configureMojo(podman, null, true, false, false, true);
+
+        buildMojo.images = new ArrayList<>();
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
 
     @Test
@@ -305,7 +330,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         buildMojo.skipBuild = skipBuild;
         buildMojo.skipAuth = skipAuth;
         buildMojo.skipTag = skipTag;
-        buildMojo.images = List.of(image);
+        buildMojo.images = image == null ? null : List.of(image);
         buildMojo.pushRegistry = "registry.example.com";
     }
 }
