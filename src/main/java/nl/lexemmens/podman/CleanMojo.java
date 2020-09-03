@@ -9,7 +9,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 /**
  * BuildMojo for building container images using Podman
  */
-@Mojo(name = "clean", defaultPhase = LifecyclePhase.CLEAN)
+@Mojo(name = "clean", defaultPhase = LifecyclePhase.PRE_CLEAN)
 public class CleanMojo extends AbstractPodmanMojo {
 
     /**
