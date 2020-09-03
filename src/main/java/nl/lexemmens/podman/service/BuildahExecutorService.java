@@ -59,7 +59,8 @@ public class BuildahExecutorService {
         }
 
         List<String> subCommand = new ArrayList<>();
-        subCommand.add("rm -rf");
+        subCommand.add("rm");
+        subCommand.add("-rf");
         subCommand.add(podmanRoot.getAbsolutePath());
 
         runCommand(BuildahCommand.UNSHARE, subCommand);
@@ -84,10 +85,8 @@ public class BuildahExecutorService {
                 .command(fullCommand)
                 .readOutput(true)
                 .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
+                .redirectError(Slf4jStream.of(getClass().getSimpleName()).asError())
                 .exitValueNormal();
-
-        // Some processes print regular text on stderror, so make redirecting the error stream configurable.
-        processExecutor.redirectError(Slf4jStream.of(getClass().getSimpleName()).asError());
 
         return delegate.executeCommand(processExecutor);
     }
