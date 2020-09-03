@@ -174,10 +174,6 @@ public class PodmanExecutorService {
         runCommand(PodmanCommand.RMI, List.of(fullImageName));
     }
 
-    public void cleanupLocalStorage(File root) {
-//        runCommand(BASE_DIR, true, );
-    }
-
     private List<String> decorateCommands(PodmanCommand podmanCommand, List<String> subCommands) {
         List<String> fullCommand = new ArrayList<>();
         fullCommand.add(PodmanCommand.PODMAN.getCommand());

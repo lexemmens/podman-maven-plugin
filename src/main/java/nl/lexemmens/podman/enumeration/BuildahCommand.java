@@ -1,9 +1,9 @@
 package nl.lexemmens.podman.enumeration;
 
-public enum BuildahCommand implements Command {
+public enum BuildahCommand {
 
     BUILDAH("buildah"),
-    UNSHARE("ushare");
+    UNSHARE("unshare");
 
     private String command;
 
@@ -11,7 +11,6 @@ public enum BuildahCommand implements Command {
         this.command = command;
     }
 
-    @Override
     public String getCommand() {
         return command;
     }

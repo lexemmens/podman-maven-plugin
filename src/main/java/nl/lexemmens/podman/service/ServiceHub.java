@@ -16,6 +16,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 public class ServiceHub {
 
     private final PodmanExecutorService podmanExecutorService;
+    private final BuildahExecutorService buildahExecutorService;
     private final DockerfileDecorator dockerfileDecorator;
     private final AuthenticationService authenticationService;
 
@@ -33,6 +34,7 @@ public class ServiceHub {
      */
     ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
         this.podmanExecutorService = new PodmanExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
+        this.buildahExecutorService = new BuildahExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
         this.dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
         this.authenticationService = new AuthenticationService(log, podmanExecutorService, mavenSettings, settingsDecrypter);
     }
@@ -62,5 +64,14 @@ public class ServiceHub {
      */
     public PodmanExecutorService getPodmanExecutorService() {
         return podmanExecutorService;
+    }
+
+    /**
+     * Returns a reference to the {@link BuildahExecutorService}
+     *
+     * @return The {@link BuildahExecutorService}
+     */
+    public BuildahExecutorService getBuildahExecutorService() {
+        return buildahExecutorService;
     }
 }
