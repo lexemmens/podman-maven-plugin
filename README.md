@@ -31,7 +31,13 @@ NOTE: This Plugin only works when a Dockerfile is in your module's folder. You c
 | -------------------------------------------------| -------------------------- | ----------------------- |
 | `podman:build`                                   | Build images               | install                 | 
 | `podman:push`                                    | Push images to a registry  | deploy                  |
+| `podman:clean`                                   | Clean up local storage     | clean                   |
 | `podman:save`                                    | Save image to a file       |                         |
+
+### Running the podman:clean command 
+To avoid accidental clearing of all container storage, the `podman:clean` command will only work when a custom root storage location has been configured (see usage section below).
+Also, as the order in which plugins run cannot be specified, when overriding Podman's root storage location, the `target` folder should not be used because it cannot be cleaned by the Maven clean plugin.
+The reason for this is that layers are stored under a different user id inaccessible by default.
 
 ## Usage
 The plugin is available via Maven Central and can be used as follows:
@@ -101,6 +107,7 @@ The following command line parameters are supported by this plugin. It is also p
 | skipBuild                 | podman.skip.build              | Boolean | N        | `podman:build`                               | false              | Skip building container image |
 | skipTag                   | podman.skip.tag                | Boolean | N        | `podman:build`                               | false              | Skip tagging container image after build |
 | skipPush                  | podman.skip.push               | Boolean | N        | `podman:push`                                | false              | Will skip pushing the container image to the `targetRegistry` |
+| skipCleanStorage          | podman.skip.clean.storage      | Boolean | N        | `podman:clean                                | false              | Will cleanup local container storage if custom root storage location is set |
 | deleteLocalImageAfterPush | podman.image.delete.after.push | Boolean | N        | `podman:push`                                | false              | Will delete the final image from the local registry. **NOTE:** All other pulled images (such as base images) will continue to exist. |
 | skipSave                  | podman.skip.save               | Boolean | N        | `podman:save`                                | false              | Will skip saving the container image |
 | skipAuth                  | podman.skip.auth               | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip registry authentication check at the beginning. **NOTE:** This may cause access denied errors when building, pushing or saving container images. |
