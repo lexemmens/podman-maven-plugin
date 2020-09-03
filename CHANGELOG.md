@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.8.0 (xx-09-2020)
+#### Improvements
+* Added clean phase that allows cleaning up the local storage. This only works when the root storage location is configured in the pom file and when the storage is not located in the target folder. See `README.md` for more information.
+
 ### 0.7.0 (26-06-2020)
 #### Bugs
 * Fixed a NullPointerException that occurred when no image configuration was present in the pom. A normal exception with more information is now raised instead.

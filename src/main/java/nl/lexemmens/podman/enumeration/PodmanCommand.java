@@ -1,6 +1,6 @@
 package nl.lexemmens.podman.enumeration;
 
-public enum PodmanCommand {
+public enum PodmanCommand implements Command {
 
     PODMAN("podman"),
     LOGIN("login"),
@@ -16,6 +16,7 @@ public enum PodmanCommand {
         this.command = command;
     }
 
+    @Override
     public String getCommand() {
         return command;
     }
