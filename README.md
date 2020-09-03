@@ -34,11 +34,6 @@ NOTE: This Plugin only works when a Dockerfile is in your module's folder. You c
 | `podman:clean`                                   | Clean up local storage     | clean                   |
 | `podman:save`                                    | Save image to a file       |                         |
 
-### Running the podman:clean command 
-To avoid accidental clearing of all container storage, the `podman:clean` command will only work when a custom root storage location has been configured (see usage section below).
-Also, as the order in which plugins run cannot be specified, when overriding Podman's root storage location, the `target` folder should not be used because it cannot be cleaned by the Maven clean plugin.
-The reason for this is that layers are stored under a different user id inaccessible by default.
-
 ## Usage
 The plugin is available via Maven Central and can be used as follows:
 
