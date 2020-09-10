@@ -22,6 +22,7 @@ public class ServiceHubFactory {
      * </p>
      *
      * @param log               Access to Maven's log system
+     * @param mavenProject      Reference to the current Maven Project.
      * @param mavenFileFilter   Access to Maven's file filtering service
      * @param podmanConfig      Holds global configuration for Podman
      * @param mavenSettings     Access to the Maven Settings
