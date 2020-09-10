@@ -7,20 +7,21 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * BuildMojo for building container images using Podman
+ * CleanMojo for building container images using Podman. This Mojo *must* run
+ * during the pre-clean phase, when Podman's root storage location is set to be in the target directory.
  */
 @Mojo(name = "clean", defaultPhase = LifecyclePhase.PRE_CLEAN)
 public class CleanMojo extends AbstractPodmanMojo {
 
     /**
-     * Indicates if building container images should be skipped
+     * Indicates if cleaning container images should be skipped
      */
     @Parameter(property = "podman.skip.clean.storage", defaultValue = "false")
-    boolean skipCleanStorage;
+    boolean skipClean;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if (skipCleanStorage) {
+        if (skipClean) {
             getLog().info("Cleaning local storage is skipped.");
             return;
         }
