@@ -78,6 +78,8 @@ public class CleanMojoTest extends AbstractMojoTest {
         cleanMojo.execute();
 
         verify(log, times(1)).info(Mockito.eq("Cleaning up " + customRoot.getAbsolutePath() + "..."));
+        verify(serviceHub, times(1)).getBuildahExecutorService();
+        verify(buildahExecutorService, times(1)).cleanupLocalContainerStorage();
     }
 
     private void configureMojo(boolean skipAll, boolean skipClean, File customRoot) {
@@ -92,7 +94,6 @@ public class CleanMojoTest extends AbstractMojoTest {
         cleanMojo.skip = skipAll;
         cleanMojo.skipAuth = true;
         cleanMojo.skipClean = skipClean;
-//        cleanMojo.pushRegistry = pushRegistry;
         cleanMojo.images = images;
     }
 }
