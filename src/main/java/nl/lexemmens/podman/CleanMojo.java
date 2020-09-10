@@ -26,7 +26,7 @@ public class CleanMojo extends AbstractPodmanMojo {
             return;
         }
 
-        if(podman.getRoot() == null) {
+        if (podman.getRoot() == null) {
             getLog().info("Not cleaning up local storage as default storage location is being used.");
         } else {
             getLog().info("Cleaning up " + podman.getRoot().getAbsolutePath() + "...");

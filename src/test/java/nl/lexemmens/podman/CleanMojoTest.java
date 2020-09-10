@@ -66,7 +66,9 @@ public class CleanMojoTest extends AbstractMojoTest {
 
     @Test
     public void testCleanWithCustomRoot() throws MojoExecutionException {
-        configureMojo(false, false, new File(""));
+        File customRoot = new File("");
+
+        configureMojo(false, false, customRoot);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -75,7 +77,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Cleaning up /home/lexemmens/Projects/podman-maven-plugin..."));
+        verify(log, times(1)).info(Mockito.eq("Cleaning up " + customRoot.getAbsolutePath() + "..."));
     }
 
     private void configureMojo(boolean skipAll, boolean skipClean, File customRoot) {
