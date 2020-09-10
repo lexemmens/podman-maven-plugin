@@ -2,7 +2,7 @@
 
 ### 0.8.0 (xx-09-2020)
 #### Improvements
-* Added clean phase that allows cleaning up the local storage. This only works when the root storage location is configured in the pom file to prevent deleting unrelated files.
+* Added clean phase that allows cleaning up the local storage. This only works when the root storage location is configured in the pom file to prevent accidentally deleting unrelated files.
 
 ### 0.7.0 (26-06-2020)
 #### Bugs

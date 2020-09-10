@@ -16,7 +16,7 @@ public class CleanMojo extends AbstractPodmanMojo {
     /**
      * Indicates if cleaning container images should be skipped
      */
-    @Parameter(property = "podman.skip.clean.storage", defaultValue = "false")
+    @Parameter(property = "podman.skip.clean", defaultValue = "false")
     boolean skipClean;
 
     @Override

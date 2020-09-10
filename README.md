@@ -102,7 +102,7 @@ The following command line parameters are supported by this plugin. It is also p
 | skipBuild                 | podman.skip.build              | Boolean | N        | `podman:build`                               | false              | Skip building container image |
 | skipTag                   | podman.skip.tag                | Boolean | N        | `podman:build`                               | false              | Skip tagging container image after build |
 | skipPush                  | podman.skip.push               | Boolean | N        | `podman:push`                                | false              | Will skip pushing the container image to the `targetRegistry` |
-| skipCleanStorage          | podman.skip.clean.storage      | Boolean | N        | `podman:clean                                | false              | Will cleanup local container storage if custom root storage location is set |
+| skipClean                 | podman.skip.clean              | Boolean | N        | `podman:clean`                               | false              | Will cleanup local container storage if custom root storage location is set |
 | deleteLocalImageAfterPush | podman.image.delete.after.push | Boolean | N        | `podman:push`                                | false              | Will delete the final image from the local registry. **NOTE:** All other pulled images (such as base images) will continue to exist. |
 | skipSave                  | podman.skip.save               | Boolean | N        | `podman:save`                                | false              | Will skip saving the container image |
 | skipAuth                  | podman.skip.auth               | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip registry authentication check at the beginning. **NOTE:** This may cause access denied errors when building, pushing or saving container images. |
@@ -159,6 +159,12 @@ The tables below explains the global configuration options for podman that were 
 |--------------------------|---------|----------|--------------------|-------------|
 | tlsVerify                | Boolean | N        | -                  | Allows explicit control of TLS Verification |
 | root                     | String  | N        | -                  | Controls the storage location that Podman should use when building containers |
+
+###### Note on setting a custom root storage location
+When using a custom root storage location for Podman, please be aware that it is mandatory to configure the `clean` mojo, if the custom Podman
+storage location is set to be the target directory. This has to do with Podman storing its containers and layers under a different user id, related 
+to the current user. This prevents a user from (accidentally) deleting these files. As a result, the `mvn clean` goal will fail if this plugin's `clean` mojo is not invoked first.
+The `clean` mojo of this plugin will effectively call a `buildah unshare rm -rf` on the custom storage location.
 
 ##### Image Configuration Options
 The tables below explains the configuration options for container images that were used in the example above:
