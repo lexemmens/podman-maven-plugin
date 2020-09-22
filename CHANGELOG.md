@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.9.0 (22-09-2020)
+#### Improvements
+* Added configuration of the `--runroot` setting, which is used by Podman to store its state information.
+
 ### 0.8.0 (xx-09-2020)
 #### Improvements
 * Added clean phase that allows cleaning up the local storage. This only works when the root storage location is configured in the pom file to prevent accidentally deleting unrelated files.
