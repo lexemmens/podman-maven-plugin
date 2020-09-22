@@ -52,6 +52,7 @@ The plugin is available via Maven Central and can be used as follows:
         <podman>
             <tlsVerify>true</tlsVerify>   
             <root>/path/to/a/folder</root>   
+            <runroot>/path/to/a/folder</runroot>   
         </podman>
         <build>
             <name>your/image/name</name>
@@ -122,6 +123,7 @@ The example in XML below lists all the other configuration options that are poss
         <podman>
             <tlsVerify>NOT_SPEFICIED</tlsVerify>    
             <root>/path/to/a/folder</root>    
+            <runroot>/path/to/a/folder</runroot>    
         </podman>
 
         <images>
@@ -159,6 +161,7 @@ The tables below explains the global configuration options for podman that were 
 |--------------------------|---------|----------|--------------------|-------------|
 | tlsVerify                | Boolean | N        | -                  | Allows explicit control of TLS Verification |
 | root                     | String  | N        | -                  | Controls the storage location that Podman should use when building containers |
+| runroot                  | String  | N        | -                  | Controls the storage location that Podman should use to store its state information when building containers |
 
 ###### Note on setting a custom root storage location
 When using a custom root storage location for Podman, please be aware that it is mandatory to configure the `clean` mojo, if the custom Podman
