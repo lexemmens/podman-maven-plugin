@@ -28,6 +28,7 @@ public class PodmanExecutorService {
     private static final String DOCKERFILE_CMD = "--file=";
     private static final String NO_CACHE_CMD = "--no-cache=";
     private static final String ROOT_CMD = "--root=";
+    private static final String RUNROOT_CMD = "--runroot=";
 
     private static final File BASE_DIR = new File(".");
 
@@ -35,6 +36,7 @@ public class PodmanExecutorService {
     private final TlsVerify tlsVerify;
     private final CommandExecutorDelegate delegate;
     private final File podmanRoot;
+    private final File podmanRunRoot;
 
 
     /**
@@ -49,6 +51,7 @@ public class PodmanExecutorService {
         this.delegate = delegate;
         this.tlsVerify = podmanConfig.getTlsVerify();
         this.podmanRoot = podmanConfig.getRoot();
+        this.podmanRunRoot = podmanConfig.getRunRoot();
     }
 
     /**
@@ -181,6 +184,10 @@ public class PodmanExecutorService {
         // Path to the root directory in which data, including images, is stored. Must be *before* build, push or any other operation
         if (podmanRoot != null) {
             fullCommand.add(ROOT_CMD + podmanRoot.getAbsolutePath());
+        }
+
+        if (podmanRunRoot != null) {
+            fullCommand.add(RUNROOT_CMD + podmanRunRoot.getAbsolutePath());
         }
 
         fullCommand.add(podmanCommand.getCommand());

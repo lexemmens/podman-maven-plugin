@@ -22,10 +22,22 @@ public class PodmanConfiguration {
     protected TlsVerify tlsVerify;
 
     /**
-     * Podman's root directory
+     * Podman's root directory.
+     * <p>
+     * Storage root dir in which data, including images, is stored (default: “/var/lib/containers/storage” for UID 0,
+     * “$HOME/.local/share/containers/storage” for other users). Default root dir configured in /etc/containers/storage.conf.
      */
     @Parameter(property = "podman.root")
     protected File root;
+
+    /**
+     * Podman's root directory for state information.
+     * <p>
+     * Storage state directory where all state information is stored (default: “/var/run/containers/storage” for UID 0,
+     * “/var/run/user/$UID/run” for other users). Default state dir configured in /etc/containers/storage.conf.
+     */
+    @Parameter(property = "podman.run.root")
+    protected File runRoot;
 
     /**
      * Constructor
@@ -53,6 +65,15 @@ public class PodmanConfiguration {
     }
 
     /**
+     * Returns the runroot directory that Podman should use for saving state information
+     *
+     * @return Podman's runroot directory
+     */
+    public File getRunRoot() {
+        return runRoot;
+    }
+
+    /**
      * Validates and initializes this configuration
      *
      * @param log Access to Maven's log system for informational purposes.
@@ -69,7 +90,13 @@ public class PodmanConfiguration {
         if (root == null) {
             log.debug("Using Podman's default settings for --root.");
         } else {
-            log.info("Setting Podman's root directory to: " + root.getAbsolutePath());
+            log.info("Setting Podman's 'root' directory to: " + root.getAbsolutePath());
+        }
+
+        if (runRoot == null) {
+            log.debug("Using Podman's default settings for --runroot.");
+        } else {
+            log.info("Setting Podman's 'runroot' directory to: " + runRoot.getAbsolutePath());
         }
     }
 }

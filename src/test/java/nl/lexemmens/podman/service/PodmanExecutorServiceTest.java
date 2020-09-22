@@ -228,6 +228,61 @@ public class PodmanExecutorServiceTest {
                 delegate.getCommandAsString());
     }
 
+    @Test
+    public void testBuildWithCustomRunRootDir() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .setRunRoot(new File("/some/custom/runroot/dir"))
+                .initAndValidate(log)
+                .build();
+
+        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+                .setDockerfileDir("src/test/resources")
+                .setFormat(OCI)
+                .initAndValidate(mavenProject, log)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
+                delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildWithCustomRootAndRunRootDir() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .setRoot(new File("/some/custom/root/dir"))
+                .setRunRoot(new File("/some/custom/runroot/dir"))
+                .initAndValidate(log)
+                .build();
+
+        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+                .setDockerfileDir("src/test/resources")
+                .setFormat(OCI)
+                .initAndValidate(mavenProject, log)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman --root=/some/custom/root/dir --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetDockerfile() + " --no-cache=false .",
+                delegate.getCommandAsString());
+    }
+
 
     private static class InterceptorCommandExecutorDelegate implements CommandExecutorDelegate {
 
