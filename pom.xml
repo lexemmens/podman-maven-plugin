@@ -6,7 +6,7 @@
 
     <groupId>nl.lexemmens</groupId>
     <artifactId>podman-maven-plugin</artifactId>
-    <version>1.0.0-alpha2-SNAPSHOT</version>
+    <version>1.0.0-alpha1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Podman Maven Plugin</name>
