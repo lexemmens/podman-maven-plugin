@@ -25,7 +25,7 @@ public class BuildImageConfiguration {
      * This is the regular expression to be used to determine a multistage Containerfiles. For now we only support
      * named stages.
      */
-    private static final Pattern MULTISTAGE_DOCKERFILE_REGEX = Pattern.compile(".*(FROM\\s.*)([ASas]\\s)([a-zA-Z].*)");
+    private static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile(".*(FROM\\s.*)([ASas]\\s)([a-zA-Z].*)");
 
     /**
      * The default name of the Containerfile to build.
@@ -147,8 +147,8 @@ public class BuildImageConfiguration {
      * @return A {@link File} object referencing the location of the Dockerfile
      */
     public Path getSourceContainerFileDir() {
-        Path dockerFileDirPath = Paths.get(containerFileDir.toURI());
-        return dockerFileDirPath.resolve(containerFile);
+        Path containerFileDirPath = Paths.get(containerFileDir.toURI());
+        return containerFileDirPath.resolve(containerFile);
     }
 
     /**
@@ -221,8 +221,8 @@ public class BuildImageConfiguration {
      * Returns the Pattern that is used to determine if a line matches a multi-stage Containerfile
      * @return The pattern to determine if a line matches the expected pattern for a multi-stage Containerfile.
      */
-    public Pattern getMultistageDockerfileRegex() {
-        return MULTISTAGE_DOCKERFILE_REGEX;
+    public Pattern getMultistageContainerfileRegex() {
+        return MULTISTAGE_CONTAINERFILE_REGEX;
     }
 
     /**
@@ -268,9 +268,9 @@ public class BuildImageConfiguration {
         determineBuildStages(log, sourceContainerFile);
     }
 
-    private boolean isContainerFileEmpty(Log log, Path fullDockerFilePath) throws MojoExecutionException {
+    private boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         try {
-            return 0 == Files.size(fullDockerFilePath);
+            return 0 == Files.size(fullContainerFilePath);
         } catch (IOException e) {
             String msg = "Unable to determine if Containerfile is empty.";
             log.error(msg, e);
@@ -282,7 +282,7 @@ public class BuildImageConfiguration {
         try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
             List<String> content = containerFileStream.collect(Collectors.toList());
             for(String line : content) {
-                Matcher matcher = MULTISTAGE_DOCKERFILE_REGEX.matcher(line);
+                Matcher matcher = MULTISTAGE_CONTAINERFILE_REGEX.matcher(line);
                 if(matcher.find()) {
                     isMultistageContainerFile = true;
 

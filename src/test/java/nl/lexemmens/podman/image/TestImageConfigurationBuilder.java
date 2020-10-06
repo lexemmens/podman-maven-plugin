@@ -28,14 +28,14 @@ public class TestImageConfigurationBuilder {
         return this;
     }
 
-    public TestImageConfigurationBuilder setDockerfile(String dockerfile) {
-        image.build.containerFile = dockerfile;
+    public TestImageConfigurationBuilder setContainerfile(String containerfile) {
+        image.build.containerFile = containerfile;
         return this;
     }
 
-    public TestImageConfigurationBuilder setDockerfileDir(String dockerfileDir) {
-        if(dockerfileDir != null) {
-            image.build.containerFileDir = new File(dockerfileDir);
+    public TestImageConfigurationBuilder setContainerfileDir(String containerfileDir) {
+        if(containerfileDir != null) {
+            image.build.containerFileDir = new File(containerfileDir);
         }
         return this;
     }

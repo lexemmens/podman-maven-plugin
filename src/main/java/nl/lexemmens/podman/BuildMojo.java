@@ -43,7 +43,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         checkAuthentication(hub);
 
         for(ImageConfiguration image : images) {
-            decorateDockerFile(image, hub);
+            decorateContainerfile(image, hub);
             buildContainerImage(image, hub);
             tagContainerImage(image, hub);
 
@@ -51,9 +51,9 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void decorateDockerFile(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void decorateContainerfile(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().debug("Filtering Dockerfile...");
-        hub.getDockerfileDecorator().decorateDockerfile(image);
+        hub.getContainerfileDecorator().decorateContainerfile(image);
     }
 
     private void buildContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
@@ -74,7 +74,7 @@ public class BuildMojo extends AbstractPodmanMojo {
 
     private void detemineImageHashes(ImageConfiguration image, List<String> processOutput, String finalImageHash) {
         // Use size -2 as the last line is the image hash of the final image, which we already captured before.
-        Pattern pattern = image.getBuild().getMultistageDockerfileRegex();
+        Pattern pattern = image.getBuild().getMultistageContainerfileRegex();
         getLog().debug("Using regular expression: " + pattern);
         boolean firstOccurrenceFound = false;
 

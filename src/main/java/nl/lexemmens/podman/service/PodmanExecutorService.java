@@ -25,7 +25,7 @@ public class PodmanExecutorService {
     private static final String BUILD_FORMAT_CMD = "--format=";
     private static final String SAVE_FORMAT_CMD = "--format=oci-archive";
     private static final String OUTPUT_CMD = "--output";
-    private static final String DOCKERFILE_CMD = "--file=";
+    private static final String CONTAINERFILE_CMD = "--file=";
     private static final String NO_CACHE_CMD = "--no-cache=";
     private static final String ROOT_CMD = "--root=";
     private static final String RUNROOT_CMD = "--runroot=";
@@ -70,7 +70,7 @@ public class PodmanExecutorService {
     public List<String> build(ImageConfiguration image) throws MojoExecutionException {
         List<String> subCommand = new ArrayList<>();
         subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
-        subCommand.add(DOCKERFILE_CMD + image.getBuild().getTargetContainerFile());
+        subCommand.add(CONTAINERFILE_CMD + image.getBuild().getTargetContainerFile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 

@@ -170,7 +170,7 @@ public class PushMojoTest extends AbstractMojoTest {
         ImageConfiguration image = new TestImageConfigurationBuilder(name)
                 .setTags(tags)
                 .setUseMavenProjectVersion(useMavenProjectVersion)
-                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
 
         pushMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();

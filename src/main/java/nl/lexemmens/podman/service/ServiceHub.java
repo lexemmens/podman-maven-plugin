@@ -17,7 +17,7 @@ public class ServiceHub {
 
     private final PodmanExecutorService podmanExecutorService;
     private final BuildahExecutorService buildahExecutorService;
-    private final DockerfileDecorator dockerfileDecorator;
+    private final ContainerfileDecorator containerfileDecorator;
     private final AuthenticationService authenticationService;
 
     /**
@@ -35,17 +35,17 @@ public class ServiceHub {
     ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
         this.podmanExecutorService = new PodmanExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
         this.buildahExecutorService = new BuildahExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
-        this.dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
+        this.containerfileDecorator = new ContainerfileDecorator(log, mavenFileFilter, mavenProject);
         this.authenticationService = new AuthenticationService(log, podmanExecutorService, mavenSettings, settingsDecrypter);
     }
 
     /**
      * Returns a reference to the FileFilterService class
      *
-     * @return The {@link DockerfileDecorator}
+     * @return The {@link ContainerfileDecorator}
      */
-    public DockerfileDecorator getDockerfileDecorator() {
-        return dockerfileDecorator;
+    public ContainerfileDecorator getContainerfileDecorator() {
+        return containerfileDecorator;
     }
 
     /**

@@ -32,7 +32,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
-public class DockerfileDecoratorTest {
+public class ContainerfileDecoratorTest {
 
     @Mock
     private Log log;
@@ -47,13 +47,13 @@ public class DockerfileDecoratorTest {
     private Build build;
 
 
-    private DockerfileDecorator dockerfileDecorator;
+    private ContainerfileDecorator containerfileDecorator;
 
     @Before
     public void setup() {
         initMocks(this);
 
-        dockerfileDecorator = new DockerfileDecorator(log, mavenFileFilter, mavenProject);
+        containerfileDecorator = new ContainerfileDecorator(log, mavenFileFilter, mavenProject);
     }
 
     @Test
@@ -63,10 +63,10 @@ public class DockerfileDecoratorTest {
         when(build.getDirectory()).thenReturn("target");
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log)
                 .build();
-        Assertions.assertThrows(MojoExecutionException.class, () -> dockerfileDecorator.decorateDockerfile(image));
+        Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
         verify(log, Mockito.times(1)).error(Mockito.eq("Failed to filter Containerfile! Some exception message!"), isA(MavenFilteringException.class));
@@ -78,10 +78,10 @@ public class DockerfileDecoratorTest {
         when(build.getDirectory()).thenReturn("target");
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log)
                 .build();
-        Assertions.assertDoesNotThrow(() -> dockerfileDecorator.decorateDockerfile(image));
+        Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("No labels to add to the Containerfile"));
         verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
@@ -97,11 +97,11 @@ public class DockerfileDecoratorTest {
         Files.copy(Paths.get("src/test/resources/Containerfile"), Paths.get("target/podman-test/Containerfile"));
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .setLabels(Map.of("testLabelKey", "testLabelValue"))
                 .initAndValidate(mavenProject, log)
                 .build();
-        Assertions.assertDoesNotThrow(() -> dockerfileDecorator.decorateDockerfile(image));
+        Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
 
@@ -121,11 +121,11 @@ public class DockerfileDecoratorTest {
         Files.copy(Paths.get("src/test/resources/Containerfile"), Paths.get("target/podman-test/Containerfile"));
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .setLabels(Map.of("testLabelKey", "testLabelValue"))
                 .initAndValidate(mavenProject, log)
                 .build();
-        Assertions.assertThrows(MojoExecutionException.class, () -> dockerfileDecorator.decorateDockerfile(image));
+        Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));
 
         verify(log, Mockito.times(1)).debug(eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
         verify(log, Mockito.times(1)).error(eq("Failed to add labels (LABEL testLabelKey=testLabelValue ) to Containerfile: " + image.getBuild().getTargetContainerFile()), isA(Exception.class));

@@ -165,7 +165,7 @@ public class PodmanExecutorServiceTest {
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log)
                 .build();
 
@@ -187,7 +187,7 @@ public class PodmanExecutorServiceTest {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setFormat(DOCKER)
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log)
                 .build();
 
@@ -213,7 +213,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log)
                 .build();
@@ -240,7 +240,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log)
                 .build();
@@ -268,7 +268,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
-                .setDockerfileDir("src/test/resources")
+                .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log)
                 .build();

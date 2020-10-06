@@ -103,7 +103,7 @@ public class SaveMojoTest extends AbstractMojoTest {
     private void configureMojo(boolean skipAll, boolean skipSave, String pushRegistry, boolean useMavenProjectVersion) {
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(useMavenProjectVersion)
-                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
 
         List<ImageConfiguration> images = List.of(image);
