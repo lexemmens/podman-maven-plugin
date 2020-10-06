@@ -68,11 +68,11 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         if(image.getBuild().isMultistageContainerFile()) {
             getLog().info("Detected multistage Containerfile...");
-            detemineImageHashes(image, processOutput);
+            detemineImageHashes(image, processOutput, finalImageHash);
         }
     }
 
-    private void detemineImageHashes(ImageConfiguration image, List<String> processOutput) {
+    private void detemineImageHashes(ImageConfiguration image, List<String> processOutput, String finalImageHash) {
         // Use size -2 as the last line is the image hash of the final image, which we already captured before.
         Pattern pattern = image.getBuild().getMultistageDockerfileRegex();
         getLog().debug("Using regular expression: " + pattern);
@@ -91,7 +91,7 @@ public class BuildMojo extends AbstractPodmanMojo {
                 firstOccurrenceFound = true;
                 currentStage = matcher.group(3);
 
-                getLog().info("Current stage: " + currentStage);
+                getLog().debug("Detected stage: " + currentStage);
             } else if (matches && currentStage != null) {
                 // If we find it again, it means we reached the end of the previous stage. Thus the hash
                 // must be on the previous line.
@@ -100,9 +100,10 @@ public class BuildMojo extends AbstractPodmanMojo {
 
                 // Save the current stage
                 currentStage = matcher.group(3);
+                getLog().debug("Detected stage: " + currentStage);
             } else if (i == processOutput.size() - 2) {
-                // Handle the last line
-                extractAndSaveImageHashFromLine(image, currentStage, currentLine);
+                getLog().debug("Detected last line. Using image hash of final image: " + finalImageHash);
+                image.getImageHashPerStage().put(currentStage, finalImageHash);
             }
         }
 
