@@ -67,15 +67,14 @@ public class PodmanExecutorService {
      * @return The last line of the build process, usually containing the image hash
      * @throws MojoExecutionException In case the container image could not be built.
      */
-    public String build(ImageConfiguration image) throws MojoExecutionException {
+    public List<String> build(ImageConfiguration image) throws MojoExecutionException {
         List<String> subCommand = new ArrayList<>();
         subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
-        subCommand.add(DOCKERFILE_CMD + image.getBuild().getTargetDockerfile());
+        subCommand.add(DOCKERFILE_CMD + image.getBuild().getTargetContainerFile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 
-        List<String> processOutput = runCommand(image.getBuild().getDockerFileDir(), false, PodmanCommand.BUILD, subCommand);
-        return processOutput.get(processOutput.size() - 1);
+        return runCommand(image.getBuild().getContainerFileDir(), false, PodmanCommand.BUILD, subCommand);
     }
 
     /**

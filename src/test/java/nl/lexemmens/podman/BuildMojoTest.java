@@ -108,7 +108,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 
         buildMojo.execute();
 
@@ -129,7 +129,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 
         Assertions.assertDoesNotThrow(() -> buildMojo.execute());
 
@@ -142,7 +142,7 @@ public class BuildMojoTest extends AbstractMojoTest {
     public void testBuildCustomDockerfileWithoutTag() throws MojoExecutionException, MavenFilteringException {
         PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
-                .setDockerfile("CustomDockerfile")
+                .setDockerfile("Containerfile")
                 .setDockerfileDir("src/test/resources/customdockerfile")
                 .build();
         configureMojo(podman, image, true, false, false, true);
@@ -152,7 +152,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76");
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 
         buildMojo.execute();
 
@@ -174,7 +174,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn("sha256:sampleimagehash");
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of("sha256:sampleimagehash"));
 
         buildMojo.execute();
 
@@ -198,7 +198,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn("sha256:sampleimagehash");
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of("sha256:sampleimagehash"));
 
         buildMojo.execute();
 
@@ -226,7 +226,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(imageHash);
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of(imageHash));
 
         buildMojo.execute();
 
@@ -256,7 +256,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getDockerfileDecorator()).thenReturn(dockerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(imageHash);
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(List.of(imageHash));
 
         buildMojo.execute();
 
@@ -298,7 +298,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(mavenProject.getBasedir()).thenReturn(new File("."));
         when(build.getDirectory()).thenReturn("target");
 
-        // No Dockerfile present at root level
+        // No Containerfile present at root level
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
 

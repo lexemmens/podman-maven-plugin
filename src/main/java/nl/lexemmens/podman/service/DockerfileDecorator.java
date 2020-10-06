@@ -82,18 +82,18 @@ public class DockerfileDecorator {
     }
 
     private void filterDockerfile(ImageConfiguration image) throws MojoExecutionException {
-        log.debug("Filtering Dockerfile. Source: " + image.getBuild().getSourceDockerfile() + ", target: " + image.getBuild().getTargetDockerfile());
+        log.debug("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile());
         try {
             MavenFileFilterRequest fileFilterRequest = new MavenFileFilterRequest();
             fileFilterRequest.setEncoding("UTF8");
             fileFilterRequest.setFiltering(true);
-            fileFilterRequest.setFrom(image.getBuild().getSourceDockerfile().toFile());
-            fileFilterRequest.setTo(image.getBuild().getTargetDockerfile().toFile());
+            fileFilterRequest.setFrom(image.getBuild().getSourceContainerFileDir().toFile());
+            fileFilterRequest.setTo(image.getBuild().getTargetContainerFile().toFile());
             fileFilterRequest.setMavenProject(mavenProject);
 
             mavenFileFilter.copyFile(fileFilterRequest);
         } catch (MavenFilteringException e) {
-            String msg = "Failed to filter Dockerfile! " + e.getMessage();
+            String msg = "Failed to filter Containerfile! " + e.getMessage();
             log.error(msg, e);
             throw new MojoExecutionException(msg, e);
         }
@@ -101,7 +101,7 @@ public class DockerfileDecorator {
 
     private void addLabelsToDockerfile(ImageConfiguration image) throws MojoExecutionException {
         if (image.getBuild().getLabels().isEmpty()) {
-            log.debug("No labels to add to the Dockerfile");
+            log.debug("No labels to add to the Containerfile");
             return;
         }
 
@@ -111,7 +111,7 @@ public class DockerfileDecorator {
         }
         String targetLabels = labelBuilder.toString();
 
-        try (Stream<String> dockerFileStream = Files.lines(image.getBuild().getTargetDockerfile())) {
+        try (Stream<String> dockerFileStream = Files.lines(image.getBuild().getTargetContainerFile())) {
             List<String> dockerFileContents = dockerFileStream.collect(Collectors.toList());
             List<String> targetDockerfileContents = new ArrayList<>();
 
@@ -126,9 +126,9 @@ public class DockerfileDecorator {
                 }
             }
 
-            Files.write(image.getBuild().getTargetDockerfile(), targetDockerfileContents, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(image.getBuild().getTargetContainerFile(), targetDockerfileContents, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
-            String msg = "Failed to add labels (" + targetLabels + ") to Dockerfile: " + e.getMessage();
+            String msg = "Failed to add labels (" + targetLabels + ") to Containerfile: " + e.getMessage();
             log.error(msg, e);
             throw new MojoExecutionException(msg, e);
         }

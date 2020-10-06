@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.10.0 (05-10-2020)
+* Renamed `Docker` to `Container` to be in line with Podman's naming conventions
+* Added basic support for multistage `Containerfile`s.
+ 
 ### 0.9.0 (22-09-2020)
 #### Improvements
 * Added configuration of the `--runroot` setting, which is used by Podman to store its state information.
