@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
@@ -278,8 +279,8 @@ public class BuildImageConfiguration {
     }
 
     private void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
-        try {
-            List<String> content = Files.lines(fullContainerFilePath).collect(Collectors.toList());
+        try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
+            List<String> content = containerFileStream.collect(Collectors.toList());
             for(String line : content) {
                 Matcher matcher = MULTISTAGE_DOCKERFILE_REGEX.matcher(line);
                 if(matcher.find()) {
