@@ -8,8 +8,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.util.Map;
-
 /**
  * PushMojo for pushing container images to a registry/repository
  */

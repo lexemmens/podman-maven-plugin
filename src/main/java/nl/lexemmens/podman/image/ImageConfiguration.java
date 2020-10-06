@@ -181,14 +181,8 @@ public class ImageConfiguration {
             throw new MojoExecutionException(msg);
         }
 
-        if(build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile && name == null) {
-            String msg = "Plugin is configured for multistage Containerfiles, but no image names have been configured. ";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        }
-
         if(build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
-            log.warn("Detected multistage Containerfile, but no custom image names per stage. Only tagging final image!");
+            log.warn("Detected multistage Containerfile, but there are no image names specified for (some of) these stages. Only tagging final image!");
         }
     }
 }
