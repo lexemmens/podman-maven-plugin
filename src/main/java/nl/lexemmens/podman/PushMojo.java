@@ -1,11 +1,14 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.StageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import java.util.Map;
 
 /**
  * PushMojo for pushing container images to a registry/repository
@@ -57,20 +60,41 @@ public class PushMojo extends AbstractPodmanMojo {
     private void pushContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Pushing container images to registry ...");
 
-        // The image configuration cannot produce an empty list of image names.
+        if(image.getBuild().isMultistageContainerFile() && image.isCustomImageNameForMultiStageContainerfile()) {
+            for (StageConfiguration stage : image.getStages()) {
+                for(String imageNameWithTag : image.getImageNamesByStage(stage.getName())) {
+                    String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
+                    doPushContainerImage(hub, fullImageName);
+                }
+            }
+        } else if (image.getBuild().isMultistageContainerFile()) {
+            getLog().warn("Detected multistage Containerfile, but no custom image names have been specified. Falling back to pushing final image.");
+
+            // The image configuration cannot produce an empty list of image names.
+            pushRegularContainerImage(image, hub);
+        } else {
+            // The image configuration cannot produce an empty list of image names.
+            pushRegularContainerImage(image, hub);
+        }
+    }
+
+    private void pushRegularContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         for (String imageNameWithTag : image.getImageNames()) {
             String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
-
-            getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
-
-            hub.getPodmanExecutorService().push(fullImageName);
-
-            if (deleteLocalImageAfterPush) {
-                getLog().info("Removing image " + fullImageName + " from the local repository");
-                hub.getPodmanExecutorService().removeLocalImage(fullImageName);
-            }
-
-            getLog().info("Successfully pushed container image " + fullImageName + " to " + pushRegistry);
+            doPushContainerImage(hub, fullImageName);
         }
+    }
+
+    private void doPushContainerImage(ServiceHub hub, String fullImageName) throws MojoExecutionException {
+        getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
+
+        hub.getPodmanExecutorService().push(fullImageName);
+
+        if (deleteLocalImageAfterPush) {
+            getLog().info("Removing image " + fullImageName + " from the local repository");
+            hub.getPodmanExecutorService().removeLocalImage(fullImageName);
+        }
+
+        getLog().info("Successfully pushed container image " + fullImageName + " to " + pushRegistry);
     }
 }
