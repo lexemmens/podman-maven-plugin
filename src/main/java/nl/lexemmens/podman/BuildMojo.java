@@ -52,7 +52,7 @@ public class BuildMojo extends AbstractPodmanMojo {
     }
 
     private void decorateContainerfile(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
-        getLog().debug("Filtering Dockerfile...");
+        getLog().info("Filtering Containerfile...");
         hub.getContainerfileDecorator().decorateContainerfile(image);
     }
 
@@ -68,13 +68,13 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         if(image.getBuild().isMultistageContainerFile()) {
             getLog().info("Detected multistage Containerfile...");
-            detemineImageHashes(image, processOutput, finalImageHash);
+            determineImageHashes(image, processOutput, finalImageHash);
         }
     }
 
-    private void detemineImageHashes(ImageConfiguration image, List<String> processOutput, String finalImageHash) {
+    private void determineImageHashes(ImageConfiguration image, List<String> processOutput, String finalImageHash) {
         // Use size -2 as the last line is the image hash of the final image, which we already captured before.
-        Pattern pattern = image.getBuild().getMultistageContainerfileRegex();
+        Pattern pattern = image.getBuild().getMultistageContainerfilePattern();
         getLog().debug("Using regular expression: " + pattern);
         boolean firstOccurrenceFound = false;
 
@@ -86,29 +86,30 @@ public class BuildMojo extends AbstractPodmanMojo {
 
             getLog().debug("Processing line: '" + currentLine + "', matches: " + matches);
 
-            if(matches && !firstOccurrenceFound) {
-                // First occurrence
-                firstOccurrenceFound = true;
-                currentStage = matcher.group(3);
+            if(matches) {
+                boolean isFirstStage = currentStage == null;
 
-                getLog().debug("Detected stage: " + currentStage);
-            } else if (matches && currentStage != null) {
-                // If we find it again, it means we reached the end of the previous stage. Thus the hash
-                // must be on the previous line.
-                String lineContainingImageHash = processOutput.get(i - 1);
-                extractAndSaveImageHashFromLine(image, currentStage, lineContainingImageHash);
+                if(isFirstStage) {
+                    currentStage = matcher.group(3);
 
-                // Save the current stage
-                currentStage = matcher.group(3);
-                getLog().debug("Detected stage: " + currentStage);
+                    getLog().debug("Initial detection of a stage in Containerfile. Stage: " + currentStage);
+                } else {
+                    // If we have found a new stage, it means we reached the end of the previous stage. Thus the hash corresponding to the
+                    // must be on the previous line.
+                    String lineContainingImageHash = processOutput.get(i - 1);
+                    extractAndSaveImageHashFromLine(image, currentStage, lineContainingImageHash);
+
+                    // Save the current stage
+                    currentStage = matcher.group(3);
+                    getLog().debug("Found new stage in Containerfile: " + currentStage);
+                }
             } else if (i == processOutput.size() - 2) {
-                getLog().debug("Detected last line. Using image hash of final image: " + finalImageHash);
+                getLog().info("Using image hash of final image (" + finalImageHash + ") for stage: " + currentStage);
                 image.getImageHashPerStage().put(currentStage, finalImageHash);
             }
         }
 
-
-        getLog().info("Collected hashes: " + image.getImageHashPerStage());
+        getLog().debug("Collected hashes: " + image.getImageHashPerStage());
     }
 
     private void extractAndSaveImageHashFromLine(ImageConfiguration image, String currentStage, String lineContainingImageHash) {
@@ -117,7 +118,7 @@ public class BuildMojo extends AbstractPodmanMojo {
             getLog().info("Found image hash " + imageHash.get() + " for stage " + currentStage);
             image.getImageHashPerStage().put(currentStage, imageHash.get());
         } else {
-            getLog().warn("Failed to determine image for stage " + currentStage);
+            getLog().warn("Failed to determine image hash for stage " + currentStage);
         }
     }
 
@@ -142,7 +143,7 @@ public class BuildMojo extends AbstractPodmanMojo {
             return;
         }
 
-        if(image.getBuild().isMultistageContainerFile() && image.isCustomImageNameForMultiStageContainerfile()) {
+        if(image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
             for(Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
                 for(String imageName : image.getImageNamesByStage(stageImage.getKey())) {
                     String fullImageName = getFullImageNameWithPushRegistry(imageName);

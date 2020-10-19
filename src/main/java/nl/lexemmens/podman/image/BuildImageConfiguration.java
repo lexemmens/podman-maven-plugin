@@ -221,7 +221,7 @@ public class BuildImageConfiguration {
      * Returns the Pattern that is used to determine if a line matches a multi-stage Containerfile
      * @return The pattern to determine if a line matches the expected pattern for a multi-stage Containerfile.
      */
-    public Pattern getMultistageContainerfileRegex() {
+    public Pattern getMultistageContainerfilePattern() {
         return MULTISTAGE_CONTAINERFILE_REGEX;
     }
 

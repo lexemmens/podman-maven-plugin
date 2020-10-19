@@ -58,7 +58,7 @@ public class PushMojo extends AbstractPodmanMojo {
     private void pushContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Pushing container images to registry ...");
 
-        if(image.getBuild().isMultistageContainerFile() && image.isCustomImageNameForMultiStageContainerfile()) {
+        if(image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
             for (StageConfiguration stage : image.getStages()) {
                 for(String imageNameWithTag : image.getImageNamesByStage(stage.getName())) {
                     String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);

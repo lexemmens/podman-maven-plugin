@@ -102,7 +102,7 @@ public class ImageConfiguration {
      * Returns whether a custom image name per stage should be used (when using a multistage Containerfile).
      * @return true when certain stages in a multistage Containerfile should have unique names.
      */
-    public boolean isCustomImageNameForMultiStageContainerfile() {
+    public boolean useCustomImageNameForMultiStageContainerfile() {
         return customImageNameForMultiStageContainerfile;
     }
 
