@@ -3,7 +3,8 @@
 ### 1.0.0 (20-10-2020)
 #### Improvements
 * Renamed `Docker` to `Container` to be in line with Podman's naming conventions. This is a breaking change, please update your configuration.
-* Added basic support for multistage `Containerfile`s. Please refer to documentation for the exact configuration.
+* Added basic support for multistage `Containerfile`s to the build and push mojo's. Please refer to documentation for the exact configuration.
+    * The SaveMojo will most likely follow later. 
  
 ### 0.9.0 (22-09-2020)
 #### Improvements

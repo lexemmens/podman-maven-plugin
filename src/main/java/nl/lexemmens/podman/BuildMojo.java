@@ -76,7 +76,6 @@ public class BuildMojo extends AbstractPodmanMojo {
         // Use size -2 as the last line is the image hash of the final image, which we already captured before.
         Pattern pattern = image.getBuild().getMultistageContainerfilePattern();
         getLog().debug("Using regular expression: " + pattern);
-        boolean firstOccurrenceFound = false;
 
         String currentStage = null;
         for(int i = 0; i <= processOutput.size() - 2; i++) {
