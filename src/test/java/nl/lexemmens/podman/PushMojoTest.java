@@ -217,16 +217,6 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testMultiStagePushOnlyFinalImage() throws MojoExecutionException, IOException, URISyntaxException {
-        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
-        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
-
-        List<String> buildOutputUnderTest = null;
-        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
-            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
-        }
-
-        Assertions.assertNotNull(buildOutputUnderTest);
-
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"1.0.0"})
@@ -250,17 +240,7 @@ public class PushMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testMultiStageBuildWithCustomTagPerStage() throws MojoExecutionException, IOException, URISyntaxException {
-        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
-        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
-
-        List<String> buildOutputUnderTest = null;
-        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
-            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
-        }
-
-        Assertions.assertNotNull(buildOutputUnderTest);
-
+    public void testMultiStagePushWithCustomTagPerStage() throws MojoExecutionException, IOException, URISyntaxException {
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"0.2.1"})

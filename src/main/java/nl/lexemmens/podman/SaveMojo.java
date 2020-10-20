@@ -1,6 +1,7 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.image.StageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -33,14 +34,37 @@ public class SaveMojo extends AbstractPodmanMojo {
         for (ImageConfiguration image : images) {
             // No need to check if the image names are empty here - this is checked by the image configuration.
 
-            exportContainerImage(image, hub);
+            exportContainerImages(image, hub);
         }
     }
 
-    private void exportContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void exportContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+        getLog().info("Exporting container images to local disk ...");
+
         Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN_DIRECTORY);
         createTargetFolder(targetPodmanDir);
 
+        if (image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
+            for (StageConfiguration stage : image.getStages()) {
+                for (String imageNameWithTag : image.getImageNamesByStage(stage.getName())) {
+                    String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
+                    doExportContainerImage(hub, fullImageName, targetPodmanDir);
+                }
+            }
+        } else if (image.getBuild().isMultistageContainerFile()) {
+            getLog().warn("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image.");
+
+            // The image configuration cannot produce an empty list of image names.
+            exportContainerImage(image, hub, targetPodmanDir);
+        } else {
+            // The image configuration cannot produce an empty list of image names.
+            exportContainerImage(image, hub, targetPodmanDir);
+        }
+
+        getLog().info("Container images exported successfully.");
+    }
+
+    private void exportContainerImage(ImageConfiguration image, ServiceHub hub, Path targetPodmanDir) throws MojoExecutionException {
         for (String imageName : image.getImageNames()) {
             String fullImageName = getFullImageNameWithPushRegistry(imageName);
 
@@ -49,8 +73,13 @@ public class SaveMojo extends AbstractPodmanMojo {
             getLog().info("Exporting image " + fullImageName + " to " + targetPodmanDir + "/" + archiveName);
             hub.getPodmanExecutorService().save(archiveName, fullImageName);
         }
+    }
 
-        getLog().info("Container images exported successfully.");
+    private void doExportContainerImage(ServiceHub hub, String fullImageName, Path targetPodmanDir) throws MojoExecutionException {
+        String archiveName = String.format("%s.tar.gz", normaliseImageName(fullImageName));
+
+        getLog().info("Exporting image " + fullImageName + " to " + targetPodmanDir + "/" + archiveName);
+        hub.getPodmanExecutorService().save(archiveName, fullImageName);
     }
 
     private void createTargetFolder(Path targetPodmanDir) throws MojoExecutionException {

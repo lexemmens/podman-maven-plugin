@@ -71,6 +71,8 @@ public class ImageConfiguration {
 
     /**
      * Returns a Map containing all image hashes per stage as listed in the Containerfile
+     *
+     * @return Returns a Map of the final image hash for each stage.
      */
     public final Map<String, String> getImageHashPerStage() {
         return imageHashPerStage;
