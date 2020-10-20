@@ -20,16 +20,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
@@ -131,6 +126,8 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testMultiStageSaveOnlyFinalImage() throws MojoExecutionException {
+        Path target = Paths.get(".", "target", "podman");
+
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"1.0.0"})
@@ -148,13 +145,15 @@ public class SaveMojoTest extends AbstractMojoTest {
         // Verify logging
         verify(log, times(1)).info(Mockito.eq("Exporting container images to local disk ..."));
         verify(log, times(1)).warn(Mockito.eq("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image."));
-        verify(log, times(1)).info(Mockito.eq("Exporting image registry.example.com/sample:1.0.0 to /home/lexemmens/Projects/podman-maven-plugin/target/podman/sample_1_0_0.tar.gz"));
+        verify(log, times(1)).info(Mockito.eq("Exporting image registry.example.com/sample:1.0.0 to " + target.resolve("sample_1_0_0.tar.gz").normalize().toFile().getAbsolutePath()));
         verify(podmanExecutorService, times(1)).save(eq("sample_1_0_0.tar.gz"), eq("registry.example.com/sample:1.0.0"));
         verify(log, times(1)).info(Mockito.eq("Container images exported successfully."));
     }
 
     @Test
     public void testMultiStageSaveWithCustomTagPerStage() throws MojoExecutionException, IOException, URISyntaxException {
+        Path target = Paths.get(".", "target", "podman");
+
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"0.2.1"})
@@ -175,9 +174,9 @@ public class SaveMojoTest extends AbstractMojoTest {
         // Verify logging
         verify(log, times(1)).info(Mockito.eq("Exporting container images to local disk ..."));
         verify(log, times(0)).warn(Mockito.eq("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image."));
-        verify(log, times(1)).info(Mockito.eq("Exporting image registry.example.com/image-name-number-1:0.2.1 to /home/lexemmens/Projects/podman-maven-plugin/target/podman/image_name_number_1_0_2_1.tar.gz"));
+        verify(log, times(1)).info(Mockito.eq("Exporting image registry.example.com/image-name-number-1:0.2.1 to " + target.resolve("image_name_number_1_0_2_1.tar.gz").normalize().toFile().getAbsolutePath()));
         verify(podmanExecutorService, times(1)).save(eq("image_name_number_1_0_2_1.tar.gz"), eq("registry.example.com/image-name-number-1:0.2.1"));
-        verify(log, times(1)).info(Mockito.eq("Exporting image registry.example.com/image-name-number-2:0.2.1 to /home/lexemmens/Projects/podman-maven-plugin/target/podman/image_name_number_2_0_2_1.tar.gz"));
+        verify(log, times(1)).info(Mockito.eq("Exporting image registry.example.com/image-name-number-2:0.2.1 to " + target.resolve("image_name_number_2_0_2_1.tar.gz").normalize().toFile().getAbsolutePath()));
         verify(podmanExecutorService, times(1)).save(eq("image_name_number_2_0_2_1.tar.gz"), eq("registry.example.com/image-name-number-2:0.2.1"));
         verify(log, times(1)).info(Mockito.eq("Container images exported successfully."));
     }
