@@ -100,6 +100,7 @@ public class ImageConfiguration {
 
     /**
      * Returns whether a custom image name per stage should be used (when using a multistage Containerfile).
+     *
      * @return true when certain stages in a multistage Containerfile should have unique names.
      */
     public boolean useCustomImageNameForMultiStageContainerfile() {
@@ -108,6 +109,7 @@ public class ImageConfiguration {
 
     /**
      * Returns the stage configuration for naming images
+     *
      * @return the configuration for naming images when using a multistage Containerfile.
      */
     public StageConfiguration[] getStages() {
@@ -134,12 +136,19 @@ public class ImageConfiguration {
         return imageNames;
     }
 
+    /**
+     * Returns a list of image names (without the registry) for a specific stage name. The list that is returned
+     * is based on the tags that are configured.
+     *
+     * @param stageName The name of the stage to retrieve the image name for
+     * @return A list of image names for the specific stage.
+     */
     public List<String> getImageNamesByStage(String stageName) {
         List<String> imageNames = new ArrayList<>();
 
-        for(StageConfiguration stage : stages) {
-            if(stageName.equals(stage.getName())) {
-                for(String tag : build.getAllTags()) {
+        for (StageConfiguration stage : stages) {
+            if (stageName.equals(stage.getName())) {
+                for (String tag : build.getAllTags()) {
                     imageNames.add(String.format("%s:%s", stage.getImageName(), tag));
                 }
             }
@@ -175,13 +184,13 @@ public class ImageConfiguration {
             throw new MojoExecutionException(msg);
         }
 
-        if(customImageNameForMultiStageContainerfile && stages == null) {
+        if (customImageNameForMultiStageContainerfile && stages == null) {
             String msg = "Plugin is configured for multistage Containerfiles, but there are no custom image names configured.";
             log.error(msg);
             throw new MojoExecutionException(msg);
         }
 
-        if(build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
+        if (build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
             log.warn("Detected multistage Containerfile, but there are no image names specified for (some of) these stages. Only tagging final image!");
         }
     }

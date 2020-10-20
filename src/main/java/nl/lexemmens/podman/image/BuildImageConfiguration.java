@@ -46,13 +46,13 @@ public class BuildImageConfiguration {
     protected String[] tags;
 
     /**
-     * Name of the Dockerfile to use. Defaults to Dockerfile
+     * Name of the Containerfile to use. Defaults to Containerfile
      */
     @Parameter
     protected String containerFile;
 
     /**
-     * Directory containing the Dockerfile
+     * Directory containing the Containerfile
      */
     @Parameter
     protected File containerFileDir;
@@ -142,9 +142,9 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Returns the directory containing the original raw Dockerfile
+     * Returns the directory containing the original raw Containerfile
      *
-     * @return A {@link File} object referencing the location of the Dockerfile
+     * @return A {@link File} object referencing the location of the Containerfile
      */
     public Path getSourceContainerFileDir() {
         Path containerFileDirPath = Paths.get(containerFileDir.toURI());
@@ -152,9 +152,9 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Returns the path to the target Dockerfile
+     * Returns the path to the target Containerfile
      *
-     * @return Returns a path to the target Dockerfile
+     * @return Returns a path to the target Containerfile
      */
     public Path getTargetContainerFile() {
         return Paths.get(outputDirectory.toURI()).resolve(containerFile);
@@ -165,10 +165,10 @@ public class BuildImageConfiguration {
      * Returns the labels to be applied to the container image
      * </p>
      * <p>
-     * All specified labels will be added to the Dockerfile after filtering.
+     * All specified labels will be added to the Containerfile after filtering.
      * </p>
      *
-     * @return All labels to be added to the Dockerfile
+     * @return All labels to be added to the Containerfile
      */
     public Map<String, String> getLabels() {
         return labels;
@@ -184,10 +184,10 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Returns the location of the raw Dockerfile. This location is used
+     * Returns the location of the raw Containerfile. This location is used
      * as the context dir when running podman.
      *
-     * @return The location of the raw Dockerfile as a File.
+     * @return The location of the raw Containerfile as a File.
      */
     public File getContainerFileDir() {
         return containerFileDir;
@@ -195,6 +195,7 @@ public class BuildImageConfiguration {
 
     /**
      * Returns the format for the built image's manifest and configuration data.
+     *
      * @return The format for the built image's manifest and configuration data
      */
     public ContainerFormat getFormat() {
@@ -203,6 +204,7 @@ public class BuildImageConfiguration {
 
     /**
      * Returns true when the Containerfile is a multistage Containerfile
+     *
      * @return true when a multistage Containerfile is used
      */
     public boolean isMultistageContainerFile() {
@@ -211,6 +213,7 @@ public class BuildImageConfiguration {
 
     /**
      * Returns a list of all stages present in the Containerfile
+     *
      * @return a list of all stages.
      */
     public List<String> getStages() {
@@ -219,6 +222,7 @@ public class BuildImageConfiguration {
 
     /**
      * Returns the Pattern that is used to determine if a line matches a multi-stage Containerfile
+     *
      * @return The pattern to determine if a line matches the expected pattern for a multi-stage Containerfile.
      */
     public Pattern getMultistageContainerfilePattern() {
@@ -230,7 +234,7 @@ public class BuildImageConfiguration {
      *
      * @param project The MavenProject used to derive some of the default values from.
      * @param log     Access to Maven's log system for writing errors
-     * @throws MojoExecutionException In case there is no Dockerfile at the specified source location or the Dockerfile is empty
+     * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
      */
     public void validate(MavenProject project, Log log) throws MojoExecutionException {
         if (containerFile == null) {
@@ -245,7 +249,7 @@ public class BuildImageConfiguration {
             labels = new HashMap<>();
         }
 
-        if(format == null) {
+        if (format == null) {
             format = OCI;
         }
 
@@ -281,9 +285,9 @@ public class BuildImageConfiguration {
     private void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
             List<String> content = containerFileStream.collect(Collectors.toList());
-            for(String line : content) {
+            for (String line : content) {
                 Matcher matcher = MULTISTAGE_CONTAINERFILE_REGEX.matcher(line);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     isMultistageContainerFile = true;
 
                     String stage = matcher.group(3);

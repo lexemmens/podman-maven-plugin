@@ -60,7 +60,7 @@ public class PodmanExecutorService {
      * </p>
      * <p>
      * Takes an {@link ImageConfiguration} class as input and uses it to retrieve
-     * the Dockerfile to build, whether caching should be used and the build's output directory
+     * the Containerfile to build, whether caching should be used and the build's output directory
      * </p>
      *
      * @param image The {@link ImageConfiguration} containing the configuration of the image to build

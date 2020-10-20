@@ -20,7 +20,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
@@ -34,7 +42,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        configureMojo(false, true, false, null, null, null, false, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, false, true, false, null, false);
 
         pushMojo.execute();
 
@@ -43,7 +56,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPush() throws MojoExecutionException {
-        configureMojo(false, false, true, null, "test", null, false, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, true, "registry.example.com",  true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -55,7 +73,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsNull() throws MojoExecutionException {
-        configureMojo(true, false, false, "registry.example.com", "sample", null, false, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(null)
+                .setUseMavenProjectVersion(false)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com",  true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -68,7 +91,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsEmpty() throws MojoExecutionException {
-        configureMojo(true, false, false, "registry.example.com", "sample", new String[]{}, false, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(false)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com",  true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -81,7 +109,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithoutTargetRegistryFails() {
-        configureMojo(true, false, false, null, "sample", new String[]{}, true, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, null,  true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -99,7 +132,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithoutCleaningUpLocalImage() throws MojoExecutionException {
-        configureMojo(true, false, false, "registry.example.com", "sample", new String[]{}, true, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com",  true);
 
         String targetRegistry = "registry.example.com/sample:1.0.0";
         when(mavenProject.getBuild()).thenReturn(build);
@@ -119,7 +157,13 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithValidAuthentication() throws MojoExecutionException {
-        configureMojo(true, false, false, "registry.example.com", "sample", new String[]{}, true, false);
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com",  true);
+
         pushMojo.registries = new String[]{"registries.example.com"};
         pushMojo.skipAuth = false;
 
@@ -142,7 +186,12 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithCleaningUpLocalImage() throws MojoExecutionException {
-        configureMojo(true, false, false, "registry.example.com", "sample", new String[]{}, true, true);
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com",  true);
 
         pushMojo.deleteLocalImageAfterPush = true;
 
@@ -166,13 +215,85 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(1)).removeLocalImage(eq(imageName));
     }
 
-    private void configureMojo(boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, String name, String[] tags, boolean useMavenProjectVersion, boolean deleteLocalImageAfterPush) {
-        ImageConfiguration image = new TestImageConfigurationBuilder(name)
-                .setTags(tags)
-                .setUseMavenProjectVersion(useMavenProjectVersion)
-                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
-                .build();
+    @Test
+    public void testMultiStagePushOnlyFinalImage() throws MojoExecutionException, IOException, URISyntaxException {
+        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
+        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
+        List<String> buildOutputUnderTest = null;
+        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
+            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
+        }
+
+        Assertions.assertNotNull(buildOutputUnderTest);
+
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setContainerfileDir("src/test/resources/multistagecontainerfile")
+                .setTags(new String[]{"1.0.0"})
+                .setCreateLatestTag(false)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com",  true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+
+        pushMojo.execute();
+
+        // Verify logging
+        verify(log, times(1)).info(Mockito.eq("Pushing container images to registry ..."));
+        verify(log, times(1)).info(Mockito.eq("Pushing image: registry.example.com/sample:1.0.0 to registry.example.com"));
+        verify(podmanExecutorService, times(1)).push(eq("registry.example.com/sample:1.0.0"));
+        verify(log, times(1)).info(Mockito.eq("Successfully pushed container image registry.example.com/sample:1.0.0 to registry.example.com"));
+        verify(log, times(1)).info(Mockito.eq("All images have been successfully pushed to the registry"));
+    }
+
+    @Test
+    public void testMultiStageBuildWithCustomTagPerStage() throws MojoExecutionException, IOException, URISyntaxException {
+        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
+        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
+
+        List<String> buildOutputUnderTest = null;
+        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
+            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
+        }
+
+        Assertions.assertNotNull(buildOutputUnderTest);
+
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setContainerfileDir("src/test/resources/multistagecontainerfile")
+                .setTags(new String[]{"0.2.1"})
+                .setCreateLatestTag(false)
+                .setUseCustomImageNameForMultiStageContainerfile(true)
+                .addCustomImageNameForBuildStage("phase", "image-name-number-1")
+                .addCustomImageNameForBuildStage("phase2", "image-name-number-2")
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com", false);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+
+        pushMojo.execute();
+
+        /// Verify logging
+        verify(log, times(1)).info(Mockito.eq("Pushing container images to registry ..."));
+
+        verify(log, times(1)).info(Mockito.eq("Pushing image: registry.example.com/image-name-number-1:0.2.1 to registry.example.com"));
+        verify(podmanExecutorService, times(1)).push(eq("registry.example.com/image-name-number-1:0.2.1"));
+        verify(log, times(1)).info(Mockito.eq("Successfully pushed container image registry.example.com/image-name-number-1:0.2.1 to registry.example.com"));
+
+        verify(log, times(1)).info(Mockito.eq("Pushing image: registry.example.com/image-name-number-2:0.2.1 to registry.example.com"));
+        verify(podmanExecutorService, times(1)).push(eq("registry.example.com/image-name-number-2:0.2.1"));
+        verify(log, times(1)).info(Mockito.eq("Successfully pushed container image registry.example.com/image-name-number-2:0.2.1 to registry.example.com"));
+
+        verify(log, times(1)).info(Mockito.eq("All images have been successfully pushed to the registry"));
+    }
+
+
+    private void configureMojo(ImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, boolean deleteLocalImageAfterPush) {
         pushMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         pushMojo.skip = skipAll;
         pushMojo.skipAuth = skipAuth;

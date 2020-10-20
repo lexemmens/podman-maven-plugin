@@ -19,11 +19,11 @@ import java.util.stream.Stream;
 
 /**
  * <p>
- * Class that brings support for decorating Dockerfiles. This means that it can:
+ * Class that brings support for decorating Containerfile. This means that it can:
  * </p>
  * <ul>
- *     <li>Decorate a specified source Dockerfile by resolving properties configured in the {@link MavenProject}</li>
- *     <li>Decorate a specified source Dockerfile by adding one or more label commands to the Dockerfile</li>
+ *     <li>Decorate a specified source Containerfile by resolving properties configured in the {@link MavenProject}</li>
+ *     <li>Decorate a specified source Containerfile by adding one or more label commands to the Containerfile</li>
  * </ul>
  *
  * <p>
