@@ -1,7 +1,7 @@
 ![Java CI with Maven](https://github.com/lexemmens/podman-maven-plugin/workflows/Java%20CI%20with%20Maven/badge.svg) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lexemmens_podman-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=lexemmens_podman-maven-plugin) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=lexemmens_podman-maven-plugin&metric=coverage)](https://sonarcloud.io/dashboard?id=lexemmens_podman-maven-plugin) [![Maven Central](https://img.shields.io/maven-central/v/nl.lexemmens/podman-maven-plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22nl.lexemmens%22%20AND%20a:%22podman-maven-plugin%22)
 
 # Podman Maven Plugin
-A maven plugin to build, tag and push OCI compliant images configured using a Dockerfile and built with Podman.
+A maven plugin to build, tag and push OCI compliant images configured using a Dockerfile/Containerfile using Podman.
 
 ## About
 This plugin was created based on the need to build container images with Podman, whilst not having an appropriate plugin to do so. Initially
@@ -22,9 +22,11 @@ This plugin is mainly inspired by the `docker-maven-plugin` and shows some simil
 - Java 9 or later
 - Podman to be installed on the OS where this plugin will run
 - Registry configuration to be present in Maven settings.
-- Dockerfile to be present in the module
+- Dockerfile or Containerfile to be present in the module
 
-NOTE: This Plugin only works when a Dockerfile is in your module's folder. You cannot create a complete Dockerfile via configuration in the `pom.xml`.
+NOTE: This Plugin only works when a Containerfile is in your module's folder. You cannot create a complete Containerfile via configuration in the `pom.xml`.
+
+NOTE: To stay in line with terminology used by Podman, we'll be using the term Containerfile instead of Dockerfile.
 
 ## Goals
 | Goal                                             | Description                | Default Lifecycle Phase |
@@ -37,7 +39,7 @@ NOTE: This Plugin only works when a Dockerfile is in your module's folder. You c
 ## Usage
 The plugin is available via Maven Central and can be used as follows:
 
-1. Ensure that there is a `Dockerfile` places in the module's root directory
+1. Ensure that there is a `Containerfile` places in the module's root directory
 2. Configure the plugin in your pom file, like so: 
 ```XML
 <plugin>
@@ -129,10 +131,19 @@ The example in XML below lists all the other configuration options that are poss
         <images>
             <image>
                 <name>my/podman/image</name>
+                
+                <customImageNameForMultiStageContainerfile>true</customImageNameForMultiStageContainerfile>
+                <stages>
+                    <stage>
+                        <name>test</name>
+                        <imageName>my-alternative-image-name</imageName>
+                    </stage>
+                </stages>
+
                 <build>
                     <noCache>true</noCache>
-                    <dockerFile>Dockerfile</dockerFile>
-                    <dockerFileDir>path/to/a/directory</dockerFileDir>
+                    <containerFile>Containerfile</containerFile>
+                    <containerFileDir>path/to/a/directory</containerFileDir>
 
                     <tagWithMavenProjectVersion>false</tagWithMavenProjectVersion>
                     <createLatestTag>false</createLatestTag>
@@ -174,17 +185,19 @@ The tables below explains the configuration options for container images that we
 
 | Parameter                | Type    | Required | Default value      | Description |
 |--------------------------|---------|----------|--------------------|-------------|
-| name                     | String  | Y        | -                  | The name of the docker image without the registry or tag. May contain a repository. Example: `some/repo/image`. [Docker naming conventions](https://docs.docker.com/engine/reference/commandline/tag/) apply. |
+| name                     | String  | Y        | -                  | The name of the container image without the registry or tag. May contain a repository. Example: `some/repo/image`. [Docker naming conventions](https://docs.docker.com/engine/reference/commandline/tag/) apply. |
 | noCache                  | Boolean | N        | false              | Do not use cache when building the image |
-| dockerFile               | String  | N        | Dockerfile         | Allows using a Dockerfile that is named differently |
-| dockerFileDir            | String  | N        | Current Module Dir | Specifies in which directory to find the Dockerfile |
+| containerFile               | String  | N        | Containerfile         | Allows using a Containerfile that is named differently |
+| containerFileDir            | String  | N        | Current Module Dir | Specifies in which directory to find the Containerfile |
 | tagAsMavenProjectVersion | Boolean | N        | false              | When set to true, the container image will automatically be tagged with the version of the Maven project. Note that a container can receive one or more tags whilst maintaining the same name. |
 | createLatestTag          | Boolean | N        | false              | When set to true, the container image will automatically be tagged 'latest'. Note that a container can receive one or more tags whilst maintaining the same name. |
-| labels                   | Map     | N        | -                  | When set, the Dockerfile will be decorated with the specified labels. Useful when adding metadata to your images |
+| labels                   | Map     | N        | -                  | When set, the Containerfile will be decorated with the specified labels. Useful when adding metadata to your images |
 | format                   | Enum    | N        | OCI                | Controls the format of the built image's manifest and configuration data. Recognised options: OCI (default) or DOCKER |
+| customImageNameForMultiStageContainerfile | Boolean | N | false | When set to true, the plugin will look for custom image names for specific stages WHEN a multistage Containerfile is detected. |
+| stages | List | N | - | Allows specifying a custom image name per stage in a Containerfile|
 
-### Using parameters in your Dockerfile
-It is possible to specify properties in your pom file and use those properties in the Dockerfile, just like you would in a pom file:
+### Using parameters in your Containerfile
+It is possible to specify properties in your pom file and use those properties in the Containerfile, just like you would in a pom file:
 ```Dockerfile
 FROM ${container.base.image}
 
@@ -193,8 +206,8 @@ COPY ${project.artifactId}.jar ./
 ```
 
 ## Troubleshooting
-This plugin takes the Dockerfile at the configured location as input and copies it to another location (usually the target folder) to decorate it. Please
-have a look at the Dockerfile in the target golder first before creating an issue. 
+This plugin takes the Containerfile at the configured location as input and copies it to another location (usually the target folder) to decorate it. Please
+have a look at the Containerfile in the target golder first before creating an issue. 
 
 ## Contributing
 Feel free to open a Pull Request if you want to contribute!

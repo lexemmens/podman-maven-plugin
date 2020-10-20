@@ -85,7 +85,7 @@ public class CleanMojoTest extends AbstractMojoTest {
     private void configureMojo(boolean skipAll, boolean skipClean, File customRoot) {
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(true)
-                .setDockerfileDir(DEFAULT_DOCKERFILE_DIR)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
 
         List<ImageConfiguration> images = List.of(image);

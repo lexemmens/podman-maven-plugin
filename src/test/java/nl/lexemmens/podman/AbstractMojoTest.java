@@ -13,7 +13,7 @@ import java.io.File;
 
 public abstract class AbstractMojoTest {
 
-    protected static final String DEFAULT_DOCKERFILE_DIR = "src/test/resources";
+    protected static final String DEFAULT_CONTAINERFILE_DIR = "src/test/resources";
     protected static final File DEFAULT_TEST_OUTPUT_DIR = new File("target");
 
     @Mock

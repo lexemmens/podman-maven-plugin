@@ -19,11 +19,11 @@ import java.util.stream.Stream;
 
 /**
  * <p>
- * Class that brings support for decorating Dockerfiles. This means that it can:
+ * Class that brings support for decorating Containerfile. This means that it can:
  * </p>
  * <ul>
- *     <li>Decorate a specified source Dockerfile by resolving properties configured in the {@link MavenProject}</li>
- *     <li>Decorate a specified source Dockerfile by adding one or more label commands to the Dockerfile</li>
+ *     <li>Decorate a specified source Containerfile by resolving properties configured in the {@link MavenProject}</li>
+ *     <li>Decorate a specified source Containerfile by adding one or more label commands to the Containerfile</li>
  * </ul>
  *
  * <p>
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  *     file as well as the default Maven properties are supported
  * </p>
  */
-public class DockerfileDecorator {
+public class ContainerfileDecorator {
 
     private static final String LABEL_ATTRIBUTE = "LABEL ";
     private static final String BASE_IMAGE_ATTRIBUTE = "FROM";
@@ -58,7 +58,7 @@ public class DockerfileDecorator {
      * @param mavenFileFilter Maven's File Filtering service
      * @param mavenProject    The MavenProject
      */
-    public DockerfileDecorator(Log log, MavenFileFilter mavenFileFilter, MavenProject mavenProject) {
+    public ContainerfileDecorator(Log log, MavenFileFilter mavenFileFilter, MavenProject mavenProject) {
         this.log = log;
         this.mavenFileFilter = mavenFileFilter;
         this.mavenProject = mavenProject;
@@ -76,32 +76,32 @@ public class DockerfileDecorator {
      * @param image The BuildContext that contains the source and target Dockerfile paths
      * @throws MojoExecutionException When the Dockerfile cannot be filtered.
      */
-    public void decorateDockerfile(ImageConfiguration image) throws MojoExecutionException {
-        filterDockerfile(image);
-        addLabelsToDockerfile(image);
+    public void decorateContainerfile(ImageConfiguration image) throws MojoExecutionException {
+        filterContainerfile(image);
+        addLabelsToContainerfile(image);
     }
 
-    private void filterDockerfile(ImageConfiguration image) throws MojoExecutionException {
-        log.debug("Filtering Dockerfile. Source: " + image.getBuild().getSourceDockerfile() + ", target: " + image.getBuild().getTargetDockerfile());
+    private void filterContainerfile(ImageConfiguration image) throws MojoExecutionException {
+        log.debug("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile());
         try {
             MavenFileFilterRequest fileFilterRequest = new MavenFileFilterRequest();
             fileFilterRequest.setEncoding("UTF8");
             fileFilterRequest.setFiltering(true);
-            fileFilterRequest.setFrom(image.getBuild().getSourceDockerfile().toFile());
-            fileFilterRequest.setTo(image.getBuild().getTargetDockerfile().toFile());
+            fileFilterRequest.setFrom(image.getBuild().getSourceContainerFileDir().toFile());
+            fileFilterRequest.setTo(image.getBuild().getTargetContainerFile().toFile());
             fileFilterRequest.setMavenProject(mavenProject);
 
             mavenFileFilter.copyFile(fileFilterRequest);
         } catch (MavenFilteringException e) {
-            String msg = "Failed to filter Dockerfile! " + e.getMessage();
+            String msg = "Failed to filter Containerfile! " + e.getMessage();
             log.error(msg, e);
             throw new MojoExecutionException(msg, e);
         }
     }
 
-    private void addLabelsToDockerfile(ImageConfiguration image) throws MojoExecutionException {
+    private void addLabelsToContainerfile(ImageConfiguration image) throws MojoExecutionException {
         if (image.getBuild().getLabels().isEmpty()) {
-            log.debug("No labels to add to the Dockerfile");
+            log.debug("No labels to add to the Containerfile");
             return;
         }
 
@@ -111,24 +111,24 @@ public class DockerfileDecorator {
         }
         String targetLabels = labelBuilder.toString();
 
-        try (Stream<String> dockerFileStream = Files.lines(image.getBuild().getTargetDockerfile())) {
-            List<String> dockerFileContents = dockerFileStream.collect(Collectors.toList());
-            List<String> targetDockerfileContents = new ArrayList<>();
+        try (Stream<String> containerFileStream = Files.lines(image.getBuild().getTargetContainerFile())) {
+            List<String> containerFileContents = containerFileStream.collect(Collectors.toList());
+            List<String> targetContainerFileContents = new ArrayList<>();
 
-            for(String line : dockerFileContents) {
-                targetDockerfileContents.add(line);
+            for(String line : containerFileContents) {
+                targetContainerFileContents.add(line);
 
                 // LABEL declaration after an entry point or run declaration are not always supported.
                 // Therefore, we add the labels directly after the base image declaration
                 // Lines are never <null> at this point
                 if(line.startsWith(BASE_IMAGE_ATTRIBUTE)) {
-                    targetDockerfileContents.add(targetLabels);
+                    targetContainerFileContents.add(targetLabels);
                 }
             }
 
-            Files.write(image.getBuild().getTargetDockerfile(), targetDockerfileContents, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(image.getBuild().getTargetContainerFile(), targetContainerFileContents, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
-            String msg = "Failed to add labels (" + targetLabels + ") to Dockerfile: " + e.getMessage();
+            String msg = "Failed to add labels (" + targetLabels + ") to Containerfile: " + e.getMessage();
             log.error(msg, e);
             throw new MojoExecutionException(msg, e);
         }

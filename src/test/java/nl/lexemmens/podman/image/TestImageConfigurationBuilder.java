@@ -6,6 +6,9 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class TestImageConfigurationBuilder {
@@ -28,14 +31,14 @@ public class TestImageConfigurationBuilder {
         return this;
     }
 
-    public TestImageConfigurationBuilder setDockerfile(String dockerfile) {
-        image.build.dockerFile = dockerfile;
+    public TestImageConfigurationBuilder setContainerfile(String containerfile) {
+        image.build.containerFile = containerfile;
         return this;
     }
 
-    public TestImageConfigurationBuilder setDockerfileDir(String dockerfileDir) {
-        if(dockerfileDir != null) {
-            image.build.dockerFileDir = new File(dockerfileDir);
+    public TestImageConfigurationBuilder setContainerfileDir(String containerfileDir) {
+        if(containerfileDir != null) {
+            image.build.containerFileDir = new File(containerfileDir);
         }
         return this;
     }
@@ -70,8 +73,31 @@ public class TestImageConfigurationBuilder {
         return this;
     }
 
+    public TestImageConfigurationBuilder addCustomImageNameForBuildStage(String stage, String imageName) {
+        StageConfiguration[] currentStagesConfigurations = image.stages;
+
+        if(currentStagesConfigurations == null) {
+            currentStagesConfigurations = new StageConfiguration[0];
+        }
+
+        List<StageConfiguration> stageConfigurationList = new ArrayList<>(Arrays.asList(currentStagesConfigurations));
+
+        StageConfiguration newStageConfiguration = new StageConfiguration();
+        newStageConfiguration.imageName = imageName;
+        newStageConfiguration.name = stage;
+        stageConfigurationList.add(newStageConfiguration);
+
+        image.stages = stageConfigurationList.toArray(new StageConfiguration[]{});
+
+        return this;
+    }
+
     public ImageConfiguration build() {
         return image;
     }
 
+    public TestImageConfigurationBuilder setUseCustomImageNameForMultiStageContainerfile(boolean useCustomImageNameForMultiStageContainerfile) {
+        image.customImageNameForMultiStageContainerfile = useCustomImageNameForMultiStageContainerfile;
+        return this;
+    }
 }
