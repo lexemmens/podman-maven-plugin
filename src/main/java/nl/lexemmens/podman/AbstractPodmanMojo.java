@@ -83,7 +83,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     /**
      * Constructor. Initializes this abstract class with a concrete base class
      */
-    public AbstractPodmanMojo() {
+    protected AbstractPodmanMojo() {
         this.requireImageConfiguration = true;
     }
 
@@ -92,7 +92,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      *
      * @param requireImageConfiguration Whether initialization of the configuration should be skipped
      */
-    public AbstractPodmanMojo(boolean requireImageConfiguration) {
+    protected AbstractPodmanMojo(boolean requireImageConfiguration) {
         this.requireImageConfiguration = requireImageConfiguration;
     }
 
