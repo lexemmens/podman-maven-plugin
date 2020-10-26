@@ -44,9 +44,6 @@ public class CleanMojoTest extends AbstractMojoTest {
     public void testSkipClean() throws MojoExecutionException {
         configureMojo(false, true, null);
 
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target/podman-test");
-
         cleanMojo.execute();
 
         verify(log, times(1)).info(Mockito.eq("Cleaning local storage is skipped."));
@@ -55,9 +52,6 @@ public class CleanMojoTest extends AbstractMojoTest {
     @Test
     public void testCleanWithoutCustomRoot() throws MojoExecutionException {
         configureMojo(false, false, null);
-
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target/podman-test");
 
         cleanMojo.execute();
 
@@ -70,8 +64,6 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         configureMojo(false, false, customRoot);
 
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target/podman-test");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
         when(serviceHub.getBuildahExecutorService()).thenReturn(buildahExecutorService);
 

@@ -5,7 +5,6 @@ import nl.lexemmens.podman.image.PodmanConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -66,6 +65,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(property = "podman.skip", defaultValue = "false")
     protected boolean skip;
 
+
     @Component
     private MavenFileFilter mavenFileFilter;
 
@@ -74,6 +74,27 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     @Component
     private SettingsDecrypter settingsDecrypter;
+
+    /**
+     * Determines whether to skip initializing configurations
+     */
+    private final boolean requireImageConfiguration;
+
+    /**
+     * Constructor. Initializes this abstract class with a concrete base class
+     */
+    public AbstractPodmanMojo() {
+        this.requireImageConfiguration = true;
+    }
+
+    /**
+     * Constructor. Initializes this abstract class with a concrete base class
+     *
+     * @param requireImageConfiguration Whether initialization of the configuration should be skipped
+     */
+    public AbstractPodmanMojo(boolean requireImageConfiguration) {
+        this.requireImageConfiguration = requireImageConfiguration;
+    }
 
     @Override
     public final void execute() throws MojoExecutionException {
@@ -90,21 +111,25 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     }
 
     private void initConfigurations() throws MojoExecutionException {
-        getLog().debug("Initializing configurations.");
+            getLog().debug("Initializing configurations.");
 
-        if(podman == null) {
-            getLog().debug("Using default Podman configuration.");
-            podman = new PodmanConfiguration();
-        }
-
-        podman.initAndValidate(getLog());
-        if(images == null || images.isEmpty()) {
-            throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
-        } else {
-            for (ImageConfiguration image : images) {
-                image.initAndValidate(project, getLog());
+            if (podman == null) {
+                getLog().debug("Using default Podman configuration.");
+                podman = new PodmanConfiguration();
             }
-        }
+
+            podman.initAndValidate(getLog());
+            if(requireImageConfiguration) {
+                if (images == null || images.isEmpty()) {
+                    throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
+                } else {
+                    for (ImageConfiguration image : images) {
+                        image.initAndValidate(project, getLog());
+                    }
+                }
+            } else {
+                getLog().debug("Validating image configuration is skipped.");
+            }
     }
 
     protected void checkAuthentication(ServiceHub hub) throws MojoExecutionException {
