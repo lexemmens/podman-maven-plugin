@@ -1,5 +1,8 @@
 ## Changelog
 
+### 1.1.0 (16-10-2020)
+* Fixed an issue that required the `CleanMojo` to have a valid ImageConfiguration. This is not necessary since only the custom root storage location needs to be configured for this Mojo to work.
+
 ### 1.0.0 (20-10-2020)
 #### Improvements
 * Renamed `Docker` to `Container` to be in line with Podman's naming conventions. This is a breaking change, please update your configuration.
