@@ -1,4 +1,8 @@
 ## Changelog
+### 1.2.1 (28-10-2020)
+### Bugs
+* Allow configuration of the directory where the Podman command is executed. This defaulted to the target directory, which is not always convenient.
+
 ### 1.2.0 (28-10-2020)
 #### Improvements
 * Introduced a flag called `failOnMissingContainerFile` that prevents that the plugin fail throw an exception in case no Containerfile is present in a Maven module. This may be useful

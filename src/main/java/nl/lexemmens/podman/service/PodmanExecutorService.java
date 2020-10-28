@@ -37,6 +37,7 @@ public class PodmanExecutorService {
     private final CommandExecutorDelegate delegate;
     private final File podmanRoot;
     private final File podmanRunRoot;
+    private final File podmanRunDirectory;
 
 
     /**
@@ -52,6 +53,7 @@ public class PodmanExecutorService {
         this.tlsVerify = podmanConfig.getTlsVerify();
         this.podmanRoot = podmanConfig.getRoot();
         this.podmanRunRoot = podmanConfig.getRunRoot();
+        this.podmanRunDirectory = podmanConfig.getRunDirectory();
     }
 
     /**
@@ -74,7 +76,7 @@ public class PodmanExecutorService {
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(".");
 
-        return runCommand(image.getBuild().getContainerFileDir(), false, PodmanCommand.BUILD, subCommand);
+        return runCommand(podmanRunDirectory, false, PodmanCommand.BUILD, subCommand);
     }
 
     /**

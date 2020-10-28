@@ -334,6 +334,33 @@ public class BuildMojoTest extends AbstractMojoTest {
     }
 
     @Test
+    public void testBuildContextWithCustomPodmanRunDirectory() {
+        String runDirectory = "customDir";
+        Path currentDir = Paths.get(".");
+        Path targetRunDir = currentDir.resolve(runDirectory);
+        String targetRunDirAsString = targetRunDir.normalize().toFile().getAbsolutePath();
+
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TlsVerify.FALSE)
+                .setRunDirectory(new File(runDirectory))
+                .build();
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{"1.0.0"})
+                .setCreateLatestTag(false)
+                .build();
+        configureMojo(podman, image, true, false, false, false, true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(mavenProject.getBasedir()).thenReturn(new File("."));
+        when(build.getDirectory()).thenReturn("target");
+
+        // No Containerfile present at root level
+        Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
+
+        verify(log, times(1)).info(Mockito.eq("Setting Podman's run directory " + targetRunDirAsString));
+    }
+
+    @Test
     public void testBuildContextWithEmptyContainerfile() {
         PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
