@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -84,9 +85,13 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveWithoutContainerfileDoesNotThrowExceptionWhenConfigured() {
-        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        String containerFileDir = "src/test/non-existing-directory";
+        Path currentDir = Paths.get(".");
+        Path targetLocation = currentDir.resolve(containerFileDir);
+        String targetLocationAsString = targetLocation.normalize().toFile().getAbsolutePath();
+
         ImageConfiguration image = new TestImageConfigurationBuilder("sample")
-                .setContainerfileDir("src/test/non-existing-directory")
+                .setContainerfileDir(targetLocationAsString)
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
                 .build();
@@ -96,7 +101,7 @@ public class SaveMojoTest extends AbstractMojoTest {
         when(build.getDirectory()).thenReturn("target");
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
-        verify(log, Mockito.times(1)).warn(Mockito.eq("No Containerfile was found at /home/lexemmens/Projects/podman-maven-plugin/src/test/non-existing-directory/Containerfile, however this will be ignored due to current plugin configuration."));
+        verify(log, Mockito.times(1)).warn(Mockito.eq("No Containerfile was found at " + targetLocationAsString + File.separator + "Containerfile, however this will be ignored due to current plugin configuration."));
         verify(log, Mockito.times(1)).warn(Mockito.eq("Skipping save of container image with name sample. Configuration is not valid for this module!"));
     }
 
