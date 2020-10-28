@@ -183,6 +183,7 @@ public class ImageConfiguration {
      *
      * @param mavenProject The MavenProject to derive some of the values from
      * @param log          The log for logging any errors that occur during validation
+     * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
      * @throws MojoExecutionException In case validation fails.
      */
     public void initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {

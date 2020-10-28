@@ -247,6 +247,7 @@ public class BuildImageConfiguration {
      *
      * @param project The MavenProject used to derive some of the default values from.
      * @param log     Access to Maven's log system for writing errors
+     * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
      * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
      */
     public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
