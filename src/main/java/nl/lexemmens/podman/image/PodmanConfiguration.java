@@ -4,6 +4,7 @@ import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 
@@ -42,7 +43,7 @@ public class PodmanConfiguration {
     /**
      * The directory from which podman should be run.
      * <p>
-     * Defaults to the modules directory
+     * Defaults to the directory the Containerfile is located
      */
     @Parameter(property = "podman.run.dir")
     protected File runDirectory;
@@ -95,7 +96,7 @@ public class PodmanConfiguration {
      * @param log Access to Maven's log system for informational purposes.
      * @throws MojoExecutionException In case validation fails.
      */
-    public void initAndValidate(Log log) throws MojoExecutionException {
+    public void initAndValidate(MavenProject project, Log log) throws MojoExecutionException {
         if (tlsVerify == null) {
             log.debug("Setting TLS Verify to NOT_SPECIFIED");
             tlsVerify = NOT_SPECIFIED;
@@ -117,7 +118,7 @@ public class PodmanConfiguration {
 
         if (runDirectory == null) {
             log.debug("Executing Podman from the module's directory.");
-            runDirectory = new File(".");
+            runDirectory = project.getBasedir();
         } else {
             log.info("Setting Podman's run directory " + runDirectory.getAbsolutePath());
         }

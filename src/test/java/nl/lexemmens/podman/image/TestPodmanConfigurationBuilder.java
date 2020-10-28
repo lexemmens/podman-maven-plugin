@@ -3,6 +3,7 @@ package nl.lexemmens.podman.image;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 
@@ -34,8 +35,8 @@ public class TestPodmanConfigurationBuilder {
         return this;
     }
 
-    public TestPodmanConfigurationBuilder initAndValidate(Log log) throws MojoExecutionException {
-        podman.initAndValidate(log);
+    public TestPodmanConfigurationBuilder initAndValidate(MavenProject project, Log log) throws MojoExecutionException {
+        podman.initAndValidate(project, log);
         return this;
     }
 

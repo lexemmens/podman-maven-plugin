@@ -6,6 +6,7 @@ import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,9 @@ public class BuildahExecutorServiceTest {
     @Mock
     private Log log;
 
+    @Mock
+    private MavenProject mavenProject;
+
     @Before
     public void setup() {
         initMocks(this);
@@ -40,7 +44,7 @@ public class BuildahExecutorServiceTest {
 
     @Test
     public void testCleanupLocalContainerStorageWithNoCustomRoot() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         BuildahExecutorService buildahExecutorService = new BuildahExecutorService(log, podmanConfig, delegate);
@@ -57,7 +61,7 @@ public class BuildahExecutorServiceTest {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
                 .setTlsVerify(FALSE)
                 .setRoot(customRoot)
-                .initAndValidate(log).build();
+                .initAndValidate(mavenProject, log).build();
 
         String expectedCommand = "buildah unshare rm -rf " + customRoot.getAbsolutePath();
 

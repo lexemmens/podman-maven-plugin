@@ -56,7 +56,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testLogin() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -67,7 +67,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testLoginWithTlsNotSpecified() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(NOT_SPECIFIED).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(NOT_SPECIFIED).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -78,7 +78,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testLoginWithoutTls() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -89,7 +89,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testLoginFailed() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(mavenProject, log).build();
 
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
 
@@ -100,7 +100,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testLoginPasswordObfuscatedUponFailure() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(mavenProject, log).build();
 
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
 
@@ -116,7 +116,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testPush() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -127,7 +127,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testTag() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -138,7 +138,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testRemoveLocalImage() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -149,7 +149,7 @@ public class PodmanExecutorServiceTest {
 
     @Test
     public void testSave() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
@@ -163,7 +163,7 @@ public class PodmanExecutorServiceTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
 
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
@@ -184,7 +184,7 @@ public class PodmanExecutorServiceTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
 
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setFormat(DOCKER)
                 .setContainerfileDir("src/test/resources")
@@ -209,7 +209,7 @@ public class PodmanExecutorServiceTest {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
                 .setTlsVerify(TRUE)
                 .setRoot(new File("/some/custom/root/dir"))
-                .initAndValidate(log)
+                .initAndValidate(mavenProject, log)
                 .build();
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
@@ -236,7 +236,7 @@ public class PodmanExecutorServiceTest {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
                 .setTlsVerify(TRUE)
                 .setRunRoot(new File("/some/custom/runroot/dir"))
-                .initAndValidate(log)
+                .initAndValidate(mavenProject, log)
                 .build();
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
@@ -264,7 +264,7 @@ public class PodmanExecutorServiceTest {
                 .setTlsVerify(TRUE)
                 .setRoot(new File("/some/custom/root/dir"))
                 .setRunRoot(new File("/some/custom/runroot/dir"))
-                .initAndValidate(log)
+                .initAndValidate(mavenProject, log)
                 .build();
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")

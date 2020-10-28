@@ -124,7 +124,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
                 podman = new PodmanConfiguration();
             }
 
-            podman.initAndValidate(getLog());
+            podman.initAndValidate(project, getLog());
             if(requireImageConfiguration) {
                 if (images == null || images.isEmpty()) {
                     throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
