@@ -99,6 +99,11 @@ public class BuildImageConfiguration {
     private boolean isMultistageContainerFile;
 
     /**
+     * Represents the validity of this configuration
+     */
+    private boolean valid;
+
+    /**
      * List of all build stages (only populated in case of multistage Containerfile)
      */
     private List<String> stages = new ArrayList<>();
@@ -230,13 +235,21 @@ public class BuildImageConfiguration {
     }
 
     /**
+     * Returns a boolean indicating whether this configuration is valid
+     * @return true if this configuration is valid. False otherwise.
+     */
+    public boolean isValid() {
+        return valid;
+    }
+
+    /**
      * Validates this class by giving all null properties a default value.
      *
      * @param project The MavenProject used to derive some of the default values from.
      * @param log     Access to Maven's log system for writing errors
      * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
      */
-    public void validate(MavenProject project, Log log) throws MojoExecutionException {
+    public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
         if (containerFile == null) {
             containerFile = DEFAULT_CONTAINERFILE;
         }
@@ -257,19 +270,23 @@ public class BuildImageConfiguration {
         this.outputDirectory = new File(project.getBuild().getDirectory());
 
         Path sourceContainerFile = getSourceContainerFileDir();
-        if (!Files.exists(sourceContainerFile)) {
+        if (!Files.exists(sourceContainerFile) && failOnMissingContainerfile) {
             String msg = "No Containerfile found at " + sourceContainerFile + ". Check your the containerFileDir and containerFile parameters in the configuration.";
             log.error(msg);
             throw new MojoExecutionException(msg);
-        }
+        } else if(!Files.exists(sourceContainerFile)) {
+            log.warn("No Containerfile was found at " + sourceContainerFile + ", however this will be ignored due to current plugin configuration.");
+            valid = false;
+        } else {
+            if (isContainerFileEmpty(log, sourceContainerFile)) {
+                String msg = "The specified Containerfile at " + sourceContainerFile + " is empty!";
+                log.error(msg);
+                throw new MojoExecutionException(msg);
+            }
 
-        if (isContainerFileEmpty(log, sourceContainerFile)) {
-            String msg = "The specified Containerfile at " + sourceContainerFile + " is empty!";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
+            determineBuildStages(log, sourceContainerFile);
+            valid = true;
         }
-
-        determineBuildStages(log, sourceContainerFile);
     }
 
     private boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {

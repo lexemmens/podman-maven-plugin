@@ -68,8 +68,8 @@ public class TestImageConfigurationBuilder {
         return this;
     }
 
-    public TestImageConfigurationBuilder initAndValidate(MavenProject mavenProject, Log log) throws MojoExecutionException {
-        image.initAndValidate(mavenProject, log);
+    public TestImageConfigurationBuilder initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
+        image.initAndValidate(mavenProject, log, failOnMissingContainerfile);
         return this;
     }
 

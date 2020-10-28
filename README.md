@@ -47,6 +47,7 @@ The plugin is available via Maven Central and can be used as follows:
     <artifactId>podman-maven-plugin</artifactId>
     <version>0.2.0</version>
     <configuration>
+        <failOnMissingContainerfile>false</failOnMissingContainerfile>
         <registries>
             <registry>registry.example.com</registry>
         </registries>
@@ -97,18 +98,19 @@ options.
 #### Configuration parameters 
 The following command line parameters are supported by this plugin. It is also possible to specify these parameters in the `<configuration>` section of the plugin in the `pom.xml`.
 
-| Parameter                 | Command line alias             | Type    | Required | Required by                                  | Default value      | Description                                    |
-| ------------------------- | ------------------------------ | ------- | -------- | -------------------------------------------- | ------------------ | ---------------------------------------------- |
-| registries                | podman.registries              | Array   | Y        | `podman:build`, `podman:save`, `podman:push` | -                  | All registries this plugin might reach out to during execution (for building (i.e. pulling), pushing and saving) |
-| pushRegistry              | podman.image.push.registry     | String  | Y        | `podman:build`, `podman:push`                | -                  | The target registry where the container image will be pushed to |
-| skip                      | podman.skip                    | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip all actions. |
-| skipBuild                 | podman.skip.build              | Boolean | N        | `podman:build`                               | false              | Skip building container image |
-| skipTag                   | podman.skip.tag                | Boolean | N        | `podman:build`                               | false              | Skip tagging container image after build |
-| skipPush                  | podman.skip.push               | Boolean | N        | `podman:push`                                | false              | Will skip pushing the container image to the `targetRegistry` |
-| skipClean                 | podman.skip.clean              | Boolean | N        | `podman:clean`                               | false              | Will cleanup local container storage if custom root storage location is set |
-| deleteLocalImageAfterPush | podman.image.delete.after.push | Boolean | N        | `podman:push`                                | false              | Will delete the final image from the local registry. **NOTE:** All other pulled images (such as base images) will continue to exist. |
-| skipSave                  | podman.skip.save               | Boolean | N        | `podman:save`                                | false              | Will skip saving the container image |
-| skipAuth                  | podman.skip.auth               | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip registry authentication check at the beginning. **NOTE:** This may cause access denied errors when building, pushing or saving container images. |
+| Parameter                  | Command line alias                   | Type    | Required | Required by                                  | Default value      | Description                                    |
+| -------------------------- | ------------------------------------ | ------- | -------- | -------------------------------------------- | ------------------ | ---------------------------------------------- |
+| registries                 | podman.registries                    | Array   | Y        | `podman:build`, `podman:save`, `podman:push` | -                  | All registries this plugin might reach out to during execution (for building (i.e. pulling), pushing and saving) |
+| pushRegistry               | podman.image.push.registry           | String  | Y        | `podman:build`, `podman:push`                | -                  | The target registry where the container image will be pushed to |
+| skip                       | podman.skip                          | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip all actions. |
+| skipBuild                  | podman.skip.build                    | Boolean | N        | `podman:build`                               | false              | Skip building container image |
+| skipTag                    | podman.skip.tag                      | Boolean | N        | `podman:build`                               | false              | Skip tagging container image after build |
+| skipPush                   | podman.skip.push                     | Boolean | N        | `podman:push`                                | false              | Will skip pushing the container image to the `targetRegistry` |
+| skipClean                  | podman.skip.clean                    | Boolean | N        | `podman:clean`                               | false              | Will cleanup local container storage if custom root storage location is set |
+| deleteLocalImageAfterPush  | podman.image.delete.after.push       | Boolean | N        | `podman:push`                                | false              | Will delete the final image from the local registry. **NOTE:** All other pulled images (such as base images) will continue to exist. |
+| skipSave                   | podman.skip.save                     | Boolean | N        | `podman:save`                                | false              | Will skip saving the container image |
+| skipAuth                   | podman.skip.auth                     | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | false              | Skip registry authentication check at the beginning. **NOTE:** This may cause access denied errors when building, pushing or saving container images. |
+| failOnMissingContainerfile | podman.fail.on.missing.containerfile | Boolean | N        | `podman:build`, `podman:save`, `podman:push` | true               | When set to false, the plugin will not throw an exception when no Containerfile is present | 
 
 #### Configuration options in the pom file
 In the `<configuration />` section of your pom, there are some other options you may apply when building container images using this plugin and `Podman`.

@@ -32,8 +32,13 @@ public class SaveMojo extends AbstractPodmanMojo {
         checkAuthentication(hub);
 
         for (ImageConfiguration image : images) {
-            // No need to check if the image names are empty here - this is checked by the image configuration.
+            if(!image.isValid()) {
+                getLog().warn("Skipping save of container image with name " + image.getImageName()
+                        + ". Configuration is not valid for this module!");
+                continue;
+            }
 
+            // No need to check if the image names are empty here - this is checked by the image configuration.
             exportContainerImages(image, hub);
         }
     }

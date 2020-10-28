@@ -166,7 +166,7 @@ public class PodmanExecutorServiceTest {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(log).build();
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
@@ -188,7 +188,7 @@ public class PodmanExecutorServiceTest {
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setFormat(DOCKER)
                 .setContainerfileDir("src/test/resources")
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
@@ -215,7 +215,7 @@ public class PodmanExecutorServiceTest {
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
@@ -242,7 +242,7 @@ public class PodmanExecutorServiceTest {
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
@@ -270,7 +270,7 @@ public class PodmanExecutorServiceTest {
         ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";

@@ -64,7 +64,7 @@ public class ContainerfileDecoratorTest {
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));
 
@@ -79,7 +79,7 @@ public class ContainerfileDecoratorTest {
 
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
 
@@ -99,7 +99,7 @@ public class ContainerfileDecoratorTest {
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
                 .setLabels(Map.of("testLabelKey", "testLabelValue"))
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
 
@@ -123,7 +123,7 @@ public class ContainerfileDecoratorTest {
         ImageConfiguration image = new TestImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
                 .setLabels(Map.of("testLabelKey", "testLabelValue"))
-                .initAndValidate(mavenProject, log)
+                .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));
 
