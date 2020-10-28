@@ -29,6 +29,11 @@ public class TestPodmanConfigurationBuilder {
         return this;
     }
 
+    public TestPodmanConfigurationBuilder setRunDirectory(File runDirectory) {
+        podman.runDirectory = runDirectory;
+        return this;
+    }
+
     public TestPodmanConfigurationBuilder initAndValidate(Log log) throws MojoExecutionException {
         podman.initAndValidate(log);
         return this;

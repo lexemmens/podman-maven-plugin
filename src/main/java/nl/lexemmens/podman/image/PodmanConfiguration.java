@@ -40,6 +40,14 @@ public class PodmanConfiguration {
     protected File runRoot;
 
     /**
+     * The directory from which podman should be run.
+     * <p>
+     * Defaults to the modules directory
+     */
+    @Parameter(property = "podman.run.dir")
+    protected File runDirectory;
+
+    /**
      * Constructor
      */
     public PodmanConfiguration() {
@@ -74,6 +82,14 @@ public class PodmanConfiguration {
     }
 
     /**
+     * Returns the directory from which Podman should be executed.
+     * @return The directory where Podman should be executed from.
+     */
+    public File getRunDirectory() {
+        return runDirectory;
+    }
+
+    /**
      * Validates and initializes this configuration
      *
      * @param log Access to Maven's log system for informational purposes.
@@ -97,6 +113,13 @@ public class PodmanConfiguration {
             log.debug("Using Podman's default settings for --runroot.");
         } else {
             log.info("Setting Podman's 'runroot' directory to: " + runRoot.getAbsolutePath());
+        }
+
+        if (runDirectory == null) {
+            log.debug("Executing Podman from the module's directory.");
+            runDirectory = new File(".");
+        } else {
+            log.info("Setting Podman's run directory " + runDirectory.getAbsolutePath());
         }
     }
 }
