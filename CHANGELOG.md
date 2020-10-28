@@ -1,6 +1,10 @@
 ## Changelog
+### 1.2.2 (28-10-2020)
+#### Bugs
+* Set the default run directory to the root of the current module instead of the root of the Maven project.
+
 ### 1.2.1 (28-10-2020)
-### Bugs
+#### Bugs
 * Allow configuration of the directory where the Podman command is executed. This defaulted to the target directory, which is not always convenient.
 
 ### 1.2.0 (28-10-2020)
