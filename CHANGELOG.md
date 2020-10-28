@@ -1,6 +1,11 @@
 ## Changelog
+### 1.2.0 (28-10-2020)
+#### Improvements
+* Introduced a flag called `failOnMissingContainerFile` that prevents that the plugin fail throw an exception in case no Containerfile is present in a Maven module. This may be useful
+for projects that use this plugin as part of a profile where a `Containerfile` is not always in the same location
 
 ### 1.1.0 (16-10-2020)
+#### Bugs
 * Fixed an issue that required the `CleanMojo` to have a valid ImageConfiguration. This is not necessary since only the custom root storage location needs to be configured for this Mojo to work.
 
 ### 1.0.0 (20-10-2020)

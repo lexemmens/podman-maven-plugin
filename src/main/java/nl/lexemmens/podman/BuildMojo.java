@@ -42,7 +42,13 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         checkAuthentication(hub);
 
-        for(ImageConfiguration image : images) {
+        for (ImageConfiguration image : images) {
+            if (!image.isValid()) {
+                getLog().warn("Skipping build of container image with name " + image.getImageName()
+                        + ". Configuration is not valid for this module!");
+                continue;
+            }
+
             decorateContainerfile(image, hub);
             buildContainerImage(image, hub);
             tagContainerImage(image, hub);
@@ -66,7 +72,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         getLog().debug("Determined final image hash as " + finalImageHash);
         image.setFinalImageHash(finalImageHash);
 
-        if(image.getBuild().isMultistageContainerFile()) {
+        if (image.getBuild().isMultistageContainerFile()) {
             getLog().info("Detected multistage Containerfile...");
             determineImageHashes(image, processOutput, finalImageHash);
         }
@@ -78,17 +84,17 @@ public class BuildMojo extends AbstractPodmanMojo {
         getLog().debug("Using regular expression: " + pattern);
 
         String currentStage = null;
-        for(int i = 0; i <= processOutput.size() - 2; i++) {
+        for (int i = 0; i <= processOutput.size() - 2; i++) {
             String currentLine = processOutput.get(i);
             Matcher matcher = pattern.matcher(currentLine);
             boolean matches = matcher.find();
 
             getLog().debug("Processing line: '" + currentLine + "', matches: " + matches);
 
-            if(matches) {
+            if (matches) {
                 boolean isFirstStage = currentStage == null;
 
-                if(isFirstStage) {
+                if (isFirstStage) {
                     currentStage = matcher.group(3);
 
                     getLog().debug("Initial detection of a stage in Containerfile. Stage: " + currentStage);
@@ -124,7 +130,7 @@ public class BuildMojo extends AbstractPodmanMojo {
     private Optional<String> retrieveImageHashFromLine(String line) {
         String imageHash = null;
         Matcher matcher = IMAGE_HASH_PATTERN.matcher(line);
-        if(matcher.find()) {
+        if (matcher.find()) {
             imageHash = matcher.group(1);
         }
 
@@ -142,9 +148,9 @@ public class BuildMojo extends AbstractPodmanMojo {
             return;
         }
 
-        if(image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
-            for(Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
-                for(String imageName : image.getImageNamesByStage(stageImage.getKey())) {
+        if (image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
+            for (Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
+                for (String imageName : image.getImageNamesByStage(stageImage.getKey())) {
                     String fullImageName = getFullImageNameWithPushRegistry(imageName);
 
                     getLog().info("Tagging container image " + stageImage.getValue() + " from stage " + stageImage.getKey() + " as " + fullImageName);
@@ -174,8 +180,6 @@ public class BuildMojo extends AbstractPodmanMojo {
             getLog().info("No image hash available. Skipping tagging container image.");
         }
     }
-
-
 
 
 }

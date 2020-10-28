@@ -65,6 +65,12 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(property = "podman.skip", defaultValue = "false")
     protected boolean skip;
 
+    /**
+     * When set to false, the plugin wil not throw an exception if a Containerfile cannot be found. Instead
+     * plugin execution will be skipped and a warning is logged.
+     */
+    @Parameter(property = "podman.fail.on.missing.containerfile", defaultValue = "true")
+    protected boolean failOnMissingContainerfile;
 
     @Component
     private MavenFileFilter mavenFileFilter;
@@ -124,7 +130,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
                     throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
                 } else {
                     for (ImageConfiguration image : images) {
-                        image.initAndValidate(project, getLog());
+                        image.initAndValidate(project, getLog(), failOnMissingContainerfile);
                     }
                 }
             } else {

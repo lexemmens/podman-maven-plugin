@@ -44,7 +44,14 @@ public class PushMojo extends AbstractPodmanMojo {
             throw new MojoExecutionException(msg);
         }
 
+
         for (ImageConfiguration image : images) {
+            if(!image.isValid()) {
+                getLog().warn("Skipping push of container image with name " + image.getImageName()
+                        + ". Configuration is not valid for this module!");
+                continue;
+            }
+
             if (image.getBuild().getAllTags().isEmpty()) {
                 getLog().info("No tags specified. Will not push container image named " + image.getImageName());
             } else {

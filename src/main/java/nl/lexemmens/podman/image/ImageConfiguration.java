@@ -171,14 +171,22 @@ public class ImageConfiguration {
     }
 
     /**
+     * Returns a boolean indicating whether this configuration is valid
+     * @return true if this configuration is valid. False otherwise.
+     */
+    public boolean isValid() {
+        return build.isValid();
+    }
+
+    /**
      * Initializes this configuration and fills any null values with default values.
      *
      * @param mavenProject The MavenProject to derive some of the values from
      * @param log          The log for logging any errors that occur during validation
      * @throws MojoExecutionException In case validation fails.
      */
-    public void initAndValidate(MavenProject mavenProject, Log log) throws MojoExecutionException {
-        build.validate(mavenProject, log);
+    public void initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
+        build.validate(mavenProject, log, failOnMissingContainerfile);
 
         if (!customImageNameForMultiStageContainerfile && name == null) {
             String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
