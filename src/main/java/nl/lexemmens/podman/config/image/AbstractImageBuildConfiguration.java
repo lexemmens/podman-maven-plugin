@@ -114,6 +114,26 @@ public abstract class AbstractImageBuildConfiguration {
     protected ContainerFormat format;
 
     /**
+     * Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.
+     * <p>
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean squash;
+
+    /**
+     * Cache intermediate images during the build process (Default is true).
+     * <p>
+     * Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
+     * export BUILDAH_LAYERS=true
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean layers;
+
+    /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
     protected File outputDirectory;
@@ -166,6 +186,14 @@ public abstract class AbstractImageBuildConfiguration {
 
         if (format == null) {
             format = OCI;
+        }
+
+        if (layers == null) {
+            layers = true;
+        }
+
+        if (squash == null) {
+            squash = false;
         }
 
         this.mavenProjectVersion = project.getVersion();
@@ -254,6 +282,25 @@ public abstract class AbstractImageBuildConfiguration {
      */
     public Pattern getMultistageContainerfilePattern() {
         return MULTISTAGE_CONTAINERFILE_REGEX;
+    }
+
+    /**
+     * Returns true when all of the image’s new layers should be squashed into a single new layer; any
+     * preexisting layers are not squashed.
+     *
+     * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
+     */
+    public boolean isSquash() {
+        return squash;
+    }
+
+    /**
+     * Returns true if intermediate layers should be cached during a Podman build.
+     *
+     * @return true, when intermediate layers should be cached. False otherwise.
+     */
+    public boolean isLayers() {
+        return layers;
     }
 
     /**

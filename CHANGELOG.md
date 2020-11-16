@@ -1,4 +1,8 @@
 ## Changelog
+### 1.9.0 (12-01-2022)
+#### Improvements
+* Added configuration options for `--squash` and `--layers`. Can be configured in the `<build>` section of an image.
+
 ### 1.8.0 (12-10-2021)
 #### Bugs
 * ([#49](https://github.com/lexemmens/podman-maven-plugin/issues/49)) - Using properties in the FROM now succeeds for multistage builds.
