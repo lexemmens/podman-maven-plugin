@@ -279,7 +279,7 @@ public class BuildImageConfiguration {
      * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
      */
     public Boolean getSquashAll() {
-        return squash;
+        return squashAll;
     }
 
     /**
