@@ -26,6 +26,7 @@ import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
 public class PodmanExecutorService {
 
     private static final String SQUASH_CMD = "--squash";
+    private static final String SQUASH_ALL_CMD = "--squash-all";
     private static final String BUILD_FORMAT_CMD = "--format=";
     private static final String LAYERS_CMD = "--layers=";
     private static final String SAVE_FORMAT_CMD = "--format=oci-archive";
@@ -77,11 +78,18 @@ public class PodmanExecutorService {
      */
     public List<String> build(SingleImageConfiguration image) throws MojoExecutionException {
         List<String> subCommand = new ArrayList<>();
-        if(image.getBuild().isSquash()) {
+        if(image.getBuild().getSquash() != null && image.getBuild().getSquash()) {
             subCommand.add(SQUASH_CMD);
         }
 
-        subCommand.add(LAYERS_CMD + image.getBuild().isLayers());
+        if(image.getBuild().getSquashAll() != null && image.getBuild().getSquashAll()) {
+            subCommand.add(SQUASH_ALL_CMD);
+        }
+
+        if(image.getBuild().getLayers() != null && image.getBuild().getLayers()) {
+            subCommand.add(LAYERS_CMD + image.getBuild().getLayers());
+        }
+
         subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
         subCommand.add(CONTAINERFILE_CMD + image.getBuild().getTargetContainerFile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());

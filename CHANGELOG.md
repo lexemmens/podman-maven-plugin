@@ -1,7 +1,7 @@
 ## Changelog
 ### 1.9.0 (12-01-2022)
 #### Improvements
-* Added configuration options for `--squash` and `--layers`. Can be configured in the `<build>` section of an image.
+* Added configuration options for `--squash`, `--squash-all` and `--layers`. Can be configured in the `<build>` section of an image.
 
 ### 1.8.0 (12-10-2021)
 #### Bugs
