@@ -1,5 +1,8 @@
 ## Changelog
 ### 1.3.0 (16-11-2020)
+#### Bugs
+* Fixed a bug where passwords that contained a `)` character were not correctly obfuscated when login to a registry fails.
+
 #### Improvements
 * Added configuration options for `--squash`, `--squash-all` and `--layers`. Can be configured in the `<build>` section of an image.
 
