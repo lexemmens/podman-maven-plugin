@@ -22,7 +22,9 @@ import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
  */
 public class PodmanExecutorService {
 
+    private static final String SQUASH_CMD = "--squash";
     private static final String BUILD_FORMAT_CMD = "--format=";
+    private static final String LAYERS_CMD = "--layers=";
     private static final String SAVE_FORMAT_CMD = "--format=oci-archive";
     private static final String OUTPUT_CMD = "--output";
     private static final String CONTAINERFILE_CMD = "--file=";
@@ -38,7 +40,6 @@ public class PodmanExecutorService {
     private final File podmanRoot;
     private final File podmanRunRoot;
     private final File podmanRunDirectory;
-
 
     /**
      * Constructs a new instance of this class.
@@ -71,6 +72,11 @@ public class PodmanExecutorService {
      */
     public List<String> build(ImageConfiguration image) throws MojoExecutionException {
         List<String> subCommand = new ArrayList<>();
+        if(image.getBuild().isSquash()) {
+            subCommand.add(SQUASH_CMD);
+        }
+
+        subCommand.add(LAYERS_CMD + image.getBuild().isLayers());
         subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
         subCommand.add(CONTAINERFILE_CMD + image.getBuild().getTargetContainerFile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());

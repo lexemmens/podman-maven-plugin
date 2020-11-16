@@ -84,6 +84,7 @@ public class PodmanConfiguration {
 
     /**
      * Returns the directory from which Podman should be executed.
+     *
      * @return The directory where Podman should be executed from.
      */
     public File getRunDirectory() {

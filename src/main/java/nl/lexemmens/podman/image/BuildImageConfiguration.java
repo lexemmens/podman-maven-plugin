@@ -89,6 +89,26 @@ public class BuildImageConfiguration {
     protected ContainerFormat format;
 
     /**
+     * Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.
+     * <p>
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean squash;
+
+    /**
+     * Cache intermediate images during the build process (Default is true).
+     * <p>
+     * Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
+     * export BUILDAH_LAYERS=true
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean layers;
+
+    /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
     private File outputDirectory;
@@ -235,7 +255,27 @@ public class BuildImageConfiguration {
     }
 
     /**
+     * Returns true when all of the image’s new layers should be squashed into a single new layer; any
+     * preexisting layers are not squashed.
+     *
+     * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
+     */
+    public boolean isSquash() {
+        return squash;
+    }
+
+    /**
+     * Returns true if intermediate layers should be cached during a Podman build.
+     *
+     * @return true, when intermediate layers should be cached. False otherwise.
+     */
+    public boolean isLayers() {
+        return layers;
+    }
+
+    /**
      * Returns a boolean indicating whether this configuration is valid
+     *
      * @return true if this configuration is valid. False otherwise.
      */
     public boolean isValid() {
@@ -245,8 +285,8 @@ public class BuildImageConfiguration {
     /**
      * Validates this class by giving all null properties a default value.
      *
-     * @param project The MavenProject used to derive some of the default values from.
-     * @param log     Access to Maven's log system for writing errors
+     * @param project                    The MavenProject used to derive some of the default values from.
+     * @param log                        Access to Maven's log system for writing errors
      * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
      * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
      */
@@ -267,6 +307,14 @@ public class BuildImageConfiguration {
             format = OCI;
         }
 
+        if (layers == null) {
+            layers = true;
+        }
+
+        if (squash == null) {
+            squash = false;
+        }
+
         this.mavenProjectVersion = project.getVersion();
         this.outputDirectory = new File(project.getBuild().getDirectory());
 
@@ -275,7 +323,7 @@ public class BuildImageConfiguration {
             String msg = "No Containerfile found at " + sourceContainerFile + ". Check your the containerFileDir and containerFile parameters in the configuration.";
             log.error(msg);
             throw new MojoExecutionException(msg);
-        } else if(!Files.exists(sourceContainerFile)) {
+        } else if (!Files.exists(sourceContainerFile)) {
             log.warn("No Containerfile was found at " + sourceContainerFile + ", however this will be ignored due to current plugin configuration.");
             valid = false;
         } else {

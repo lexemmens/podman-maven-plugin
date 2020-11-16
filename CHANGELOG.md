@@ -1,4 +1,8 @@
 ## Changelog
+### 1.3.0 (16-11-2020)
+#### Improvements
+* Added configuration options for `--squash` and `--layers`. Can be configured in the `<build>` section of an image.
+
 ### 1.2.2 (28-10-2020)
 #### Bugs
 * Set the default run directory to the root of the current module instead of the root of the Maven project.
