@@ -98,6 +98,15 @@ public class BuildImageConfiguration {
     protected Boolean squash;
 
     /**
+     * Squash all of the new image’s layers (including those inherited from a base image) into a single new layer.
+     * <p>
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean squashAll;
+
+    /**
      * Cache intermediate images during the build process (Default is true).
      * <p>
      * Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
@@ -260,7 +269,16 @@ public class BuildImageConfiguration {
      *
      * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
      */
-    public boolean isSquash() {
+    public Boolean getSquash() {
+        return squash;
+    }
+
+    /**
+     * Returns true when all of the image’s new layers, including those inherited from a base image, into a single new layer.
+     *
+     * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
+     */
+    public Boolean getSquashAll() {
         return squash;
     }
 
@@ -269,7 +287,7 @@ public class BuildImageConfiguration {
      *
      * @return true, when intermediate layers should be cached. False otherwise.
      */
-    public boolean isLayers() {
+    public Boolean getLayers() {
         return layers;
     }
 
@@ -278,7 +296,7 @@ public class BuildImageConfiguration {
      *
      * @return true if this configuration is valid. False otherwise.
      */
-    public boolean isValid() {
+    public Boolean isValid() {
         return valid;
     }
 
@@ -305,14 +323,6 @@ public class BuildImageConfiguration {
 
         if (format == null) {
             format = OCI;
-        }
-
-        if (layers == null) {
-            layers = true;
-        }
-
-        if (squash == null) {
-            squash = false;
         }
 
         this.mavenProjectVersion = project.getVersion();

@@ -1,7 +1,6 @@
 package nl.lexemmens.podman.image;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -94,10 +93,10 @@ public class PodmanConfiguration {
     /**
      * Validates and initializes this configuration
      *
-     * @param log Access to Maven's log system for informational purposes.
-     * @throws MojoExecutionException In case validation fails.
+     * @param project The current Maven Project.
+     * @param log     Access to Maven's log system for informational purposes.
      */
-    public void initAndValidate(MavenProject project, Log log) throws MojoExecutionException {
+    public void initAndValidate(MavenProject project, Log log) {
         if (tlsVerify == null) {
             log.debug("Setting TLS Verify to NOT_SPECIFIED");
             tlsVerify = NOT_SPECIFIED;
