@@ -81,7 +81,7 @@ public class PodmanExecutorService {
             subCommand.add(SQUASH_ALL_CMD);
         }
 
-        if(image.getBuild().getLayers() != null && image.getBuild().getLayers()) {
+        if(image.getBuild().getLayers() != null) {
             subCommand.add(LAYERS_CMD + image.getBuild().getLayers());
         }
 
