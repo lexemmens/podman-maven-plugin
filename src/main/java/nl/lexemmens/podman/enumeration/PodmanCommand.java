@@ -8,7 +8,8 @@ public enum PodmanCommand {
     TAG("tag"),
     SAVE("save"),
     PUSH("push"),
-    RMI("rmi");
+    RMI("rmi"),
+    VERSION("version");
 
     private String command;
 

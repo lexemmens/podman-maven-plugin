@@ -113,29 +113,36 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
         ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, podman, settings, settingsDecrypter);
 
+        printPodmanVersion(hub);
         executeInternal(hub);
     }
 
+    private void printPodmanVersion(ServiceHub hub) throws MojoExecutionException {
+        if (getLog().isDebugEnabled()) {
+            hub.getPodmanExecutorService().version();
+        }
+    }
+
     private void initConfigurations() throws MojoExecutionException {
-            getLog().debug("Initializing configurations.");
+        getLog().debug("Initializing configurations.");
 
-            if (podman == null) {
-                getLog().debug("Using default Podman configuration.");
-                podman = new PodmanConfiguration();
-            }
+        if (podman == null) {
+            getLog().debug("Using default Podman configuration.");
+            podman = new PodmanConfiguration();
+        }
 
-            podman.initAndValidate(project, getLog());
-            if(requireImageConfiguration) {
-                if (images == null || images.isEmpty()) {
-                    throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
-                } else {
-                    for (ImageConfiguration image : images) {
-                        image.initAndValidate(project, getLog(), failOnMissingContainerfile);
-                    }
-                }
+        podman.initAndValidate(project, getLog());
+        if (requireImageConfiguration) {
+            if (images == null || images.isEmpty()) {
+                throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
             } else {
-                getLog().debug("Validating image configuration is skipped.");
+                for (ImageConfiguration image : images) {
+                    image.initAndValidate(project, getLog(), failOnMissingContainerfile);
+                }
             }
+        } else {
+            getLog().debug("Validating image configuration is skipped.");
+        }
     }
 
     protected void checkAuthentication(ServiceHub hub) throws MojoExecutionException {

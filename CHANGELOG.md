@@ -1,4 +1,11 @@
 ## Changelog
+### 1.3.0 (18-11-2020)
+#### Improvements
+* When debug is enabled, Podman version information will now be printed.
+
+#### Bugs
+* Passwords that contained special characters were not always properly obfuscated
+
 ### 1.2.2 (28-10-2020)
 #### Bugs
 * Set the default run directory to the root of the current module instead of the root of the Maven project.

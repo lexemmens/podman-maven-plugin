@@ -14,6 +14,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
 
@@ -156,10 +157,25 @@ public class PodmanExecutorService {
         } catch (MojoExecutionException e) {
             // When the command fails, the whole command is put in the error message, possibly exposing passwords.
             // Therefore we catch the exception, remove the password and throw a new exception with an updated message.
-            String message = e.getMessage().replaceAll(String.format("-p[, ]+%s", password), "-p **********");
+            String message = e.getMessage().replaceAll(String.format("-p[, ]+%s", Pattern.quote(password)), "-p **********");
             log.error(message);
             throw new MojoExecutionException(message);
         }
+    }
+
+    /**
+     * <p>
+     * Implementation of the 'podman version' command
+     * </p>
+     *
+     * @throws MojoExecutionException In case printing the information fails
+     */
+    public void version() throws MojoExecutionException {
+        List<String> fullCommand = new ArrayList<>();
+        fullCommand.add(PodmanCommand.PODMAN.getCommand());
+        fullCommand.add(PodmanCommand.VERSION.getCommand());
+
+        runCommand(fullCommand, BASE_DIR, true);
     }
 
     /**
@@ -198,7 +214,6 @@ public class PodmanExecutorService {
         }
 
         fullCommand.addAll(subCommands);
-
         return fullCommand;
     }
 
@@ -210,7 +225,15 @@ public class PodmanExecutorService {
 
     private List<String> runCommand(File workDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
         List<String> fullCommand = decorateCommands(command, subCommands);
+        return runCommand(fullCommand, workDir, redirectError);
+    }
 
+    private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
+        // Ignore output
+        runCommand(BASE_DIR, true, command, subCommands);
+    }
+
+    private List<String> runCommand(List<String> fullCommand, File workDir, boolean redirectError) throws MojoExecutionException {
         String msg = String.format("Executing command '%s' from basedir %s", StringUtils.join(fullCommand, " "), BASE_DIR.getAbsolutePath());
         log.debug(msg);
         ProcessExecutor processExecutor = new ProcessExecutor()
@@ -226,11 +249,5 @@ public class PodmanExecutorService {
         }
 
         return delegate.executeCommand(processExecutor);
-
-    }
-
-    private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        // Ignore output
-        runCommand(BASE_DIR, true, command, subCommands);
     }
 }
