@@ -132,17 +132,6 @@ public class PodmanExecutorService {
 
     /**
      * <p>
-     * Implementation of the 'podman version' command
-     * </p>
-     *
-     * @throws MojoExecutionException In case printing the information fails
-     */
-    public void version() throws MojoExecutionException {
-        runCommand(PodmanCommand.VERSION, new ArrayList<>());
-    }
-
-    /**
-     * <p>
      * Implementation of the 'podman login' command.
      * </p>
      * <p>
@@ -171,6 +160,21 @@ public class PodmanExecutorService {
             log.error(message);
             throw new MojoExecutionException(message);
         }
+    }
+
+    /**
+     * <p>
+     * Implementation of the 'podman version' command
+     * </p>
+     *
+     * @throws MojoExecutionException In case printing the information fails
+     */
+    public void version() throws MojoExecutionException {
+        List<String> fullCommand = new ArrayList<>();
+        fullCommand.add(PodmanCommand.PODMAN.getCommand());
+        fullCommand.add(PodmanCommand.VERSION.getCommand());
+
+        runCommand(fullCommand, BASE_DIR, true);
     }
 
     /**
@@ -220,7 +224,15 @@ public class PodmanExecutorService {
 
     private List<String> runCommand(File workDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
         List<String> fullCommand = decorateCommands(command, subCommands);
+        return runCommand(fullCommand, workDir, redirectError);
+    }
 
+    private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
+        // Ignore output
+        runCommand(BASE_DIR, true, command, subCommands);
+    }
+
+    private List<String> runCommand(List<String> fullCommand, File workDir, boolean redirectError) throws MojoExecutionException {
         String msg = String.format("Executing command '%s' from basedir %s", StringUtils.join(fullCommand, " "), BASE_DIR.getAbsolutePath());
         log.debug(msg);
         ProcessExecutor processExecutor = new ProcessExecutor()
@@ -236,10 +248,5 @@ public class PodmanExecutorService {
         }
 
         return delegate.executeCommand(processExecutor);
-    }
-
-    private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        // Ignore output
-        runCommand(BASE_DIR, true, command, subCommands);
     }
 }

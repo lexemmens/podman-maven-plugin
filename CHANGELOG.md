@@ -1,7 +1,10 @@
 ## Changelog
-### 1.2.3 (18-11-2020)
+### 1.3.0 (18-11-2020)
 #### Improvements
-* Allow printing podman version information when debug is enabled.
+* When debug is enabled, Podman version information will now be printed.
+
+#### Bugs
+* Passwords that contained special characters were not always properly obfuscated
 
 ### 1.2.2 (28-10-2020)
 #### Bugs
