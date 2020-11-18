@@ -142,6 +142,17 @@ public class PodmanExecutorServiceTest {
     }
 
     @Test
+    public void testVersion() throws MojoExecutionException {
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+        podmanExecutorService.version();
+
+        Assertions.assertEquals("podman version", delegate.getCommandAsString());
+    }
+
+    @Test
     public void testTag() throws MojoExecutionException {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
 
