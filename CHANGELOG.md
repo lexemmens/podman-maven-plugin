@@ -1,4 +1,8 @@
 ## Changelog
+### 1.2.3 (18-11-2020)
+#### Improvements
+* Allow printing podman version information when debug is enabled.
+
 ### 1.2.2 (28-10-2020)
 #### Bugs
 * Set the default run directory to the root of the current module instead of the root of the Maven project.

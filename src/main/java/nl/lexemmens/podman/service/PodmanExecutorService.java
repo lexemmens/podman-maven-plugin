@@ -132,6 +132,17 @@ public class PodmanExecutorService {
 
     /**
      * <p>
+     * Implementation of the 'podman version' command
+     * </p>
+     *
+     * @throws MojoExecutionException In case printing the information fails
+     */
+    public void version() throws MojoExecutionException {
+        runCommand(PodmanCommand.VERSION, new ArrayList<>());
+    }
+
+    /**
+     * <p>
      * Implementation of the 'podman login' command.
      * </p>
      * <p>
@@ -198,7 +209,6 @@ public class PodmanExecutorService {
         }
 
         fullCommand.addAll(subCommands);
-
         return fullCommand;
     }
 
@@ -226,7 +236,6 @@ public class PodmanExecutorService {
         }
 
         return delegate.executeCommand(processExecutor);
-
     }
 
     private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
