@@ -115,6 +115,22 @@ public class PodmanExecutorServiceTest {
     }
 
     @Test
+    public void testLoginPasswordObfuscatedUponFailureWithComplexPassword() throws MojoExecutionException {
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(mavenProject, log).build();
+
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
+
+        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u username -p hgX^@k0&)12s@"));
+
+        try {
+            podmanExecutorService.login("registry.example.com", "username", "hgX^@k0&)12s@");
+            Assertions.fail("This should not happen");
+        } catch (MojoExecutionException e) {
+            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u username -p **********", e.getMessage());
+        }
+    }
+
+    @Test
     public void testPush() throws MojoExecutionException {
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
 
