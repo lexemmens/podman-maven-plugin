@@ -43,7 +43,7 @@ public class BuildImageConfiguration {
      * always be build on the latest base.
      */
     @Parameter
-    protected boolean pull;
+    protected Boolean pull;
 
 
     /**
@@ -282,6 +282,10 @@ public class BuildImageConfiguration {
 
         if (format == null) {
             format = OCI;
+        }
+
+        if (pull == null) {
+            pull = true;
         }
 
         this.mavenProjectVersion = project.getVersion();
