@@ -26,6 +26,11 @@ public class TestImageConfigurationBuilder {
         return this;
     }
 
+    public TestImageConfigurationBuilder setPull(boolean pull) {
+        image.build.pull = pull;
+        return this;
+    }
+
     public TestImageConfigurationBuilder setLabels(Map<String, String> labels) {
         image.build.labels = labels;
         return this;

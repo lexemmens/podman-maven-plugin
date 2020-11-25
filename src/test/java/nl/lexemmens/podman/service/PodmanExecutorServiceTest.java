@@ -202,7 +202,7 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true .",
                 delegate.getCommandAsString());
     }
 
@@ -224,7 +224,7 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --format=docker --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+        Assertions.assertEquals("podman build --tls-verify=true --format=docker --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true .",
                 delegate.getCommandAsString());
     }
 
@@ -251,7 +251,7 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman --root=/some/custom/root/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+        Assertions.assertEquals("podman --root=/some/custom/root/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true .",
                 delegate.getCommandAsString());
     }
 
@@ -278,7 +278,7 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+        Assertions.assertEquals("podman --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true .",
                 delegate.getCommandAsString());
     }
 
@@ -306,7 +306,7 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman --root=/some/custom/root/dir --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+        Assertions.assertEquals("podman --root=/some/custom/root/dir --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true .",
                 delegate.getCommandAsString());
     }
 

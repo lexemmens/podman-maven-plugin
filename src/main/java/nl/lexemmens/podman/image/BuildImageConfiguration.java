@@ -39,6 +39,14 @@ public class BuildImageConfiguration {
     protected boolean noCache;
 
     /**
+     * Configures whether from-images should be pulled so that the image will
+     * always be build on the latest base.
+     */
+    @Parameter
+    protected Boolean pull;
+
+
+    /**
      * Array consisting of one or more tags to attach to a container image.
      * Tags will be appended at the end of the image name
      */
@@ -123,6 +131,15 @@ public class BuildImageConfiguration {
      */
     public boolean isNoCache() {
         return noCache;
+    }
+
+    /**
+     * Returns if the --pull property should be used
+     *
+     * @return When set to true, podman will build with --pull
+     */
+    public boolean isPull() {
+        return pull;
     }
 
     /**
@@ -265,6 +282,10 @@ public class BuildImageConfiguration {
 
         if (format == null) {
             format = OCI;
+        }
+
+        if (pull == null) {
+            pull = true;
         }
 
         this.mavenProjectVersion = project.getVersion();
