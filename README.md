@@ -146,6 +146,7 @@ The example in XML below lists all the other configuration options that are poss
                     <noCache>true</noCache>
                     <containerFile>Containerfile</containerFile>
                     <containerFileDir>path/to/a/directory</containerFileDir>
+                    <pull>true</pull>
 
                     <tagWithMavenProjectVersion>false</tagWithMavenProjectVersion>
                     <createLatestTag>false</createLatestTag>
@@ -189,6 +190,7 @@ The tables below explains the configuration options for container images that we
 |--------------------------|---------|----------|--------------------|-------------|
 | name                     | String  | Y        | -                  | The name of the container image without the registry or tag. May contain a repository. Example: `some/repo/image`. [Docker naming conventions](https://docs.docker.com/engine/reference/commandline/tag/) apply. |
 | noCache                  | Boolean | N        | false              | Do not use cache when building the image |
+| pull                     | Boolean | N        | true               | Controls whether the image should be pulled if non-existant in local storage |
 | containerFile               | String  | N        | Containerfile         | Allows using a Containerfile that is named differently |
 | containerFileDir            | String  | N        | Current Module Dir | Specifies in which directory to find the Containerfile |
 | tagAsMavenProjectVersion | Boolean | N        | false              | When set to true, the container image will automatically be tagged with the version of the Maven project. Note that a container can receive one or more tags whilst maintaining the same name. |
