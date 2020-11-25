@@ -1,7 +1,7 @@
 ## Changelog
 ### 1.4.0 (25-11-2020)
 #### Improvements
-* (#26) Introduced `pull` option in build configuration to control whether an image should be pulled. [More information](https://www.redhat.com/sysadmin/podman-image-pulling). Thanks to [Christopher J. Uwe](https://github.com/cruwe).
+* ([#26](https://github.com/lexemmens/podman-maven-plugin/pull/26)) Introduced `pull` option in build configuration to control whether an image should be pulled. [More information](https://www.redhat.com/sysadmin/podman-image-pulling). Thanks to [Christopher J. Uwe](https://github.com/cruwe).
 
 ### 1.3.0 (18-11-2020)
 #### Improvements
