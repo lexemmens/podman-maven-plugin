@@ -1,4 +1,8 @@
 ## Changelog
+### 1.5.0 (09-02-2020)
+#### Bugs
+* ([#28](https://github.com/lexemmens/podman-maven-plugin/issues/28)) - Changed algorithm for image hash detection when using multistage containerfiles to use lookahead instead of look back. 
+
 ### 1.4.0 (25-11-2020)
 #### Improvements
 * ([#26](https://github.com/lexemmens/podman-maven-plugin/pull/26)) Introduced `pull` option in build configuration to control whether an image should be pulled. [More information](https://www.redhat.com/sysadmin/podman-image-pulling). Thanks to [Christopher J. Uwe](https://github.com/cruwe).

@@ -1,0 +1,36 @@
+Building container image...
+STEP 1: FROM nexus.example:15000/adoptopenjdk/openjdk11:11.0.3 AS base
+Getting image source signatures
+Copying blob sha256:df15d82c4ffe976522b836c1f0c300e289f797cb2e302df1b7d0b917af7d3795
+Copying blob sha256:c29f4698c17768b4bf36dde25d584231424db9f4b9c9e67cce8980cfc50efbc1
+Copying blob sha256:b08df05e829707fdd711d6669671a0dd0431a20ca7ae89d7cd415e0025ba3a84
+Copying blob sha256:ad26192fb1166465550d702a8418c67ecda7b089149870f48673d8f0fb5ab8c1
+Copying blob sha256:95c2c089cb32f9959093f091b223b04c3a8e0e0aa8b703c0052ebfe9be5f0b3c
+Copying blob sha256:67300986eedeec2c7442a3b30e65142200b72dc72dc6da2e945a0f06d5e9183b
+Copying config sha256:c83be72afce332f5c3c3ae4992f3340479fee3115d7f449afebf39d0b6eb16b6
+Writing manifest to image destination
+Storing signatures
+STEP 2: LABEL Build-User=example Git-Repository-Url=null
+fdb500249b3b8db3bdd0857d4bdfdbdbde12901987f792d84fa54c1bf7d9dec7
+STEP 3: ENV RUN_CMD="exec java -jar a-sample-jar-file.jar"
+7f1f1bd5ceb0013496d519bb799a5589f16d41a1554a1a55ce1bd367dc7da1b3
+STEP 4: WORKDIR /application
+ffe9fdbba1c18cfb6563652d9f60425c0f465526855fa97582e20cefbe2d112f
+STEP 5: ENTRYPOINT /application
+823ed30df4abf7574498d5f766b0ebf70793d73a99fc4220dda200c5131b60ce
+STEP 6: FROM 823ed30df4abf7574498d5f766b0ebf70793d73a99fc4220dda200c5131b60ce AS phase
+STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null
+103013b8de849337063c6a3814c85774576303b58c7b7f31aefe8eff63da6b75
+STEP 8: COPY target/a-sample-jar-file.jar ./
+493cf9a1f9e820d6163591acc1b0f5b35136b37302647850e891448d798254c8
+STEP 9: ENTRYPOINT ${RUN_CMD}
+b51d6faa80bc4cc9ea93ec3b3b3bdff9629500330df37295c72d388d17b9c303
+STEP 10: FROM 823ed30df4abf7574498d5f766b0ebf70793d73a99fc4220dda200c5131b60ce AS phase2
+STEP 11: LABEL Build-User=another-user Git-Repository-Url=null
+afed3f95872aee093de6e1c598df97c8a37c0d8bba5db5f4db567ffa1219a1e3
+STEP 12: COPY target/some-other-jar-file.jar ./
+257504d973a1ae6293d5c40ca4c7f812c6288282e30c67dd38a2c1a03ea1432c
+STEP 13: ENTRYPOINT ${RUN_CMD}
+STEP 14: COMMIT
+ba6cb6863b48c3487810458db4b88b238f086cef65078839d9efe30f1069bed7
+ba6cb6863b48c3487810458db4b88b238f086cef65078839d9efe30f1069bed7
