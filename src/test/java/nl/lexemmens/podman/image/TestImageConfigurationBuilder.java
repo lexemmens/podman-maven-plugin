@@ -97,6 +97,11 @@ public class TestImageConfigurationBuilder {
         return this;
     }
 
+    public TestImageConfigurationBuilder setPullAlways(boolean pullAlways) {
+        image.build.pullAlways = pullAlways;
+        return this;
+    }
+
     public ImageConfiguration build() {
         return image;
     }

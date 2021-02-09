@@ -45,6 +45,17 @@ public class BuildImageConfiguration {
     @Parameter
     protected Boolean pull;
 
+    /**
+     * Configures whether from-images should always be pulled from the first registry it is found in.
+     *
+     * From Podman docs:
+     * Pull the image from the first registry it is found in as listed in registries.conf.
+     * Raise an error if not found in the registries, even if the image is present locally.
+     *
+     * @see <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html#pull-always">--pull-always on docs.podman.io</a>
+     */
+    @Parameter
+    protected Boolean pullAlways;
 
     /**
      * Array consisting of one or more tags to attach to a container image.
@@ -140,6 +151,15 @@ public class BuildImageConfiguration {
      */
     public boolean isPull() {
         return pull;
+    }
+
+    /**
+     * Returns if the --pull-always property should be used
+     *
+     * @return When set to true, podman will build with --pull-always
+     */
+    public boolean isPullAlways() {
+        return pullAlways;
     }
 
     /**
@@ -286,6 +306,10 @@ public class BuildImageConfiguration {
 
         if (pull == null) {
             pull = true;
+        }
+
+        if (pullAlways == null) {
+            pullAlways = false;
         }
 
         this.mavenProjectVersion = project.getVersion();
