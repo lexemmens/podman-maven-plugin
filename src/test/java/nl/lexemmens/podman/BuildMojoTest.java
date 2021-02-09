@@ -469,22 +469,140 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
 
         // Verify stage detection
-        verify(log, times(1)).debug(Mockito.eq("Initial detection of a stage in Containerfile. Stage: base"));
-        verify(log, times(1)).debug(Mockito.eq("Found new stage in Containerfile: phase"));
-        verify(log, times(1)).debug(Mockito.eq("Found new stage in Containerfile: phase2"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase2"));
 
         // Verify hashes for stages
-        verify(log, times(1)).info(Mockito.eq("Found image hash 7e72c870614 for stage base"));
-        verify(log, times(1)).info(Mockito.eq("Found image hash 7f55eab001a for stage phase"));
-        verify(log, times(1)).info(Mockito.eq("Using image hash of final image (d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f) for stage: phase2"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 7e72c870614"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase is: 7f55eab001a"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase2 is: d2efc6645cb"));
 
         // Verify tagging image
         verify(log, times(1)).info(Mockito.eq("Tagging container image 7f55eab001a from stage phase as registry.example.com/image-name-number-1:0.2.1"));
-        verify(log, times(1)).info(Mockito.eq("Tagging container image d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f from stage phase2 as registry.example.com/image-name-number-2:0.2.1"));
-        verify(log, times(0)).info(Mockito.eq("Tagging container image d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f as registry.example.com/sample:1.0.0"));
+        verify(log, times(1)).info(Mockito.eq("Tagging container image d2efc6645cb from stage phase2 as registry.example.com/image-name-number-2:0.2.1"));
+        verify(log, times(0)).info(Mockito.eq("Tagging container image d2efc6645cb as registry.example.com/sample:1.0.0"));
 
         verify(podmanExecutorService, times(1)).tag(eq("7f55eab001a"), eq("registry.example.com/image-name-number-1:0.2.1"));
-        verify(podmanExecutorService, times(1)).tag(eq("d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f"), eq("registry.example.com/image-name-number-2:0.2.1"));
+        verify(podmanExecutorService, times(1)).tag(eq("d2efc6645cb"), eq("registry.example.com/image-name-number-2:0.2.1"));
+
+        verify(log, times(1)).info(Mockito.eq("Built container image."));
+    }
+
+    @Test
+    public void testMultiStageBuildWithCustomTagPerStageFinalLineDifferent() throws MojoExecutionException, IOException, URISyntaxException {
+        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput2.txt").toURI();
+        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
+
+        List<String> buildOutputUnderTest = null;
+        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
+            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
+        }
+
+        Assertions.assertNotNull(buildOutputUnderTest);
+
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setContainerfileDir("src/test/resources/multistagecontainerfile")
+                .setTags(new String[]{"0.2.1"})
+                .setCreateLatestTag(false)
+                .setUseCustomImageNameForMultiStageContainerfile(true)
+                .addCustomImageNameForBuildStage("phase", "image-name-number-1")
+                .addCustomImageNameForBuildStage("phase2", "image-name-number-2")
+                .build();
+        configureMojo(podman, image, true, false, false, false, true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(buildOutputUnderTest);
+
+        buildMojo.execute();
+
+        // Verify logging
+        verify(log, times(1)).info(Mockito.eq("Detected multistage Containerfile..."));
+
+        // At random verify some lines
+        verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 1: FROM nexus.example:15000/adoptopenjdk/openjdk11:11.0.3 AS base', matches: true"));
+        verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
+
+        // Verify stage detection
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase2"));
+
+        // Verify hashes for stages
+        verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 7e72c870614"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase is: 7f55eab001a"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase2 is: d2efc6645cb"));
+
+        // Verify tagging image
+        verify(log, times(1)).info(Mockito.eq("Tagging container image 7f55eab001a from stage phase as registry.example.com/image-name-number-1:0.2.1"));
+        verify(log, times(1)).info(Mockito.eq("Tagging container image d2efc6645cb from stage phase2 as registry.example.com/image-name-number-2:0.2.1"));
+
+        verify(podmanExecutorService, times(1)).tag(eq("7f55eab001a"), eq("registry.example.com/image-name-number-1:0.2.1"));
+        verify(podmanExecutorService, times(1)).tag(eq("d2efc6645cb"), eq("registry.example.com/image-name-number-2:0.2.1"));
+
+        verify(log, times(1)).info(Mockito.eq("Built container image."));
+    }
+
+    @Test
+    public void testMultiStageBuildWithCustomTagPerStagePodman1x() throws MojoExecutionException, IOException, URISyntaxException {
+        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput_podman1x.txt").toURI();
+        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
+
+        List<String> buildOutputUnderTest = null;
+        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
+            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
+        }
+
+        Assertions.assertNotNull(buildOutputUnderTest);
+
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setContainerfileDir("src/test/resources/multistagecontainerfile")
+                .setTags(new String[]{"0.2.1"})
+                .setCreateLatestTag(false)
+                .setUseCustomImageNameForMultiStageContainerfile(true)
+                .addCustomImageNameForBuildStage("phase", "image-name-number-1")
+                .addCustomImageNameForBuildStage("phase2", "image-name-number-2")
+                .build();
+        configureMojo(podman, image, true, false, false, false, true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(podmanExecutorService.build(isA(ImageConfiguration.class))).thenReturn(buildOutputUnderTest);
+
+        buildMojo.execute();
+
+        // Verify logging
+        verify(log, times(1)).info(Mockito.eq("Detected multistage Containerfile..."));
+
+        // At random verify some lines
+        verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 1: FROM nexus.example:15000/adoptopenjdk/openjdk11:11.0.3 AS base', matches: true"));
+        verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
+
+        // Verify stage detection
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase2"));
+
+        // Verify hashes for stages
+        verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 823ed30df4abf7574498d5f766b0ebf70793d73a99fc4220dda200c5131b60ce"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase is: b51d6faa80bc4cc9ea93ec3b3b3bdff9629500330df37295c72d388d17b9c303"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase2 is: ba6cb6863b48c3487810458db4b88b238f086cef65078839d9efe30f1069bed7"));
+
+        // Verify tagging image
+        verify(log, times(1)).info(Mockito.eq("Tagging container image b51d6faa80bc4cc9ea93ec3b3b3bdff9629500330df37295c72d388d17b9c303 from stage phase as registry.example.com/image-name-number-1:0.2.1"));
+        verify(log, times(1)).info(Mockito.eq("Tagging container image ba6cb6863b48c3487810458db4b88b238f086cef65078839d9efe30f1069bed7 from stage phase2 as registry.example.com/image-name-number-2:0.2.1"));
+
+        verify(podmanExecutorService, times(1)).tag(eq("b51d6faa80bc4cc9ea93ec3b3b3bdff9629500330df37295c72d388d17b9c303"), eq("registry.example.com/image-name-number-1:0.2.1"));
+        verify(podmanExecutorService, times(1)).tag(eq("ba6cb6863b48c3487810458db4b88b238f086cef65078839d9efe30f1069bed7"), eq("registry.example.com/image-name-number-2:0.2.1"));
 
         verify(log, times(1)).info(Mockito.eq("Built container image."));
     }

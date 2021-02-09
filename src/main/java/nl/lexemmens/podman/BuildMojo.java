@@ -74,58 +74,69 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         if (image.getBuild().isMultistageContainerFile()) {
             getLog().info("Detected multistage Containerfile...");
-            determineImageHashes(image, processOutput, finalImageHash);
+            determineImageHashes(image, processOutput);
         }
     }
 
-    private void determineImageHashes(ImageConfiguration image, List<String> processOutput, String finalImageHash) {
+    private void determineImageHashes(ImageConfiguration image, List<String> processOutput) {
         // Use size -2 as the last line is the image hash of the final image, which we already captured before.
-        Pattern pattern = image.getBuild().getMultistageContainerfilePattern();
-        getLog().debug("Using regular expression: " + pattern);
+        Pattern stagePattern = image.getBuild().getMultistageContainerfilePattern();
+        getLog().debug("Using regular expression: " + stagePattern);
+
+        // We are interested in output that starts either with:
+        // * STEP
+        // * -->
+        //
+        // STEP means a build step
+        // --> means the result of a build step
+        //
+        // The last line always contain the final image hash, which not interesting in this case.
+
 
         String currentStage = null;
+        String lastKnownImageHash = null;
         for (int i = 0; i <= processOutput.size() - 2; i++) {
+            // Read current line and next line (this is safe as we only loop until size - 2)
             String currentLine = processOutput.get(i);
-            Matcher matcher = pattern.matcher(currentLine);
-            boolean matches = matcher.find();
+            String nextLine = processOutput.get(i + 1);
 
-            getLog().debug("Processing line: '" + currentLine + "', matches: " + matches);
+            // Check if the current line defines a new stage
+            Matcher stageMatcher = stagePattern.matcher(currentLine);
+            boolean currentLineDefinesStage = stageMatcher.find();
 
-            if (matches) {
+            getLog().debug("Processing line: '" + currentLine + "', defines stage: " + currentLineDefinesStage);
+
+            // Check if the next line contains a hash
+            Optional<String> imageHashOptional = retrieveImageHashFromLine(nextLine);
+
+            if(currentLineDefinesStage) {
                 boolean isFirstStage = currentStage == null;
 
-                if (isFirstStage) {
-                    currentStage = matcher.group(3);
-
-                    getLog().debug("Initial detection of a stage in Containerfile. Stage: " + currentStage);
-                } else {
-                    // If we have found a new stage, it means we reached the end of the previous stage. Thus the hash corresponding to the
-                    // must be on the previous line.
-                    String lineContainingImageHash = processOutput.get(i - 1);
-                    extractAndSaveImageHashFromLine(image, currentStage, lineContainingImageHash);
-
-                    // Save the current stage
-                    currentStage = matcher.group(3);
-                    getLog().debug("Found new stage in Containerfile: " + currentStage);
+                if(!isFirstStage) {
+                    // If it is not the first stage, then we must save the image hash of the previous stage
+                    getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
+                    image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
                 }
-            } else if (i == processOutput.size() - 2) {
-                getLog().info("Using image hash of final image (" + finalImageHash + ") for stage: " + currentStage);
-                image.getImageHashPerStage().put(currentStage, finalImageHash);
+
+                currentStage = stageMatcher.group(3);
+                lastKnownImageHash = null;
+
+                getLog().info("Found stage in Containerfile: " + currentStage);
+            } else if(currentLine.startsWith("STEP") && imageHashOptional.isPresent()) {
+                lastKnownImageHash = imageHashOptional.get();
+                getLog().debug("Stage " + currentStage + ", current image hash: " + lastKnownImageHash);
+            } else {
+                getLog().debug("Not a (valid) step output, continuing...");
             }
         }
+
+        // Save the last image hash we know
+        getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
+        image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
 
         getLog().debug("Collected hashes: " + image.getImageHashPerStage());
     }
 
-    private void extractAndSaveImageHashFromLine(ImageConfiguration image, String currentStage, String lineContainingImageHash) {
-        Optional<String> imageHash = retrieveImageHashFromLine(lineContainingImageHash);
-        if (imageHash.isPresent()) {
-            getLog().info("Found image hash " + imageHash.get() + " for stage " + currentStage);
-            image.getImageHashPerStage().put(currentStage, imageHash.get());
-        } else {
-            getLog().warn("Failed to determine image hash for stage " + currentStage);
-        }
-    }
 
     private Optional<String> retrieveImageHashFromLine(String line) {
         String imageHash = null;
