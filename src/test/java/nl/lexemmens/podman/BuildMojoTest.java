@@ -413,14 +413,14 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
 
         // Verify stage detection
-        verify(log, times(1)).debug(Mockito.eq("Initial detection of a stage in Containerfile. Stage: base"));
-        verify(log, times(1)).debug(Mockito.eq("Found new stage in Containerfile: phase"));
-        verify(log, times(1)).debug(Mockito.eq("Found new stage in Containerfile: phase2"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase2"));
 
         // Verify hashes for stages
-        verify(log, times(1)).info(Mockito.eq("Found image hash 7e72c870614 for stage base"));
-        verify(log, times(1)).info(Mockito.eq("Found image hash 7f55eab001a for stage phase"));
-        verify(log, times(1)).info(Mockito.eq("Using image hash of final image (d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f) for stage: phase2"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 7e72c870614"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase is: 7f55eab001a"));
+        verify(log, times(1)).info(Mockito.eq("Final image for stage phase2 is: d2efc6645cb"));
 
         // Verify tagging image
         verify(log, times(1)).info(Mockito.eq("Tagging container image d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f as registry.example.com/sample:1.0.0"));
@@ -469,9 +469,9 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
 
         // Verify stage detection
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: base"));
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase"));
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase2"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase2"));
 
         // Verify hashes for stages
         verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 7e72c870614"));
@@ -529,9 +529,9 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
 
         // Verify stage detection
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: base"));
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase"));
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase2"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase2"));
 
         // Verify hashes for stages
         verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 7e72c870614"));
@@ -588,9 +588,9 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(log, times(1)).debug(Mockito.eq("Processing line: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null', matches: false"));
 
         // Verify stage detection
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: base"));
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase"));
-        verify(log, times(1)).info(Mockito.eq("Found stage in Containerfile: phase2"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: base"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase"));
+        verify(log, times(1)).debug(Mockito.eq("Found stage in Containerfile: phase2"));
 
         // Verify hashes for stages
         verify(log, times(1)).info(Mockito.eq("Final image for stage base is: 823ed30df4abf7574498d5f766b0ebf70793d73a99fc4220dda200c5131b60ce"));

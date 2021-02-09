@@ -104,7 +104,7 @@ public class BuildMojo extends AbstractPodmanMojo {
             Matcher stageMatcher = stagePattern.matcher(currentLine);
             boolean currentLineDefinesStage = stageMatcher.find();
 
-            getLog().debug("Processing line: '" + currentLine + "', defines stage: " + currentLineDefinesStage);
+            getLog().debug("Processing line: '" + currentLine + "', matches: " + currentLineDefinesStage);
 
             // Check if the next line contains a hash
             Optional<String> imageHashOptional = retrieveImageHashFromLine(nextLine);
@@ -121,7 +121,7 @@ public class BuildMojo extends AbstractPodmanMojo {
                 currentStage = stageMatcher.group(3);
                 lastKnownImageHash = null;
 
-                getLog().info("Found stage in Containerfile: " + currentStage);
+                getLog().debug("Found stage in Containerfile: " + currentStage);
             } else if(currentLine.startsWith("STEP") && imageHashOptional.isPresent()) {
                 lastKnownImageHash = imageHashOptional.get();
                 getLog().debug("Stage " + currentStage + ", current image hash: " + lastKnownImageHash);
