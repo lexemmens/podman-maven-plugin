@@ -29,6 +29,7 @@ public class PodmanExecutorService {
     private static final String CONTAINERFILE_CMD = "--file=";
     private static final String NO_CACHE_CMD = "--no-cache=";
     private static final String PULL_CMD = "--pull=";
+    private static final String PULL_ALWAYS_CMD = "--pull-always=";
     private static final String ROOT_CMD = "--root=";
     private static final String RUNROOT_CMD = "--runroot=";
 
@@ -77,6 +78,7 @@ public class PodmanExecutorService {
         subCommand.add(CONTAINERFILE_CMD + image.getBuild().getTargetContainerFile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
         subCommand.add(PULL_CMD + image.getBuild().isPull());
+        subCommand.add(PULL_ALWAYS_CMD + image.getBuild().isPullAlways());
         subCommand.add(".");
 
         return runCommand(podmanRunDirectory, false, PodmanCommand.BUILD, subCommand);
