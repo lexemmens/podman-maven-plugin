@@ -87,52 +87,84 @@ public class BuildMojo extends AbstractPodmanMojo {
         // * STEP
         // * -->
         //
-        // STEP means a build step
-        // --> means the result of a build step
+        // STEP means a Podman build step
+        // --> means the result of a build step. This line contains a hash.
         //
         // The last line always contain the final image hash, which not interesting in this case.
+        //
+        // A STEP may produce multiline output.
 
+        // The last line (size - 1) contains the image hash. We want the hash produced by the STEP, which is on the second to last line
+        int lastLine = processOutput.size() - 2;
+        int searchIndex = 0;
+        while(searchIndex <= lastLine) {
+            String currentStage = null;
+            String lastKnownImageHash = null;
 
-        String currentStage = null;
-        String lastKnownImageHash = null;
-        for (int i = 0; i <= processOutput.size() - 2; i++) {
-            // Read current line and next line (this is safe as we only loop until size - 2)
-            String currentLine = processOutput.get(i);
-            String nextLine = processOutput.get(i + 1);
+            // Read current line
+            String currentLine = processOutput.get(searchIndex);
 
             // Check if the current line defines a new stage
             Matcher stageMatcher = stagePattern.matcher(currentLine);
             boolean currentLineDefinesStage = stageMatcher.find();
 
-            getLog().debug("Processing line: '" + currentLine + "', matches: " + currentLineDefinesStage);
-
-            // Check if the next line contains a hash
-            Optional<String> imageHashOptional = retrieveImageHashFromLine(nextLine);
-
+            getLog().debug("Processing line: '" + currentLine + "'");
             if(currentLineDefinesStage) {
-                boolean isFirstStage = currentStage == null;
+                currentStage = stageMatcher.group(3);
+                getLog().debug("Processing stage in Containerfile: " + currentStage);
+            }
 
-                if(!isFirstStage) {
-                    // If it is not the first stage, then we must save the image hash of the previous stage
+            // Find either the next step or image hash - whatever comes first
+            int searchStartIndex = searchIndex + 1;
+            boolean hashFound = false;
+            for(int i = searchStartIndex; i <= lastLine; i++) {
+                String candidate = processOutput.get(i);
+                getLog().debug("Processing candidate: '" + candidate + "'");
+
+                // Check if the candidate line defines a new stage
+                Matcher nextStageMatcher = stagePattern.matcher(candidate);
+                boolean candidateLineDefinesStage = nextStageMatcher.find();
+
+                Optional<String> imageHashOptional = retrieveImageHashFromLine(candidate);
+
+                if (candidateLineDefinesStage && !hashFound) {
+                    // If we hit this branch, no image hash has been found, thus the current branch has probably no output
+                    getLog().info("No hash found for stage '" + currentStage + "'");
+
+                    // Use the index of this line as our next search index
+                    searchIndex = i;
+
+                    // Stop searching and continue with the outer loop as we found a new stage.
+                    break;
+                } else if (candidateLineDefinesStage) {
+                    getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
+                    image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
+
+                    // Use the index of this line as our next search index
+                    searchIndex = i;
+
+                    // Stop searching and continue with the outer loop
+                    break;
+                } else if(imageHashOptional.isPresent()) {
+                    // Record the image hash we found
+                    lastKnownImageHash = imageHashOptional.get();
+
+                    getLog().info("Found image hash '" + lastKnownImageHash + "' for stage '" + currentStage + "'");
+                    hashFound = true;
+                } else {
+                    getLog().debug("Line contains no stage or image hash: " + candidate);
+                }
+
+                if(i == lastLine) {
+                    // Last line reached. Ensure we break the outer loop
+                    searchIndex = Integer.MAX_VALUE;
+
+                    // Register the image hash we fount last
                     getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
                     image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
                 }
-
-                currentStage = stageMatcher.group(3);
-                lastKnownImageHash = null;
-
-                getLog().debug("Found stage in Containerfile: " + currentStage);
-            } else if(currentLine.startsWith("STEP") && imageHashOptional.isPresent()) {
-                lastKnownImageHash = imageHashOptional.get();
-                getLog().debug("Stage " + currentStage + ", current image hash: " + lastKnownImageHash);
-            } else {
-                getLog().debug("Not a (valid) step output, continuing...");
             }
         }
-
-        // Save the last image hash we know
-        getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
-        image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
 
         getLog().debug("Collected hashes: " + image.getImageHashPerStage());
     }
