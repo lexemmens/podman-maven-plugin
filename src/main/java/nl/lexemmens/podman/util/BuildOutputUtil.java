@@ -175,7 +175,7 @@ public final class BuildOutputUtil {
                 // Record the image hash we found
                 lastKnownImageHash = imageHashOptional.get();
 
-                log.info("Found image hash '" + lastKnownImageHash + "' for stage '" + currentStage + "'");
+                log.debug("Found image hash '" + lastKnownImageHash + "' for stage '" + currentStage + "'");
                 hashFound = true;
             } else {
                 log.debug("Line contains no stage or image hash: " + candidate);
