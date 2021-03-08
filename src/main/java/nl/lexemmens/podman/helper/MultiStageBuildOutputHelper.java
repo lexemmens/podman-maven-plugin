@@ -164,7 +164,7 @@ public final class MultiStageBuildOutputHelper {
      * to detect if the last row of the build output has been reached.
      */
     private static ImageHashSearchResult findImageHash(Log log, List<String> processOutput, int searchStartIndex, Pattern multiStagePattern) {
-        ImageHashSearchResult searchResult = ImageHashSearchResult.EMPTY;
+        ImageHashSearchResult searchResult = ImageHashSearchResult.EMPTY    ;
         String lastKnownImageHash = null;
 
         int lastLine = processOutput.size() - 2;
