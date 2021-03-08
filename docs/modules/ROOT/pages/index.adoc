@@ -1,0 +1,13 @@
+= Podman Maven Plugin Documentation
+:navtitle: Introduction
+
+A maven plugin to build, tag and push OCI compliant images configured using a Dockerfile/Containerfile using Podman.
+
+== About
+This plugin was created based on the need to build container images with Podman, whilst not having an appropriate plugin to do so. Initially using the docker-maven-plugin from fabric8io it quickly became clear that simply swapping Docker for Podman (alias docker=podman) did not work as the plugin requires a Docker outlet to communicate with. With other plugins currently not yet available, the idea was born.
+
+This plugin uses a ProcessExecutor from ZeroTurnaround to do its magic under water. Although this plugins' structure is similar to that from the docker-maven-plugin, its implementation is not. In an effort to keep things simple, I have chosen to use a ProcessExecutor to run podman rather than implementing the logic myself.
+
+Also, only a subset of the podmans capabilities have been implemented (build, push and save).
+
+This plugin is mainly inspired by the docker-maven-plugin and shows some similarities in configuration.

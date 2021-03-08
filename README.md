@@ -17,24 +17,9 @@ Also, only a subset of the `podman`s capabilities have been implemented (build, 
 
 This plugin is mainly inspired by the `docker-maven-plugin` and shows some similarities in configuration.
 
-## Requirements
-- Maven 3.6.2 or later
-- Java 9 or later
-- Podman to be installed on the OS where this plugin will run
-- Registry configuration to be present in Maven settings.
-- Dockerfile or Containerfile to be present in the module
+## Documentation
+The manual of this plugin is available on [GitHub Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/index.html)
 
-NOTE: This Plugin only works when a Containerfile is in your module's folder. You cannot create a complete Containerfile via configuration in the `pom.xml`.
-
-NOTE: To stay in line with terminology used by Podman, we'll be using the term Containerfile instead of Dockerfile.
-
-## Goals
-| Goal                                             | Description                | Default Lifecycle Phase |
-| -------------------------------------------------| -------------------------- | ----------------------- |
-| `podman:build`                                   | Build images               | install                 | 
-| `podman:push`                                    | Push images to a registry  | deploy                  |
-| `podman:clean`                                   | Clean up local storage     | clean                   |
-| `podman:save`                                    | Save image to a file       |                         |
 
 ## Usage
 The plugin is available via Maven Central and can be used as follows:
@@ -92,8 +77,7 @@ configuration should look like this:
 The password may be encrypted. The id of the server **must** match the registries configured in the plugin (see below). The plugin will fail if
 credentials are missing for any of the provided registries.
 
-This plugin will also fail if there are no registries configured, but authentication is not skipped. Please refer to the table below for all configuration
-options.
+
 
 #### Configuration parameters 
 The following command line parameters are supported by this plugin. It is also possible to specify these parameters in the `<configuration>` section of the plugin in the `pom.xml`.
