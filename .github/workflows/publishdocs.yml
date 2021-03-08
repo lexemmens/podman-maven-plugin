@@ -16,9 +16,9 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build_site:
+  build:
     # The type of runner that the job will run on
-    name: "Build site with Antora"
+    name: "Build and Deploy Documentation"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,36 +27,14 @@ jobs:
         uses: kameshsampath/antora-site-action@master
         with:
           antora_playbook: antora-playbook.yml
-      - name: "Upload generated site"
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          name: site
-          path: "${{ github.workspace }}/build/${{ env.SITE_DIR }}"
-  
-  deploy_site:        
-    name: "Deploy GitHub Pages"
-    runs-on: [ubuntu-latest]
-    needs: [build_site]
-    steps:
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v2.1.5
-        with:
-          version: '14'
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Download generated site
-        uses: actions/download-artifact@v1
-        with:
-          name: site
-          path: "${{ github.workspace }}/${{ env.SITE_DIR }}"
       - name: Deploy to GitHub Pages
         uses: cpina/github-action-push-to-another-repository@v1.2
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: "${{ github.workspace }}/${{ env.SITE_DIR }}"
+          source-directory: "${{ github.workspace }}/build/${{ env.SITE_DIR }}"
           target-branch: "main"
           destination-github-username: lexemmens
           destination-repository-name: lexemmens.github.io
           user-email: noreply@lexemmens.github.io
-          commit-message: "[CI] Publish Document  ation for ${{ github.sha }}"
+          commit-message: "[CI] Publish Documentation for ${{ github.sha }}"
