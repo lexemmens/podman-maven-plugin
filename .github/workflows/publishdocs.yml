@@ -55,7 +55,8 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source-directory: "${{ github.workspace }}/${{ env.SITE_DIR }}"
+          target-branch: "main"
           destination-github-username: lexemmens
           destination-repository-name: lexemmens.github.io
           user-email: noreply@lexemmens.github.io
-          commit-message: "[CI] Publish Documentation for ${{ github.sha }}"
+          commit-message: "[CI] Publish Document  ation for ${{ github.sha }}"
