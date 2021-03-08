@@ -51,10 +51,11 @@ jobs:
           path: "${{ github.workspace }}/${{ env.SITE_DIR }}"
       - name: Deploy to GitHub Pages
         uses: cpina/github-action-push-to-another-repository@v1.2
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source-directory: "${{ github.workspace }}/${{ env.SITE_DIR }}"
           destination-github-username: lexemmens
           destination-repository-name: lexemmens.github.io
           user-email: noreply@lexemmens.github.io
           commit-message: "[CI] Publish Documentation for ${{ github.sha }}"
-          API_TOKEN_GITHUB: "${{ github.token}}"
