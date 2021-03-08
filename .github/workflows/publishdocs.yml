@@ -50,10 +50,11 @@ jobs:
           name: site
           path: "${{ github.workspace }}/${{ env.SITE_DIR }}"
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4.1.0
+        uses: cpina/github-action-push-to-another-repository@v1.2
         with:
-          GITHUB_TOKEN: "${{ github.token}}"
-          FOLDER: "${{ env.SITE_DIR }}"
-          BRANCH: 'gh-pages'
-          COMMIT_MESSAGE: "[CI] Publish Documentation for ${{ github.sha }}"
-          CLEAN: true
+          source-directory: "${{ github.workspace }}/${{ env.SITE_DIR }}"
+          destination-github-username: lexemmens
+          destination-repository-name: lexemmens.github.io
+          user-email: noreply@lexemmens.github.io
+          commit-message: "[CI] Publish Documentation for ${{ github.sha }}"
+          API_TOKEN_GITHUB: "${{ github.token}}"
