@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.image.ImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -10,7 +11,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.util.List;
 import java.util.Map;
 
-import static nl.lexemmens.podman.util.BuildOutputUtil.determineImageHashes;
 
 /**
  * BuildMojo for building container images using Podman
@@ -29,6 +29,17 @@ public class BuildMojo extends AbstractPodmanMojo {
      */
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
     boolean skipTag;
+
+    private final MultiStageBuildOutputHelper buildOutputHelper;
+
+    /**
+     * Constructor
+     */
+    public BuildMojo() {
+        super();
+
+        this.buildOutputHelper = new MultiStageBuildOutputHelper();
+    }
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
@@ -71,7 +82,7 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         if (image.getBuild().isMultistageContainerFile()) {
             getLog().info("Detected multistage Containerfile...");
-            determineImageHashes(getLog(), image, processOutput);
+            buildOutputHelper.recordImageHashes(getLog(), image, processOutput);
         }
     }
 
