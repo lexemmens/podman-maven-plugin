@@ -1,0 +1,4 @@
+= Podman Maven Plugin Documentation
+:navtitle: Introduction
+
+The Podman Maven Plugin is a simple maven plugin to build, tag and push OCI compliant images configured using a Dockerfile/Containerfile using Podman.
