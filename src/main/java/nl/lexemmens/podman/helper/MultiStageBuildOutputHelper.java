@@ -164,7 +164,7 @@ public final class MultiStageBuildOutputHelper {
      * to detect if the last row of the build output has been reached.
      */
     private static ImageHashSearchResult findImageHash(Log log, List<String> processOutput, int searchStartIndex, Pattern multiStagePattern) {
-        ImageHashSearchResult searchResult = null;
+        ImageHashSearchResult searchResult = ImageHashSearchResult.EMPTY;
         String lastKnownImageHash = null;
 
         int lastLine = processOutput.size() - 2;
@@ -183,7 +183,7 @@ public final class MultiStageBuildOutputHelper {
             if (!candidateLineDefinesStage && imageHashOptional.isPresent()) {
                 // Record the image hash we found
                 lastKnownImageHash = imageHashOptional.get();
-                log.debug("Derived hash: '" + lastKnownImageHash + "' from: " + candidate);
+                log.debug("Derived hash: '" + lastKnownImageHash + "' from:     " + candidate);
             }
 
             if (candidateLineDefinesStage || isLastLine) {
@@ -210,6 +210,8 @@ public final class MultiStageBuildOutputHelper {
     }
 
     private static class ImageHashSearchResult {
+
+        private static final ImageHashSearchResult EMPTY = new ImageHashSearchResult(null, -1, true);
 
         private final String imageHash;
         private final int nextIndex;
