@@ -1,3 +1,124 @@
 = General Configuration
+[#generalconfig]
+:navtitle: General Configuration
+:listing-caption: Listing
+:table-caption: Table
 
-Before you start using this plugin, you must configure the registries in your Maven settings file. The first step of `podman-maven-plugin`, before any of the goals is executed, is to authenticate you with all the registries that are configured in your `pom.xml`.
+Global configuration parameters specify overall behavior like the general plugin behavior or the Podman registries that are used.
+The `podman-maven-plugin` uses the Podman binary installed on your environment.
+
+== Plugin configuration
+[#pluginconfig]
+:navtitle: Plugin Configuration
+
+.General configuration options
+|===
+|Element |Description |Property
+
+|failOnMissingContainerfile
+|Determines whether the plugin should fail in case no `Containerfile` is found.
+When set to `false`, the plugin will not fail when no `Containerfile` is found.
+
+**Default value is**: `true`
+|`podman.fail.on.missing.containerfile`
+
+|registries
+|A list of source registries where (base) images might be pulled from.
+
+**This property is required.**
+|`podman.registries`
+
+|pushRegistry
+|The target registry where the images will be pushed to.
+
+**This property is required.**
+|`podman.image.push.registry`
+
+|skipAuth
+|When set to `true`, Podman will not authenticate the current user with any of the configured registries.
+This may be useful when using registries that do not require authentication.
+
+**Default value is**: `false`
+|`podman.skip.auth`
+
+|skip
+|When set to `true`, Podman will skip _all_ configured steps.
+
+**Default value is**: `false`
+|`podman.skip`
+
+|===
+
+.Example configuration
+[source,xml]
+----
+<configuration>
+    ...
+    <failOnMissingContainerfile>false</failOnMissingContainerfile>
+    <registries>
+        <registry>some-registry.host.com:12345</registry>
+        <registry>another-registry.another-host.com</registry>
+    </registries>
+    <pushRegistry>some-registry.host.com:12345</pushRegistry>
+    <skipAuth>true</skipAuth>
+    <skip>true</skip>
+    ...
+</configuration>
+----
+
+== Podman configuration
+[#podmanconfig]
+:navtitle: Podman Configuration
+
+.Podman configuration options
+|===
+|Element |Description |Property
+
+|tlsVerify
+|Require HTTPS and verify certificates when contacting registries (default: true).
+If explicitly set to true, then TLS verification will be used.
+If set to false, then TLS verification will not be used if needed.
+If not specified, default registries will be searched through (in /etc/containers/registries.conf), and TLS will be skipped if a default registry is listed in the insecure registries.
+
+**Default value is:** NOT_SPECIFIED
+
+**Supported values are:** FALSE, TRUE, NOT_SPECIFIED
+|`podman.tls.verify`
+
+|root
+|Storage root dir in which data, including images, is stored (default: “/var/lib/containers/storage” for UID 0, “$HOME/.local/share/containers/storage” for other users).
+Default root dir configured in /etc/containers/storage.conf.
+
+**See:** https://docs.podman.io/en/latest/markdown/podman.1.html
+|`podman.root`
+
+|runRoot
+|Storage state directory where all state information is stored (default: “/run/containers/storage” for UID 0, “/run/user/$UID/run” for other users).
+Default state dir configured in /etc/containers/storage.conf.
+
+**See:** https://docs.podman.io/en/latest/markdown/podman.1.html
+|`podman.run.root`
+
+|runDirectory
+|Directory from where the Podman executable should be run.
+
+**Default value is**: Directory where the `Containerfile` is located.
+|`podman.run.directory`
+|===
+
+WARNING: When using a custom root storage location for Podman, please be aware that it is _mandatory_ to configure the `clean` mojo, if the custom Podman storage location is set to be the target directory. This has to do with Podman storing its containers and layers in a different user namespace. This prevents a user from (accidentally) deleting these files. As a result, the `mvn clean` goal will fail if this plugin's `clean` mojo is not invoked first. See xref:goals/clean.adoc[] for more information.
+
+.Example configuration
+[source,xml]
+----
+<configuration>
+    ...
+    <podman>
+        <tlsVerify>FALSE</tlsVerify>
+        <root>/path/to/custom/root</root>
+        <runRoot>/path/to/custom/runroot</runRoot>
+        <runDirectory>/path/to/custom/runroot</runDirectory>
+    </podman>
+    ...
+</configuration>
+----

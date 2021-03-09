@@ -1,8 +1,11 @@
 = Introduction
+:navtitle: Introduction
+:listing-caption: Listing
 
 The `podman-maven-plugin` is a maven plugin that allows you to build, tag and push OCI compliant containe images that are configured using a `Dockerfile` or a `Containerfile` using Podman.
 
 == Goals Overview
+:navtitle: Goals
 
 This plugin has three goals:
 
@@ -19,6 +22,7 @@ xref:goals/save.adoc[podman:save]::
 Saves an image as a `tar.gz` file to the local disk. This goal is not bound to any phase.
 
 == Requirements
+:navtitle: Requirements
 
 - Maven 3.6.2 or later
 - Java 9 or later
@@ -31,6 +35,7 @@ NOTE: This Plugin only works when a Containerfile is in your module's folder. Yo
 NOTE: To stay in line with terminology used by Podman, we'll be using the term Containerfile instead of Dockerfile.
 
 == Using parameters in your Containerfile
+:navtitle: Parameters
 
 It is possible to specify properties in your pom file and use those properties in the Containerfile, just like you would in a pom file:
 

@@ -1,0 +1,87 @@
+= Image Configuration
+:navtitle: Image Configuration
+:listing-caption: Listing
+:table-caption: Table
+
+The plugin’s configuration is centered around images.
+These are specified for each image within the `<images>` element of the configuration with one `<image>` element per image to use.
+
+The `<image>` element can contain the following sub elements:
+
+.Image configuration options
+|===
+|Element |Description
+
+|name
+|Each `<image>` configuration has a mandatory, unique container repository name.
+This can include registry and tag parts.
+This name does not support placeholer characters.
+
+|customImageNameForMultiStageContainerfile
+|A `Containerfile` can define multiple stages.
+When set to `true`, the result of each stage can have a different image name.
+
+When set to false, but the `Containerfile` does define one or more stages, a warning will be logged and the value from the `name` property will be used.
+
+|<<stageconfig,stages>>
+|Defines a list of custom image names per stage listed in a `Containerfile`
+
+|xref:goals/build.adoc#buildconfig[build]
+|Element that contains all the configuration aspects when doing a podman:build.
+
+|===
+
+A `<build>` section must be present for each image configuration.
+
+.Example configuration
+[source,xml]
+----
+<configuration>
+    ...
+    <images>
+        <image>
+            <name>your-image-name</name>
+            <customImageNameForMultiStageContainerfile>true</customImageNameForMultiStageContainerfile>
+            <stages>...</stages>
+            <build>...</build>
+        </image>
+    </images>
+    ...
+</configuration>
+----
+
+== Stage Configuration
+:navtitle: Stage Configuration
+[#stageconfig]
+
+The `stages` configuration section is useful when working with multi-stage `Containerfiles`.
+
+.Stage configuration options
+|===
+|Element |Description
+
+|name
+|The name of the stage in a `Containerfile`. A stage in a `Containerfile` is usually defined as: `FROM <image> AS <stageName>`.
+
+|imageName
+|The target name that the image, which was built in stage with `<name>`, should get.
+
+|===
+
+.Example configuration
+[source,xml]
+----
+<configuration>
+    ...
+    <image>
+        <stages>
+            <stage>
+                <name>some_stage</name>
+                <imageName>my-fancy-image</imageName>
+            </stage>
+        </stages>
+    </image>
+    ...
+</configuration>
+----
+

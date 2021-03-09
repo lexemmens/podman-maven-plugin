@@ -1,3 +1,4 @@
 = Contributing
+:navtitle: Contributing
 
 This plugin is fully open source. Together we can make this plugin better. Please feel free to write an issue or, even better, open a pull request if you want to contribute!

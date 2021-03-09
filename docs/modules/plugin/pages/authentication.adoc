@@ -1,6 +1,9 @@
-= Maven Settings Configuration
-:navtitle: Maven Settings
+= Authentication
+:navtitle: Authentication
 :listing-caption: Listing
+
+== Maven Settings
+:navtitle: Maven Settings
 
 Before you start using this plugin, you must configure the registries in your Maven settings file. The first step of `podman-maven-plugin`, before any of the goals is executed, is to authenticate you with all the registries that are configured in your `pom.xml`.
 
