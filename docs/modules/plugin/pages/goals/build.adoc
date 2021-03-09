@@ -1,4 +1,5 @@
 = Build
+[#buildmojo]
 :navtitle: Build
 :listing-caption: Listing
 :table-caption: Table
@@ -107,10 +108,12 @@ Supported values are:
 Labels are a mechanism for applying metadata to container images. Labels can be used to order images. A label is a key-value pair, stored as a string. You can specify multiple labels for an object, but each key-value pair must be unique within an object. If the same key is given multiple values, the most-recently-written value overwrites all previous values.
 
 === Key format recommendations
+[#keyformatrecommendations]
 :navtitle: Key format recommendations
 A label key is the left-hand side of the key-value pair. Keys are alphanumeric strings which may contain periods (`.`) and hyphens (`-`). Most Podman users use images created by other organizations, and the following guidelines help to prevent inadvertent duplication of labels across objects, especially if you plan to use labels as a mechanism for automation.
 
 === Value guidelines
+[#valuefuidelines]
 :navtitle: Value guidelines
 Label values can contain any data type that can be represented as a string, including (but not limited to) JSON, XML, CSV, or YAML. The only requirement is that the value be serialized to a string first, using a mechanism specific to the type of structure. For instance, to serialize JSON into a string, you might use the `JSON.stringify()` JavaScript method.
 

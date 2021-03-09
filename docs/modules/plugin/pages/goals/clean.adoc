@@ -1,4 +1,8 @@
 = Clean
+[#cleanmojo]
+:navtitle: Clean
+:listing-caption: Listing
+:table-caption: Table
 
 This goal cleans the custom root directory when specified. This goal runs before the Maven's clean goal, because files ccreated by Podman, that are stored in the project directory are created in a different user namespace. Those files cannot be removed by a simple `rm -rf` or similar command and that's where this goal comes in.
 

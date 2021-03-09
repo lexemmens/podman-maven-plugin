@@ -106,7 +106,7 @@ Default state dir configured in /etc/containers/storage.conf.
 |`podman.run.directory`
 |===
 
-WARNING: When using a custom root storage location for Podman, please be aware that it is _mandatory_ to configure the `clean` mojo, if the custom Podman storage location is set to be the target directory. This has to do with Podman storing its containers and layers in a different user namespace. This prevents a user from (accidentally) deleting these files. As a result, the `mvn clean` goal will fail if this plugin's `clean` mojo is not invoked first. See xref:goals/clean.adoc[] for more information.
+WARNING: When using a custom root storage location for Podman, please be aware that it is _mandatory_ to configure the `clean` mojo, if the custom Podman storage location is set to be anywhere in the projects directory. This has to do with Podman storing its containers and layers in a different user namespace. This prevents a user from (accidentally) deleting these files but also prevents the `mvn clean` goal from executing cleanly. See xref:goals/clean.adoc[] for more information.
 
 .Example configuration
 [source,xml]

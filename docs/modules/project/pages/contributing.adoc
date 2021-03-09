@@ -1,4 +1,9 @@
 = Contributing
+[#contributing]
 :navtitle: Contributing
 
-This plugin is fully open source. Together we can make this plugin better. Please feel free to write an issue or, even better, open a pull request if you want to contribute!
+This plugin is fully open source.Together we can make this plugin better.Please feel free to write an issue or, even better, open a pull request if you want to contribute!
+
+== Troubleshooting
+[#troubleshooting]
+Before writing a ticket, it is good to check the `Containerfile` that is being build first. Because the plugin allows to use Maven's filtering option, it takes the file from the given location and copies it to the target directory to decorate it. If the target `Containerfile` looks okay and you are sill running into issues, please feel free to write an issue.
