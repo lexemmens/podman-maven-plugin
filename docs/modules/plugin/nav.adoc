@@ -7,7 +7,7 @@
 *** xref:goals/build.adoc[build]
 *** xref:goals/push.adoc[push]
 *** xref:goals/save.adoc[save]
-*** xref:goals/clean.adoc[save]
+*** xref:goals/clean.adoc[clean]
 ** xref:registry-handling.adoc[]
 ** xref:usage.adoc[]
 ** xref:further-reading.adoc[]
