@@ -1,1 +1,18 @@
 = Save
+:navtitle: Podman Save
+:table-caption: Table
+
+This goal saves an image defined in the build configuration to a local file. This is identical to `podman:save`. The name of the container image is calculated based on the full name of the image (including the registry). The resulting file will be a `.tar.gz` file located in the project's `target` directory.
+
+NOTE: This goal is experimental.
+
+.Push options
+|===
+|Element |Description
+
+|skipSave
+|If set to true the plugin won’t save the image to the local disk.
+
+**Default value is**: `false`
+
+|===
