@@ -7,5 +7,5 @@ asciidoc:
     maven-site-plugin-version: 3.9.0
     project-repo: lexemmens/podman-maven-plugin
 nav:
-  - modules/plugin/nav.adoc
+  - modules/ROOT/nav.adoc
   - modules/project/nav.adoc

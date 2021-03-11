@@ -1,5 +1,5 @@
 * Maven Plugin
-** xref:introduction.adoc[]
+** xref:index.adoc[]
 ** xref:authentication.adoc[]
 ** xref:general-configuration.adoc[]
 ** xref:image-configuration.adoc[]
