@@ -1,17 +1,12 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config.image;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
 import java.util.*;
 
-/**
- * Holds the configuration for the container images that are being built. Values of this class will be set via
- * the Maven pom, except for the image hash.
- */
-public class ImageConfiguration {
+public abstract class AbstractImageConfiguration<T extends AbstractImageBuildConfiguration> {
 
     /**
      * The name of the image without the target registry. May contain the repository. Must be all lowercase and no special characters.
@@ -34,10 +29,13 @@ public class ImageConfiguration {
     protected StageConfiguration[] stages;
 
     /**
-     * The build image configuration.
+     * <p>
+     * Returns the build configuration
+     * </p>
+     *
+     * @return the configuration used for building the image
      */
-    @Parameter
-    protected BuildImageConfiguration build;
+    public abstract T getBuild();
 
     /**
      * Set after the image is built.
@@ -47,16 +45,7 @@ public class ImageConfiguration {
     /**
      * Stores the image hashes per stage in case of a multi stage Containerfile
      */
-    private Map<String, String> imageHashPerStage = new HashMap<>();
-
-    /**
-     * <p>
-     * Constructor
-     * </p>
-     */
-    public ImageConfiguration() {
-        // Empty - will be injected
-    }
+    private final Map<String, String> imageHashPerStage = new HashMap<>();
 
     /**
      * <p>
@@ -90,21 +79,11 @@ public class ImageConfiguration {
     }
 
     /**
-     * <p>
-     * Returns the build configuration
-     * </p>
-     *
-     * @return the configuration used for building the image
-     */
-    public BuildImageConfiguration getBuild() {
-        return build;
-    }
-
-    /**
      * Returns whether a custom image name per stage should be used (when using a multistage Containerfile).
      *
      * @return true when certain stages in a multistage Containerfile should have unique names.
      */
+
     public boolean useCustomImageNameForMultiStageContainerfile() {
         return customImageNameForMultiStageContainerfile;
     }
@@ -131,7 +110,7 @@ public class ImageConfiguration {
     public List<String> getImageNames() {
         List<String> imageNames = new ArrayList<>();
 
-        for (String tag : build.getAllTags()) {
+        for (String tag : getBuild().getAllTags()) {
             imageNames.add(String.format("%s:%s", name, tag));
         }
 
@@ -150,13 +129,33 @@ public class ImageConfiguration {
 
         for (StageConfiguration stage : stages) {
             if (stageName.equals(stage.getName())) {
-                for (String tag : build.getAllTags()) {
+                for (String tag : getBuild().getAllTags()) {
                     imageNames.add(String.format("%s:%s", stage.getImageName(), tag));
                 }
             }
         }
 
         return imageNames;
+    }
+
+    /**
+     * Initialises and validates this configuration
+     *
+     * @param log The log class for logging
+     * @throws MojoExecutionException In case validation fails.
+     */
+    public void initAndValidate(Log log) throws MojoExecutionException {
+        if (!customImageNameForMultiStageContainerfile && name == null) {
+            String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
+            log.error(msg);
+            throw new MojoExecutionException(msg);
+        }
+
+        if (customImageNameForMultiStageContainerfile && stages == null) {
+            String msg = "Plugin is configured for multistage Containerfiles, but there are no custom image names configured.";
+            log.error(msg);
+            throw new MojoExecutionException(msg);
+        }
     }
 
     /**
@@ -172,37 +171,37 @@ public class ImageConfiguration {
 
     /**
      * Returns a boolean indicating whether this configuration is valid
+     *
      * @return true if this configuration is valid. False otherwise.
      */
     public boolean isValid() {
-        return build.isValid();
+        return getBuild().isValid();
     }
 
     /**
-     * Initializes this configuration and fills any null values with default values.
+     * Sets the name of this image.
      *
-     * @param mavenProject The MavenProject to derive some of the values from
-     * @param log          The log for logging any errors that occur during validation
-     * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
-     * @throws MojoExecutionException In case validation fails.
+     * @param name The name of this image
      */
-    public void initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
-        build.validate(mavenProject, log, failOnMissingContainerfile);
+    public void setImageName(String name) {
+        this.name = name;
+    }
 
-        if (!customImageNameForMultiStageContainerfile && name == null) {
-            String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        }
+    /**
+     * Sets whether a custom image name should be used for each stage in the Containerfile.
+     *
+     * @param customImageNameForMultiStageContainerfile true if a custom name should be used for each stage in the Containerfile.
+     */
+    public void setCustomImageNameForMultiStageContainerfile(boolean customImageNameForMultiStageContainerfile) {
+        this.customImageNameForMultiStageContainerfile = customImageNameForMultiStageContainerfile;
+    }
 
-        if (customImageNameForMultiStageContainerfile && stages == null) {
-            String msg = "Plugin is configured for multistage Containerfiles, but there are no custom image names configured.";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        }
-
-        if (build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
-            log.warn("Detected multistage Containerfile, but there are no image names specified for (some of) these stages. Only tagging final image!");
-        }
+    /**
+     * Sets the custom {@link StageConfiguration}s
+     *
+     * @param stages The {@link StageConfiguration}s to set.
+     */
+    public void setStages(StageConfiguration[] stages) {
+        this.stages = stages;
     }
 }

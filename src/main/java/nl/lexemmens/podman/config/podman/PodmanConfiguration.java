@@ -1,4 +1,4 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -84,6 +84,7 @@ public class PodmanConfiguration {
 
     /**
      * Returns the directory from which Podman should be executed.
+     *
      * @return The directory where Podman should be executed from.
      */
     public File getRunDirectory() {
@@ -93,7 +94,8 @@ public class PodmanConfiguration {
     /**
      * Validates and initializes this configuration
      *
-     * @param log Access to Maven's log system for informational purposes.
+     * @param log     Access to Maven's log system for informational purposes.
+     * @param project The Maven Project that allows to set some details when properties are omitted.
      * @throws MojoExecutionException In case validation fails.
      */
     public void initAndValidate(MavenProject project, Log log) throws MojoExecutionException {
