@@ -1,6 +1,6 @@
 name: docs
 title: Podman Maven Plugin
-version: 'master'
+version: '1.6.0'
 display_version: '1.6.0 (latest)'
 asciidoc:
   attributes:
