@@ -3,7 +3,7 @@ site:
 content:
   sources:
     - url: .
-      branches: [ master, feature/Move-documentation-to-asciidoc ]
+      branches: [ master ]
       start_path: docs
 asciidoc:
   attributes:
@@ -14,4 +14,8 @@ ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
-  supplemental_files: ./docs/supplemental-ui
+  supplemental_files:
+    - ./docs/supplemental-ui
+    - path: css/podman.css
+      contents: |
+        static_files: [ docs/css/podman.xss ]
