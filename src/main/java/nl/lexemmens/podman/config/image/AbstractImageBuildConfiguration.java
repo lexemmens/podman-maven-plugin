@@ -1,4 +1,4 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config.image;
 
 import nl.lexemmens.podman.enumeration.ContainerFormat;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -19,18 +19,7 @@ import java.util.stream.Stream;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
-public class BuildImageConfiguration {
-
-    /**
-     * This is the regular expression to be used to determine a multistage Containerfiles. For now we only support
-     * named stages.
-     */
-    private static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile(".*(FROM\\s.*)([ASas]\\s)([a-zA-Z].*)");
-
-    /**
-     * The default name of the Containerfile to build.
-     */
-    private static final String DEFAULT_CONTAINERFILE = "Containerfile";
+public abstract class AbstractImageBuildConfiguration implements ImageBuildConfiguration {
 
     /**
      * Configures whether caching should be used to build images.
@@ -70,11 +59,6 @@ public class BuildImageConfiguration {
     @Parameter
     protected String containerFile;
 
-    /**
-     * Directory containing the Containerfile
-     */
-    @Parameter
-    protected File containerFileDir;
 
     /**
      * Specify any labels to be applied to the image
@@ -117,10 +101,7 @@ public class BuildImageConfiguration {
      */
     private boolean isMultistageContainerFile;
 
-    /**
-     * Represents the validity of this configuration
-     */
-    private boolean valid;
+
 
     /**
      * List of all build stages (only populated in case of multistage Containerfile)
@@ -129,11 +110,12 @@ public class BuildImageConfiguration {
 
 
     /**
-     * Constructor
+     * Represents the validity of this configuration
      */
-    public BuildImageConfiguration() {
-        // Empty - will be injected
-    }
+    protected boolean valid;
+
+
+
 
     /**
      * Returns which value should be used for the --no-cache property
@@ -167,6 +149,7 @@ public class BuildImageConfiguration {
      *
      * @return The tags to be applied
      */
+    @Override
     public List<String> getAllTags() {
         List<String> allTags = new ArrayList<>();
         if (tags != null) {
@@ -181,16 +164,6 @@ public class BuildImageConfiguration {
             allTags.add(mavenProjectVersion);
         }
         return allTags;
-    }
-
-    /**
-     * Returns the directory containing the original raw Containerfile
-     *
-     * @return A {@link File} object referencing the location of the Containerfile
-     */
-    public Path getSourceContainerFileDir() {
-        Path containerFileDirPath = Paths.get(containerFileDir.toURI());
-        return containerFileDirPath.resolve(containerFile);
     }
 
     /**
@@ -223,16 +196,6 @@ public class BuildImageConfiguration {
      */
     public File getOutputDirectory() {
         return outputDirectory;
-    }
-
-    /**
-     * Returns the location of the raw Containerfile. This location is used
-     * as the context dir when running podman.
-     *
-     * @return The location of the raw Containerfile as a File.
-     */
-    public File getContainerFileDir() {
-        return containerFileDir;
     }
 
     /**
@@ -279,21 +242,9 @@ public class BuildImageConfiguration {
         return valid;
     }
 
-    /**
-     * Validates this class by giving all null properties a default value.
-     *
-     * @param project The MavenProject used to derive some of the default values from.
-     * @param log     Access to Maven's log system for writing errors
-     * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
-     * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
-     */
     public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
         if (containerFile == null) {
             containerFile = DEFAULT_CONTAINERFILE;
-        }
-
-        if (containerFileDir == null) {
-            containerFileDir = project.getBasedir();
         }
 
         if (labels == null) {
@@ -314,28 +265,9 @@ public class BuildImageConfiguration {
 
         this.mavenProjectVersion = project.getVersion();
         this.outputDirectory = new File(project.getBuild().getDirectory());
-
-        Path sourceContainerFile = getSourceContainerFileDir();
-        if (!Files.exists(sourceContainerFile) && failOnMissingContainerfile) {
-            String msg = "No Containerfile found at " + sourceContainerFile + ". Check your the containerFileDir and containerFile parameters in the configuration.";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        } else if(!Files.exists(sourceContainerFile)) {
-            log.warn("No Containerfile was found at " + sourceContainerFile + ", however this will be ignored due to current plugin configuration.");
-            valid = false;
-        } else {
-            if (isContainerFileEmpty(log, sourceContainerFile)) {
-                String msg = "The specified Containerfile at " + sourceContainerFile + " is empty!";
-                log.error(msg);
-                throw new MojoExecutionException(msg);
-            }
-
-            determineBuildStages(log, sourceContainerFile);
-            valid = true;
-        }
     }
 
-    private boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {
+    protected boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         try {
             return 0 == Files.size(fullContainerFilePath);
         } catch (IOException e) {
@@ -345,7 +277,7 @@ public class BuildImageConfiguration {
         }
     }
 
-    private void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
+    protected void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
             List<String> content = containerFileStream.collect(Collectors.toList());
             for (String line : content) {
@@ -365,4 +297,5 @@ public class BuildImageConfiguration {
             throw new MojoExecutionException(msg, e);
         }
     }
+
 }

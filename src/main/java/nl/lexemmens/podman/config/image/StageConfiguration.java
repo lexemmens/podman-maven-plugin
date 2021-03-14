@@ -1,4 +1,4 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config.image;
 
 import org.apache.maven.plugins.annotations.Parameter;
 

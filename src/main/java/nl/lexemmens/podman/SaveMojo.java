@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.StageConfiguration;
+import nl.lexemmens.podman.config.image.StageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -31,7 +31,7 @@ public class SaveMojo extends AbstractPodmanMojo {
 
         checkAuthentication(hub);
 
-        for (ImageConfiguration image : images) {
+        for (SingleImageConfiguration image : allImageConfigurations) {
             if(!image.isValid()) {
                 getLog().warn("Skipping save of container image with name " + image.getImageName()
                         + ". Configuration is not valid for this module!");
@@ -43,7 +43,7 @@ public class SaveMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void exportContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void exportContainerImages(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Exporting container images to local disk ...");
 
         Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN_DIRECTORY);
@@ -69,7 +69,7 @@ public class SaveMojo extends AbstractPodmanMojo {
         getLog().info("Container images exported successfully.");
     }
 
-    private void exportContainerImage(ImageConfiguration image, ServiceHub hub, Path targetPodmanDir) throws MojoExecutionException {
+    private void exportContainerImage(SingleImageConfiguration image, ServiceHub hub, Path targetPodmanDir) throws MojoExecutionException {
         for (String imageName : image.getImageNames()) {
             String fullImageName = getFullImageNameWithPushRegistry(imageName);
 

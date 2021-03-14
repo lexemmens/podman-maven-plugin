@@ -1,7 +1,7 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.executor.CommandExecutorDelegateImpl;
-import nl.lexemmens.podman.image.PodmanConfiguration;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;

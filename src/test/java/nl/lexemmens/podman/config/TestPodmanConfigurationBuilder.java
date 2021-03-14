@@ -1,5 +1,6 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config;
 
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -16,22 +17,22 @@ public class TestPodmanConfigurationBuilder {
     }
 
     public TestPodmanConfigurationBuilder setTlsVerify(TlsVerify tlsVerify) {
-        podman.tlsVerify = tlsVerify;
+//        podman.tlsVerify = tlsVerify;
         return this;
     }
 
     public TestPodmanConfigurationBuilder setRoot(File root) {
-        podman.root = root;
+//        podman.root = root;
         return this;
     }
 
     public TestPodmanConfigurationBuilder setRunRoot(File runRoot) {
-        podman.runRoot = runRoot;
+//        podman.runRoot = runRoot;
         return this;
     }
 
     public TestPodmanConfigurationBuilder setRunDirectory(File runDirectory) {
-        podman.runDirectory = runDirectory;
+//        podman.runDirectory = runDirectory;
         return this;
     }
 

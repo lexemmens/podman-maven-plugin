@@ -1,10 +1,10 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
-import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
+import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -39,7 +39,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(false)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
@@ -52,7 +52,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipSave() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(false)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
@@ -68,7 +68,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveNoTags() {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(false)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
@@ -90,7 +90,7 @@ public class SaveMojoTest extends AbstractMojoTest {
         Path targetLocation = currentDir.resolve(containerFileDir);
         String targetLocationAsString = targetLocation.normalize().toFile().getAbsolutePath();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir(targetLocationAsString)
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
@@ -107,7 +107,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveWithMavenProjectVersion() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
@@ -128,7 +128,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSaveImageFromLocalRegistry() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
@@ -151,7 +151,7 @@ public class SaveMojoTest extends AbstractMojoTest {
     public void testMultiStageSaveOnlyFinalImage() throws MojoExecutionException {
         Path target = Paths.get(".", "target", "podman");
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
@@ -177,7 +177,7 @@ public class SaveMojoTest extends AbstractMojoTest {
     public void testMultiStageSaveWithCustomTagPerStage() throws MojoExecutionException, IOException, URISyntaxException {
         Path target = Paths.get(".", "target", "podman");
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"0.2.1"})
                 .setCreateLatestTag(false)
@@ -204,15 +204,15 @@ public class SaveMojoTest extends AbstractMojoTest {
         verify(log, times(1)).info(Mockito.eq("Container images exported successfully."));
     }
 
-    private void configureMojo(ImageConfiguration image, boolean skipAll, boolean skipSave, String pushRegistry, boolean failOnMissingContainerfile) {
-        List<ImageConfiguration> images = List.of(image);
+    private void configureMojo(SingleImageConfiguration image, boolean skipAll, boolean skipSave, String pushRegistry, boolean failOnMissingContainerfile) {
+        List<SingleImageConfiguration> images = List.of(image);
 
         saveMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         saveMojo.skip = skipAll;
         saveMojo.skipAuth = true;
         saveMojo.skipSave = skipSave;
         saveMojo.pushRegistry = pushRegistry;
-        saveMojo.images = images;
+//        saveMojo.images = images;
         saveMojo.failOnMissingContainerfile = failOnMissingContainerfile;
     }
 }

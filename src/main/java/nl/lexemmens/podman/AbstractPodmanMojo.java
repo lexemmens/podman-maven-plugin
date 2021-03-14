@@ -1,7 +1,9 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
+import nl.lexemmens.podman.config.image.ImageConfiguration;
+import nl.lexemmens.podman.config.image.batch.BatchImageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
@@ -13,6 +15,7 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
@@ -42,10 +45,16 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected String pushRegistry;
 
     /**
-     * Image configuration
+     * Single Image configuration: 1 configuration to 1 image
      */
     @Parameter
-    protected List<ImageConfiguration> images;
+    protected SingleImageConfiguration[] images;
+
+    /**
+     * Batch Image Configuration: 1 configuration to n images.
+     */
+    @Parameter
+    protected BatchImageConfiguration batch;
 
     /**
      * Podman specific configuration
@@ -81,6 +90,8 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Component
     private SettingsDecrypter settingsDecrypter;
 
+    protected final List<SingleImageConfiguration> allImageConfigurations;
+
     /**
      * Determines whether to skip initializing configurations
      */
@@ -91,6 +102,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     protected AbstractPodmanMojo() {
         this.requireImageConfiguration = true;
+        this.allImageConfigurations = new ArrayList<>();
     }
 
     /**
@@ -100,6 +112,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     protected AbstractPodmanMojo(boolean requireImageConfiguration) {
         this.requireImageConfiguration = requireImageConfiguration;
+        this.allImageConfigurations = new ArrayList<>();
     }
 
     @Override
@@ -108,6 +121,8 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             getLog().info("Podman actions are skipped.");
             return;
         }
+
+        // TODO Concert BatchImageConfigurations to SingleImageConfigurations
 
         initConfigurations();
 
@@ -133,7 +148,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
         podman.initAndValidate(project, getLog());
         if (requireImageConfiguration) {
-            if (images == null || images.isEmpty()) {
+            if (images == null || images.length == 0) {
                 throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
             } else {
                 for (ImageConfiguration image : images) {

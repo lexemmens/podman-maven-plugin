@@ -1,10 +1,10 @@
 package nl.lexemmens.podman.service;
 
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
-import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
+import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -191,7 +191,7 @@ public class PodmanExecutorServiceTest {
         when(build.getDirectory()).thenReturn("target");
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
                 .build();
@@ -212,7 +212,7 @@ public class PodmanExecutorServiceTest {
         when(build.getDirectory()).thenReturn("target");
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setFormat(DOCKER)
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
@@ -234,7 +234,7 @@ public class PodmanExecutorServiceTest {
         when(build.getDirectory()).thenReturn("target");
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setFormat(OCI)
                 .setPullAlways(true)
                 .setContainerfileDir("src/test/resources")
@@ -262,7 +262,7 @@ public class PodmanExecutorServiceTest {
                 .initAndValidate(mavenProject, log)
                 .build();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log, true)
@@ -289,7 +289,7 @@ public class PodmanExecutorServiceTest {
                 .initAndValidate(mavenProject, log)
                 .build();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log, true)
@@ -317,7 +317,7 @@ public class PodmanExecutorServiceTest {
                 .initAndValidate(mavenProject, log)
                 .build();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log, true)
