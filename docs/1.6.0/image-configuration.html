@@ -145,7 +145,7 @@
     <li><a href="image-configuration.html">Image Configuration</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/feature/Move-documentation-to-asciidoc/docs/modules/ROOT/pages/image-configuration.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/master/docs/modules/ROOT/pages/image-configuration.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
@@ -253,14 +253,16 @@ When set to <code>true</code>, the result of each stage can have a different ima
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
     ...
-    &lt;image&gt;
-        &lt;stages&gt;
-            &lt;stage&gt;
-                &lt;name&gt;some_stage&lt;/name&gt;
-                &lt;imageName&gt;my-fancy-image&lt;/imageName&gt;
-            &lt;/stage&gt;
-        &lt;/stages&gt;
-    &lt;/image&gt;
+    &lt;images&gt;
+        &lt;image&gt;
+            &lt;stages&gt;
+                &lt;stage&gt;
+                    &lt;name&gt;some_stage&lt;/name&gt;
+                    &lt;imageName&gt;my-fancy-image&lt;/imageName&gt;
+                &lt;/stage&gt;
+            &lt;/stages&gt;
+        &lt;/image&gt;
+    &lt;/images&gt;
     ...
 &lt;/configuration&gt;</code></pre>
 </div>
