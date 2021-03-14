@@ -73,14 +73,16 @@ The `stages` configuration section is useful when working with multi-stage `Cont
 ----
 <configuration>
     ...
-    <image>
-        <stages>
-            <stage>
-                <name>some_stage</name>
-                <imageName>my-fancy-image</imageName>
-            </stage>
-        </stages>
-    </image>
+    <images>
+        <image>
+            <stages>
+                <stage>
+                    <name>some_stage</name>
+                    <imageName>my-fancy-image</imageName>
+                </stage>
+            </stages>
+        </image>
+    </images>
     ...
 </configuration>
 ----
