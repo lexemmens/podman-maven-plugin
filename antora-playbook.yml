@@ -15,7 +15,7 @@ ui:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
   supplemental_files:
-    - ./docs/supplemental-ui
+    - path: ./docs/supplemental-ui
     - path: css/podman.css
       contents: |
         static_files: [ docs/css/podman.xss ]
