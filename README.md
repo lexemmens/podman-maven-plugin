@@ -17,6 +17,14 @@ Also, only a subset of the `podman`s capabilities have been implemented (build, 
 
 This plugin is mainly inspired by the `docker-maven-plugin` and shows some similarities in configuration.
 
+## Goals
+| Goal                                             | Description                | Default Lifecycle Phase |
+| -------------------------------------------------| -------------------------- | ----------------------- |
+| `podman:build`                                   | Build images               | install                 | 
+| `podman:push`                                    | Push images to a registry  | deploy                  |
+| `podman:clean`                                   | Clean up local storage     | clean                   |
+| `podman:save`                                    | Save image to a file       |                         |
+
 ## Documentation
 The manual of this plugin is available on [GitHub Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/index.html)
 
