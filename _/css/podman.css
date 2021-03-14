@@ -1,1 +1,3 @@
-static_files: [ docs/css/podman.xss ]
+.color-navbar-bg {
+    background-color: #1b223d;
+}
