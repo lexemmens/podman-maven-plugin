@@ -1,0 +1,13 @@
+* Maven Plugin
+** xref:index.adoc[]
+** xref:authentication.adoc[]
+** xref:general-configuration.adoc[]
+** xref:image-configuration.adoc[]
+** Goals
+*** xref:goals/build.adoc[build]
+*** xref:goals/push.adoc[push]
+*** xref:goals/save.adoc[save]
+*** xref:goals/clean.adoc[clean]
+** xref:registry-handling.adoc[]
+** xref:usage.adoc[]
+** xref:further-reading.adoc[]

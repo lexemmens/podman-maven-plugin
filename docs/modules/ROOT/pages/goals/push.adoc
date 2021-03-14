@@ -1,0 +1,26 @@
+= Push
+[#pushmojo]
+:navtitle: Push
+:table-caption: Table
+
+This goal uploads images to the registry which have a `<build>` configuration section. The default registry where images are pushed to is docker.io, but can be specified as part of the images’s name the Docker way. E.g. `containers.host.com:12345/sample:1.2` will push the image data with tag 1.2 to the registry `containers.host.com` at port 12345. Security information (i.e. user and password) can be specified as described in section xref:authentication.adoc[].
+
+.Push options
+|===
+|Element |Description |Property
+
+|skipPush
+|If set to true the plugin won’t push any images that have been built.
+
+**Default value is**: `false`
+|`podman.skip.push`
+
+|deleteLocalImageAfterPush
+|When set to true, the locally created image will be deleted after it has been pushed to the registry.
+
+**Default value is**: `false`
+|`podman.image.delete.after.push`
+
+|===
+
+NOTE: When using the `deleteLocalImageAfterPush` option, be advised that any base images that may have been pulled as part of building the image continue to exist.

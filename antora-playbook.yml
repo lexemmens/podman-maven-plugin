@@ -1,10 +1,9 @@
-
 site:
   title: 'Podman Maven Plugin - Documentation'
 content:
   sources:
     - url: .
-      branches: [ master, feature/Move-documentation-to-asciidoc ]
+      branches: [ master ]
       start_path: docs
 asciidoc:
   attributes:
@@ -13,10 +12,6 @@ asciidoc:
     idseparator: '-'
 ui:
   bundle:
-    url: https://github.com/abelsromero/asciidoctor-maven-plugin-antora-ui/raw/master/bundle/ui-bundle.zip
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
-  supplemental_files:
-    - path: ui.yml
-      contents: |
-        static_files: [ .nojekyll ]
-    - path: .nojekyll
+  supplemental_files: ./docs/supplemental-ui
