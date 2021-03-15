@@ -1,9 +1,9 @@
 site:
   title: 'Podman Maven Plugin - Documentation'
 content:
+  branches: [ 'master', '1.*' ]
   sources:
-    - url: .
-      branches: [ 'master', '1.*' ]
+    - url: https://github.com/lexemmens/podman-maven-plugin.git
       start_path: docs
 asciidoc:
   attributes:
