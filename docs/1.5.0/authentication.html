@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Introduction :: Podman Maven Plugin - Documentation</title>
-    <link rel="next" href="authentication.html">
+    <title>Authentication :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="general-configuration.html">
     <meta name="generator" content="Antora 2.3.4">
 <link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
   </head>
@@ -40,7 +41,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="docs" data-version="1.6.0">
+<div class="nav-container" data-component="docs" data-version="1.5.0">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -53,10 +54,10 @@
     <button class="nav-item-toggle"></button>
     <span class="nav-text">Maven Plugin</span>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="index.html">Introduction</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="authentication.html">Authentication</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -118,14 +119,14 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">Podman Maven Plugin</span>
-    <span class="version">1.6.0</span>
+    <span class="version">1.5.0</span>
   </div>
   <ul class="components">
     <li class="component is-current">
       <a class="title" href="index.html">Podman Maven Plugin</a>
       <ul class="versions">
         <li class="version is-current is-latest">
-          <a href="index.html">1.6.0</a>
+          <a href="index.html">1.5.0</a>
         </li>
       </ul>
     </li>
@@ -141,144 +142,93 @@
   <ul>
     <li><a href="index.html">Podman Maven Plugin</a></li>
     <li>Maven Plugin</li>
-    <li><a href="index.html">Introduction</a></li>
+    <li><a href="authentication.html">Authentication</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/master/docs/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/master/docs/modules/ROOT/pages/authentication.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Introduction</h1>
+<h1 class="page">Authentication</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <code>podman-maven-plugin</code> is a maven plugin that allows you to build, tag and push OCI compliant containe images that are configured using a <code>Dockerfile</code> or a <code>Containerfile</code> using Podman.</p>
+<p>The <code>podman-maven-plugin</code> currently supports one method of authentication, which is by providing authentication details via the Maven settings file.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="about"><a class="anchor" href="#about"></a>About</h2>
+<h2 id="maven-settings"><a class="anchor" href="#maven-settings"></a>Maven Settings</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>This plugin was created based on the need to build container images with Podman, whilst not having an appropriate plugin to do so. Initially using the docker-maven-plugin from fabric8io it quickly became clear that simply swapping Docker for Podman (alias docker=podman) did not work as the plugin requires a Docker outlet to communicate with. With other plugins currently not yet available, the idea was born.</p>
+<div id="mavensettings" class="paragraph">
+<p>Before you start using this plugin, you must configure the registries in your Maven settings file. The first step of <code>podman-maven-plugin</code>, before any of the goals is executed, is to authenticate you with all the registries that are configured in your <code>pom.xml</code>.</p>
 </div>
-<div class="paragraph">
-<p>This plugin uses a ProcessExecutor from ZeroTurnaround to do its magic under water. Although this plugins' structure is similar to that from the docker-maven-plugin, its implementation is not. In an effort to keep things simple, I have chosen to use a ProcessExecutor to run podman rather than implementing the logic myself.</p>
-</div>
-<div class="paragraph">
-<p>Also, only a subset of the podmans capabilities have been implemented (build, push and save).</p>
-</div>
-<div class="paragraph">
-<p>This plugin is mainly inspired by the docker-maven-plugin and shows some similarities in configuration.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="goals-overview"><a class="anchor" href="#goals-overview"></a>Goals Overview</h2>
-<div class="sectionbody">
-<div id="goals" class="paragraph">
-<p>This plugin has three goals:</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a href="goals/build.html" class="page">podman:build</a></dt>
-<dd>
-<p>Builds <em>and</em> tags a configured container image. This goal is bound to the <code>install</code> phase.</p>
-</dd>
-<dt class="hdlist1"><a href="goals/push.html" class="page">podman:push</a></dt>
-<dd>
-<p>Pushes a container image to the registry. This goal is bound to the <code>deploy</code> phase</p>
-</dd>
-<dt class="hdlist1"><a href="goals/clean.html" class="page">podman:clean</a></dt>
-<dd>
-<p>Cleans up the local Podman root storage. This goal is bound to the <code>pre-clean</code> phase.</p>
-</dd>
-<dt class="hdlist1"><a href="goals/save.html" class="page">podman:save</a></dt>
-<dd>
-<p>Saves an image as a <code>tar.gz</code> file to the local disk. This goal is not bound to any phase.</p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="requirements"><a class="anchor" href="#requirements"></a>Requirements</h2>
-<div class="sectionbody">
-<div id="requirements" class="ulist">
-<ul>
-<li>
-<p>Maven 3.6.2 or later</p>
-</li>
-<li>
-<p>Java 9 or later</p>
-</li>
-<li>
-<p>Podman to be installed on the OS where this plugin will run</p>
-</li>
-<li>
-<p>Registry configuration to be present in Maven settings.</p>
-</li>
-<li>
-<p>Dockerfile or Containerfile to be present in the module</p>
-</li>
-</ul>
-</div>
-<div class="admonitionblock note">
+<div class="admonitionblock warning">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-This Plugin only works when a Containerfile is in your module&#8217;s folder. You cannot create a complete Containerfile via configuration in the <code>pom.xml</code>.
+The id of the server <strong>must</strong> match the registries configured in the plugin (see below). The plugin will fail if credentials are missing for any of the provided registries.
 </td>
 </tr>
 </table>
 </div>
-<div class="admonitionblock note">
+<div class="admonitionblock warning">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-To stay in line with terminology used by Podman, we&#8217;ll be using the term Containerfile instead of Dockerfile.
+This plugin will also fail if there are no registries configured, but authentication is not skipped. Please refer to the table below for all configuration options.
 </td>
 </tr>
 </table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="command-line"><a class="anchor" href="#command-line"></a>Command line</h2>
-<div class="sectionbody">
-<div id="commandline" class="paragraph">
-<p>You can also call this plugin from the command line by invoking either of its Mojo&#8217;s directly, i.e. via <code>mvn podman:build</code> or <code>mvn podman:push</code> after running a <code>mvn install</code>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="using-parameters-in-your-containerfile"><a class="anchor" href="#using-parameters-in-your-containerfile"></a>Using parameters in your Containerfile</h2>
-<div class="sectionbody">
-<div id="usingparams" class="paragraph">
-<p>It is possible to specify properties in your pom file and use those properties in the Containerfile, just like you would in a pom file:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listing 1. Example Containerfile</div>
+<div class="title">Listing 1. Excerpt of a Maven Settings file.</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-Dockerfile hljs" data-lang="Dockerfile">FROM ${container.base.image}
+<pre class="highlightjs highlight"><code class="language-XML hljs" data-lang="XML">&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
 
-WORKDIR /application
-COPY ${project.artifactId}.jar ./</code></pre>
+    &lt;servers&gt;
+        &lt;server&gt;
+            &lt;id&gt;container-registry.host.com&lt;/id&gt;
+            &lt;username&gt;username&lt;/username&gt;
+            &lt;password&gt;password&lt;/password&gt;
+        &lt;/server&gt;
+        &lt;server&gt;
+            &lt;id&gt;container-registry.anotherhost.com:12345&lt;/id&gt;
+            &lt;username&gt;username&lt;/username&gt;
+            &lt;password&gt;{gsuybjVYiL4HK1S++3xiE9sHnHtzRGBlajGkQE5IH78=}&lt;/password&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        &lt;/server&gt;
+    &lt;/servers&gt;
+
+    &lt;!-- Other settings omitted --&gt;
+
+&lt;/settings&gt;</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Both encrypted and unencrypted passwords are supported.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="next"><a href="authentication.html">Authentication</a></span>
+  <span class="prev"><a href="index.html">Introduction</a></span>
+  <span class="next"><a href="general-configuration.html">General Configuration</a></span>
 </nav>
 </article>
   </div>
