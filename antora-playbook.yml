@@ -3,6 +3,7 @@ site:
 content:
   sources:
     - url: .
+      branches: [ master, 1.5.0]
       start_path: docs
 asciidoc:
   attributes:
