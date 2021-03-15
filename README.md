@@ -26,7 +26,7 @@ This plugin is mainly inspired by the `docker-maven-plugin` and shows some simil
 | `podman:save`                                    | Save image to a file       |                         |
 
 ## Documentation
-The manual of this plugin is available on [GitHub Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/index.html)
+The manual of this plugin is available on [GitHub Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.5.0/index.html)
 
 ## Contributing
 Feel free to open a Pull Request if you want to contribute!

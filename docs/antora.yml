@@ -1,9 +1,9 @@
 name: docs
 title: Podman Maven Plugin
-version: '1.6.0'
+version: '1.5.0'
 asciidoc:
   attributes:
-    release-version: 1.6.0
+    release-version: 1.5.0
     maven-site-plugin-version: 3.9.0
     project-repo: lexemmens/podman-maven-plugin
 nav:
