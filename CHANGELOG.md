@@ -1,4 +1,8 @@
 ## Changelog
+### UNRELEASED CHANGES
+#### Improvements 
+* Documentation has now moved towards [Github Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/).
+
 ### 1.5.0 (09-02-2021)
 #### Bugs
 * ([#28](https://github.com/lexemmens/podman-maven-plugin/issues/28)) Changed algorithm for image hash detection when using multistage containerfiles to use lookahead instead of look back.

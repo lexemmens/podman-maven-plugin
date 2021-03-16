@@ -1,0 +1,23 @@
+= Registry Handling
+
+Podman uses registries to store container images. The registry is usually specified as part of the name of the container image. I.e. if the first part (everything before the first `/`) contains a dot (`.`) or colon (`:`) this part is interpreted as an address (optionally, a port may be specified) of a remote registry. This registry is used during push and pull operations. Podman uses `docker.io` by default, but this plugin requires specifying the registries explicitly. Authentication is explained in the next xref:authentication.adoc[] section.
+
+This registry is (or registries are) used for pulling (i.e. a base image is specified in the `Containerfile` during `podman:build`) and pushing with `podman:push`. This plugin requires that the `pushRegistry` is explicitly specified. For a more fine-grained control, separate registries for pull and push can be specified using the configuration parameters `<registries>` and `<pushRegistry>`.
+
+.Example configuration of registries
+[source,XML]
+----
+<configuration>
+    <registries>
+        <registry>podman.registry.com:443</registry>
+    </registries>
+    <images>
+        <image>
+            <!-- Results in image podman.registry.com:443/helloworld/helloworld-java -->
+            <name>helloworld/helloworld-java</name>
+            ....
+        </image>
+    </images>
+</configuration>
+----
+

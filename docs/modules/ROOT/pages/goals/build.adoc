@@ -1,0 +1,122 @@
+= Build
+[#buildmojo]
+:navtitle: Build
+:listing-caption: Listing
+:table-caption: Table
+
+This goal will build all images which have a `<build>` configuration section. There must be a `Containerfile` present in order to build a container image.
+
+NOTE: Building a container image without a `Containerfile`, thus purely on configuration is currently not supported.
+
+== Build Configuration
+:navtitle: Build Configuration
+[#buildconfig]
+
+This section covers all the possible options for the `<build>` tag.
+
+.Build configuration options
+|===
+|Element |Description
+
+|noCache
+|Do not use existing cached images for the container build. Build from the start with a new set of cached layers.
+
+**Default value is**: `false`
+|pull
+|When the option is specified or set to “true”, pull the image. Raise an error if the image could not be pulled, even if the image is present locally.
+
+If the option is disabled (with –pull=false) or not specified, pull the image from the registry only if the image is not present locally. Raise an error if the image is not found in the registries and is not present locally.
+
+**Default value is**: `true` (note: deviates from Podman defaults)
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
+|pullAlways
+|Pull the image from the first registry it is found in as listed in registries.conf. Raise an error if not found in the registries, even if the image is present locally.
+
+**Default value is**: `false`
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
+|tags
+|An array consisting of one or more tags to attach to the built container image. Tags will be appended at the end of the image name.
+
+|containerFile
+|The name of the `Containerfile` to build. If you are using a `Dockerfile` you should change this parameter.
+
+**Default value is**: `Containerfile`
+
+|containerFileDir
+|Path of the directory where the `Containerfile` is located.
+
+**Default value is**: Project base directory
+
+|<<labels,labels>>
+|A collection of labels to add to this image. They are specified in the typical maven property format.
+
+|tagWithMavenProjectVersion
+|When set to `true`, the resulting container image will be tagged with the current version of the Maven project.
+
+**Default value is**: `true`
+
+|createLatestTag
+|Specifies whether the resultig container image should be tagged with `latest`.
+
+**Default value is**: `false`
+
+|format
+a|Control the format for the built image’s manifest and configuration data.
+
+Supported values are:
+
+* DOCKER (version 2, using schema format 2 for the manifest)
+* OCI (OCI image-spec v1.0, the default)
+
+**Default value is**: `OCI`
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
+|===
+
+.Example configuration
+[source,xml]
+----
+<configuration>
+    ...
+    <images>
+        <image>
+            <name>your-image-name</name>
+            <build>
+                <pull>true</pull>
+                <pullAlways>false</pullAlways>
+                <tags>
+                    <sampleTag>sampleTagValue</sampleTag>
+                </tags>
+                <createLatestTag>true</createLatestTag>
+                <format>OCI</format>
+            </build>
+        </image>
+    </images>
+    ...
+</configuration>
+----
+
+=== Labels
+:navtitle: Labels
+[#labels]
+
+Labels are a mechanism for applying metadata to container images. Labels can be used to order images. A label is a key-value pair, stored as a string. You can specify multiple labels for an object, but each key-value pair must be unique within an object. If the same key is given multiple values, the most-recently-written value overwrites all previous values.
+
+=== Key format recommendations
+[#keyformatrecommendations]
+:navtitle: Key format recommendations
+A label key is the left-hand side of the key-value pair. Keys are alphanumeric strings which may contain periods (`.`) and hyphens (`-`). Most Podman users use images created by other organizations, and the following guidelines help to prevent inadvertent duplication of labels across objects, especially if you plan to use labels as a mechanism for automation.
+
+=== Value guidelines
+[#valuefuidelines]
+:navtitle: Value guidelines
+Label values can contain any data type that can be represented as a string, including (but not limited to) JSON, XML, CSV, or YAML. The only requirement is that the value be serialized to a string first, using a mechanism specific to the type of structure. For instance, to serialize JSON into a string, you might use the `JSON.stringify()` JavaScript method.
+
+Since Podman does not deserialize the value, you cannot treat a JSON or XML document as a nested structure when querying or filtering by label value unless you build this functionality into third-party tooling.
+
+
