@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Contains the configuration for batch image processing.
@@ -23,9 +24,8 @@ public class BatchImageBuildConfiguration extends AbstractImageBuildConfiguratio
      */
     public List<Path> getAllContainerFiles() throws MojoExecutionException {
         List<Path> allContainerFiles;
-        try {
-            allContainerFiles = Files.walk(Paths.get(containerFileDir.toURI()))
-                    .filter(Files::isRegularFile)
+        try (Stream<Path> pathStream = Files.walk(Paths.get(containerFileDir.toURI()))) {
+            allContainerFiles = pathStream.filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().equals(containerFile))
                     .collect(Collectors.toList());
         } catch (IOException e) {

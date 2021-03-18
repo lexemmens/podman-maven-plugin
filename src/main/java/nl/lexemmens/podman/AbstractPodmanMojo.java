@@ -170,7 +170,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
         if(batch != null) {
             getLog().warn("NOTE: Batch mode enabled.");
             batch.initAndValidate(getLog(), project);
-            resolvedImages.addAll(batch.resolve(getLog(), project));
+            resolvedImages.addAll(batch.resolve(getLog()));
         }
 
         if(images != null && !images.isEmpty()) {

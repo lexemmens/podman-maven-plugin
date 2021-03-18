@@ -44,10 +44,11 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
      * Concerts this {@link BatchImageConfiguration} into a collection of {@link SingleImageConfiguration} instances. One
      * instance will be created per Containerfile found.
      *
+     * @param log For logging
      * @return A collection of {@link SingleImageConfiguration} instances based on the current {@link BatchImageConfiguration}
      * @throws MojoExecutionException In case of an IOException during querying all Containerfiles
      */
-    public List<SingleImageConfiguration> resolve(Log log, MavenProject project) throws MojoExecutionException {
+    public List<SingleImageConfiguration> resolve(Log log) throws MojoExecutionException {
         List<Path> allContainerFiles = getBuild().getAllContainerFiles();
         if (allContainerFiles == null || allContainerFiles.isEmpty()) {
             throw new MojoExecutionException("Invalid batch configuration found! ");
