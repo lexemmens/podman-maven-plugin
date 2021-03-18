@@ -122,11 +122,6 @@ public abstract class AbstractImageBuildConfiguration {
     private boolean isMultistageContainerFile;
 
     /**
-     * List of all build stages (only populated in case of multistage Containerfile)
-     */
-    private final List<String> stages = new ArrayList<>();
-
-    /**
      * Represents the validity of this configuration
      */
     protected boolean valid;
@@ -306,7 +301,6 @@ public abstract class AbstractImageBuildConfiguration {
                     String stage = matcher.group(3);
 
                     log.debug("Found a stage named: " + stage);
-                    stages.add(stage);
                 }
             }
         } catch (IOException e) {
