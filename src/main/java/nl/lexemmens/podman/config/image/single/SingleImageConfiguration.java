@@ -1,8 +1,6 @@
 package nl.lexemmens.podman.config.image.single;
 
-import nl.lexemmens.podman.config.image.AbstractImageBuildConfiguration;
 import nl.lexemmens.podman.config.image.AbstractImageConfiguration;
-import nl.lexemmens.podman.helper.ImageNameHelper;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -31,12 +29,10 @@ public class SingleImageConfiguration extends AbstractImageConfiguration<SingleI
     public void initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
         super.initAndValidate(log);
 
-        if(build == null) {
+        if (build == null) {
             log.error("Missing <build/> section in image configuration!");
             throw new MojoExecutionException("Missing <build/> section in image configuration!");
         }
-
-        build.validate(mavenProject, log, failOnMissingContainerfile);
 
         if (!customImageNameForMultiStageContainerfile && name == null) {
             String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
@@ -53,6 +49,8 @@ public class SingleImageConfiguration extends AbstractImageConfiguration<SingleI
         if (build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
             log.warn("Detected multistage Containerfile, but there are no image names specified for (some of) these stages. Only tagging final image!");
         }
+
+        build.validate(mavenProject, log, failOnMissingContainerfile);
     }
 
     @Override
@@ -60,6 +58,11 @@ public class SingleImageConfiguration extends AbstractImageConfiguration<SingleI
         return build;
     }
 
+    /**
+     * Sets the {@link SingleImageBuildConfiguration} to use fot he image configuration
+     *
+     * @param build The build configuration to use.
+     */
     public void setBuild(SingleImageBuildConfiguration build) {
         this.build = build;
     }

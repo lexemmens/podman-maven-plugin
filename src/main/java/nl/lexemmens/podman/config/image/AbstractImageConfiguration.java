@@ -83,7 +83,7 @@ public abstract class AbstractImageConfiguration<T extends AbstractImageBuildCon
      *
      * @return true when certain stages in a multistage Containerfile should have unique names.
      */
-    
+
     public boolean useCustomImageNameForMultiStageContainerfile() {
         return customImageNameForMultiStageContainerfile;
     }
@@ -138,7 +138,12 @@ public abstract class AbstractImageConfiguration<T extends AbstractImageBuildCon
         return imageNames;
     }
 
-    
+    /**
+     * Initialises and validates this configuration
+     *
+     * @param log The log class for logging
+     * @throws MojoExecutionException In case validation fails.
+     */
     public void initAndValidate(Log log) throws MojoExecutionException {
         if (!customImageNameForMultiStageContainerfile && name == null) {
             String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
@@ -166,20 +171,36 @@ public abstract class AbstractImageConfiguration<T extends AbstractImageBuildCon
 
     /**
      * Returns a boolean indicating whether this configuration is valid
+     *
      * @return true if this configuration is valid. False otherwise.
      */
     public boolean isValid() {
         return getBuild().isValid();
     }
 
+    /**
+     * Sets the name of this image.
+     *
+     * @param name The name of this image
+     */
     public void setImageName(String name) {
         this.name = name;
     }
 
+    /**
+     * Sets whether a custom image name should be used for each stage in the Containerfile.
+     *
+     * @param customImageNameForMultiStageContainerfile true if a custom name should be used for each stage in the Containerfile.
+     */
     public void setCustomImageNameForMultiStageContainerfile(boolean customImageNameForMultiStageContainerfile) {
         this.customImageNameForMultiStageContainerfile = customImageNameForMultiStageContainerfile;
     }
 
+    /**
+     * Sets the custom {@link StageConfiguration}s
+     *
+     * @param stages The {@link StageConfiguration}s to set.
+     */
     public void setStages(StageConfiguration[] stages) {
         this.stages = stages;
     }

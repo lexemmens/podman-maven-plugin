@@ -118,6 +118,7 @@ When providing an image name in either the `<image/>` or `<batch/`> configuratio
 
 NOTE: These placeholders also work when using a custom image name per stage.
 
+.Image name placeholders
 |===
 |Placeholder |Description
 
@@ -137,7 +138,7 @@ NOTE: These placeholders also work when using a custom image name per stage.
 |If the project version ends with `-SNAPSHOT` then this placeholder results in `latest`, otherwise the full Maven version is used (same as `%v`)
 
 |t
-|dfdfdd
+|Resolves to `snapshot-<timestamp>` where the timestamp is formatted as `yyMMdd-HHmmss-SSSS`
 
 |v
 |The project version. See also: `${project.version}`

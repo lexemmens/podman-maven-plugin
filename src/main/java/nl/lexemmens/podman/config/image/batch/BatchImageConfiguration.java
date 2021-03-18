@@ -8,7 +8,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +27,13 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
     /**
      * Initializes this configuration and fills any null values with default values.
      *
-     * @param log                        The log for logging any errors that occur during validation
+     * @param log The log for logging any errors that occur during validation
      * @throws MojoExecutionException In case validation fails.
      */
     public void initAndValidate(Log log, MavenProject project) throws MojoExecutionException {
         super.initAndValidate(log);
 
-        if(build == null) {
+        if (build == null) {
             throw new MojoExecutionException("Missing <build/> section in image configuration!");
         }
 
@@ -49,20 +48,18 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
      * @throws MojoExecutionException In case of an IOException during querying all Containerfiles
      */
     public List<SingleImageConfiguration> resolve(Log log, MavenProject project) throws MojoExecutionException {
-        List<SingleImageConfiguration> imageConfigurations = new ArrayList<>();
-
-        if(build.getContainerFileDir() == null) {
-            String projectBuildDir = project.getBuild().getDirectory();
-            log.info("BATCH > Option containerFileDir not set. Falling back to: " + projectBuildDir);
-            build.setContainerFileDir(new File(projectBuildDir));
-        }
-
         List<Path> allContainerFiles = getBuild().getAllContainerFiles();
-        if(allContainerFiles == null || allContainerFiles.isEmpty()) {
+        if (allContainerFiles == null || allContainerFiles.isEmpty()) {
             throw new MojoExecutionException("Invalid batch configuration found! ");
         }
 
-        log.info("BATCH > Found " + allContainerFiles.size() + " Containerfiles");
+        return convertToSingleImageConfigurations(log, allContainerFiles);
+    }
+
+    private List<SingleImageConfiguration> convertToSingleImageConfigurations(Log log, List<Path> allContainerFiles) throws MojoExecutionException {
+        List<SingleImageConfiguration> imageConfigurations = new ArrayList<>();
+
+        log.info("[BATCH] Found " + allContainerFiles.size() + " Containerfiles");
         for (Path containerFile : getBuild().getAllContainerFiles()) {
             SingleImageConfiguration imageConfiguration = new SingleImageConfiguration();
             imageConfiguration.setImageName(getImageName());

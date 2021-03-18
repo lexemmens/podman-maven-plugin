@@ -19,6 +19,10 @@ import java.util.stream.Stream;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
+/**
+ * Contains the shared configuration used by both single image configurations as well
+ * as batch configurations.
+ */
 public abstract class AbstractImageBuildConfiguration {
 
     /**
@@ -53,7 +57,7 @@ public abstract class AbstractImageBuildConfiguration {
 
     /**
      * Configures whether from-images should always be pulled from the first registry it is found in.
-     *
+     * <p>
      * From Podman docs:
      * Pull the image from the first registry it is found in as listed in registries.conf.
      * Raise an error if not found in the registries, even if the image is present locally.
@@ -255,15 +259,6 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     /**
-     * Returns a list of all stages present in the Containerfile
-     *
-     * @return a list of all stages.
-     */
-    public List<String> getStages() {
-        return stages;
-    }
-
-    /**
      * Returns the Pattern that is used to determine if a line matches a multi-stage Containerfile
      *
      * @return The pattern to determine if a line matches the expected pattern for a multi-stage Containerfile.
@@ -274,12 +269,18 @@ public abstract class AbstractImageBuildConfiguration {
 
     /**
      * Returns a boolean indicating whether this configuration is valid
+     *
      * @return true if this configuration is valid. False otherwise.
      */
     public boolean isValid() {
         return valid;
     }
 
+    /**
+     * Returns true when a latest tag should be created
+     *
+     * @return true if an image should be tagged 'latest'
+     */
     public boolean isCreateLatestTag() {
         return createLatestTag;
     }
@@ -315,38 +316,85 @@ public abstract class AbstractImageBuildConfiguration {
         }
     }
 
+    /**
+     * Sets the noCache option. Allows configuring whether caching should be used
+     * to cache images
+     *
+     * @param noCache Sets the noCache option on and off.
+     */
     public void setNoCache(boolean noCache) {
         this.noCache = noCache;
     }
 
+    /**
+     * Configures whether from-images should be pulled so that the image will
+     * always be build on the latest base.
+     *
+     * @param pull The value to set
+     */
     public void setPull(Boolean pull) {
         this.pull = pull;
     }
 
+    /**
+     * Configures whether from-images should always be pulled from the first registry it is found in.
+     *
+     * @param pullAlways The value to set
+     */
     public void setPullAlways(Boolean pullAlways) {
         this.pullAlways = pullAlways;
     }
 
+    /**
+     * Sets the tags that should be used for this image
+     *
+     * @param tags The tags this image should receive
+     */
     public void setTags(String[] tags) {
         this.tags = tags;
     }
 
+    /**
+     * Sets the name of the Containerfile (defaults to Containerfile)
+     *
+     * @param containerFile The name of the Containerfile to set
+     */
     public void setContainerFile(String containerFile) {
         this.containerFile = containerFile;
     }
 
+    /**
+     * Sets the labels to add to the container image.
+     *
+     * @param labels The labels to set.
+     */
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
 
+    /**
+     * Specifies whether the image should be tagged with the Maven Project version
+     *
+     * @param tagWithMavenProjectVersion whether the image should be tagged with the Maven project version
+     */
     public void setTagWithMavenProjectVersion(boolean tagWithMavenProjectVersion) {
         this.tagWithMavenProjectVersion = tagWithMavenProjectVersion;
     }
 
+    /**
+     * Specifies whether a latest tag should be created
+     *
+     * @param createLatestTag If true, the image will receive the tag 'latest'
+     */
     public void setCreateLatestTag(boolean createLatestTag) {
         this.createLatestTag = createLatestTag;
     }
 
+    /**
+     * The format of the container image to use.
+     *
+     * @param format The format to use
+     */
     public void setFormat(ContainerFormat format) {
         this.format = format;
     }

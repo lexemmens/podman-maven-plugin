@@ -1,11 +1,8 @@
 package nl.lexemmens.podman.config.image.batch;
 
 import nl.lexemmens.podman.config.image.AbstractImageBuildConfiguration;
-import nl.lexemmens.podman.config.image.single.SingleImageBuildConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,8 +10,17 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Contains the configuration for batch image processing.
+ */
 public class BatchImageBuildConfiguration extends AbstractImageBuildConfiguration {
 
+    /**
+     * Takes the {@link #containerFileDir} and looks for Containerfiles in that directory.
+     *
+     * @return A collection of Containefiles found. May be an empty list, but is never <code>null</code>
+     * @throws MojoExecutionException In case an IOException occurs during the search.
+     */
     public List<Path> getAllContainerFiles() throws MojoExecutionException {
         List<Path> allContainerFiles;
         try {
@@ -29,18 +35,20 @@ public class BatchImageBuildConfiguration extends AbstractImageBuildConfiguratio
         return allContainerFiles;
     }
 
-    public File getContainerFileDir() {
-        return containerFileDir;
-    }
-
-    public void setContainerFileDir(File path) {
-        this.containerFileDir = path;
-    }
-
+    /**
+     * Returns all configured tags
+     *
+     * @return all tags, may be <code>null</code>
+     */
     protected String[] getTags() {
         return tags;
     }
 
+    /**
+     * Returns whether the images should be tagged with the Maven Project version.
+     *
+     * @return true in case the image should be tagged with the Maven Project version. False otherwise.
+     */
     protected boolean isTagWithMavenProjectVersion() {
         return tagWithMavenProjectVersion;
     }
