@@ -10,14 +10,11 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+
+import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
 public class SingleImageBuildConfiguration extends AbstractImageBuildConfiguration {
-
-    /**
-     * Directory containing the Containerfile
-     */
-    @Parameter
-    protected File containerFileDir;
 
     /**
      * Constructor
@@ -35,11 +32,7 @@ public class SingleImageBuildConfiguration extends AbstractImageBuildConfigurati
      * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
      */
     public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
-        super.validate(project, log, failOnMissingContainerfile);
-
-        if (containerFileDir == null) {
-            containerFileDir = project.getBasedir();
-        }
+        super.validate(project);
 
         Path sourceContainerFile = getSourceContainerFileDir();
         if (!Files.exists(sourceContainerFile) && failOnMissingContainerfile) {
@@ -61,6 +54,10 @@ public class SingleImageBuildConfiguration extends AbstractImageBuildConfigurati
         }
     }
 
+    public void setContainerFileDir(File containerFileDir) {
+        this.containerFileDir = containerFileDir;
+    }
+
     /**
      * Returns the directory containing the original raw Containerfile
      *
@@ -70,4 +67,6 @@ public class SingleImageBuildConfiguration extends AbstractImageBuildConfigurati
         Path containerFileDirPath = Paths.get(containerFileDir.toURI());
         return containerFileDirPath.resolve(containerFile);
     }
+
+
 }

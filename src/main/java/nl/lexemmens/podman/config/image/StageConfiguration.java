@@ -17,4 +17,8 @@ public class StageConfiguration {
     public String getImageName() {
         return imageName;
     }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
 }

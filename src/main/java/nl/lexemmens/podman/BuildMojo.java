@@ -42,7 +42,7 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         checkAuthentication(hub);
 
-        for (SingleImageConfiguration image : allImageConfigurations) {
+        for (SingleImageConfiguration image : resolvedImages) {
             if (!image.isValid()) {
                 getLog().warn("Skipping build of container image with name " + image.getImageName()
                         + ". Configuration is not valid for this module!");

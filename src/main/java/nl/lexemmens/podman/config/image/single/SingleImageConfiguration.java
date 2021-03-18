@@ -1,6 +1,8 @@
 package nl.lexemmens.podman.config.image.single;
 
+import nl.lexemmens.podman.config.image.AbstractImageBuildConfiguration;
 import nl.lexemmens.podman.config.image.AbstractImageConfiguration;
+import nl.lexemmens.podman.helper.ImageNameHelper;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -10,25 +12,13 @@ import org.apache.maven.project.MavenProject;
  * Holds the configuration for the container images that are being built. Values of this class will be set via
  * the Maven pom, except for the image hash.
  */
-public class SingleImageConfiguration extends AbstractImageConfiguration {
+public class SingleImageConfiguration extends AbstractImageConfiguration<SingleImageBuildConfiguration> {
 
     /**
      * The build image configuration.
      */
     @Parameter
     protected SingleImageBuildConfiguration build;
-
-    /**
-     * <p>
-     * Returns the build configuration
-     * </p>
-     *
-     * @return the configuration used for building the image
-     */
-    @Override
-    public SingleImageBuildConfiguration getBuild() {
-        return build;
-    }
 
     /**
      * Initializes this configuration and fills any null values with default values.
@@ -38,9 +28,14 @@ public class SingleImageConfiguration extends AbstractImageConfiguration {
      * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
      * @throws MojoExecutionException In case validation fails.
      */
-    @Override
     public void initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
-        super.initAndValidate(mavenProject, log, failOnMissingContainerfile);
+        super.initAndValidate(log);
+
+        if(build == null) {
+            log.error("Missing <build/> section in image configuration!");
+            throw new MojoExecutionException("Missing <build/> section in image configuration!");
+        }
+
         build.validate(mavenProject, log, failOnMissingContainerfile);
 
         if (!customImageNameForMultiStageContainerfile && name == null) {
@@ -58,5 +53,14 @@ public class SingleImageConfiguration extends AbstractImageConfiguration {
         if (build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
             log.warn("Detected multistage Containerfile, but there are no image names specified for (some of) these stages. Only tagging final image!");
         }
+    }
+
+    @Override
+    public SingleImageBuildConfiguration getBuild() {
+        return build;
+    }
+
+    public void setBuild(SingleImageBuildConfiguration build) {
+        this.build = build;
     }
 }

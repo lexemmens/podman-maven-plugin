@@ -1,11 +1,10 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.ImageConfiguration;
-import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
-import nl.lexemmens.podman.enumeration.TlsVerify;
-import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
 import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.service.ContainerfileDecorator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -98,7 +97,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         configureMojo(podman, null, true, false, false, true, true);
 
-        buildMojo.images = new SingleImageConfiguration[0];
+//        buildMojo.images = new SingleImageConfiguration[0];
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
     }
@@ -618,7 +617,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         } else {
             SingleImageConfiguration[] imageConfigurations = new SingleImageConfiguration[1];
             imageConfigurations[0] = image;
-            buildMojo.images = imageConfigurations;
+//            buildMojo.images = imageConfigurations;
         }
         buildMojo.pushRegistry = "registry.example.com";
         buildMojo.failOnMissingContainerfile = failOnMissingContainerFile;

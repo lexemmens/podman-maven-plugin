@@ -19,7 +19,24 @@ import java.util.stream.Stream;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
-public abstract class AbstractImageBuildConfiguration implements ImageBuildConfiguration {
+public abstract class AbstractImageBuildConfiguration {
+
+    /**
+     * This is the regular expression to be used to determine a multistage Containerfiles. For now we only support
+     * named stages.
+     */
+    protected static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile(".*(FROM\\s.*)([ASas]\\s)([a-zA-Z].*)");
+
+    /**
+     * The default name of the Containerfile to build.
+     */
+    protected static final String DEFAULT_CONTAINERFILE = "Containerfile";
+
+    /**
+     * Directory containing the Containerfile
+     */
+    @Parameter
+    protected File containerFileDir;
 
     /**
      * Configures whether caching should be used to build images.
@@ -76,7 +93,6 @@ public abstract class AbstractImageBuildConfiguration implements ImageBuildConfi
     /**
      * The Maven project version to use (only when useMavenProjectVersion is set to true)
      */
-    @Parameter
     protected String mavenProjectVersion;
 
     /**
@@ -94,28 +110,22 @@ public abstract class AbstractImageBuildConfiguration implements ImageBuildConfi
     /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
-    private File outputDirectory;
+    protected File outputDirectory;
 
     /**
      * Will be set to true when the Containerfile is a multistage Containerfile.
      */
     private boolean isMultistageContainerFile;
 
-
-
     /**
      * List of all build stages (only populated in case of multistage Containerfile)
      */
-    private List<String> stages = new ArrayList<>();
-
+    private final List<String> stages = new ArrayList<>();
 
     /**
      * Represents the validity of this configuration
      */
     protected boolean valid;
-
-
-
 
     /**
      * Returns which value should be used for the --no-cache property
@@ -144,12 +154,40 @@ public abstract class AbstractImageBuildConfiguration implements ImageBuildConfi
         return pullAlways;
     }
 
+    public void validate(MavenProject project) {
+        if (containerFile == null) {
+            containerFile = DEFAULT_CONTAINERFILE;
+        }
+
+        if (pull == null) {
+            pull = true;
+        }
+
+        if (pullAlways == null) {
+            pullAlways = false;
+        }
+
+        if (labels == null) {
+            labels = new HashMap<>();
+        }
+
+        if (format == null) {
+            format = OCI;
+        }
+
+        this.mavenProjectVersion = project.getVersion();
+        this.outputDirectory = new File(project.getBuild().getDirectory());
+
+        if (containerFileDir == null) {
+            containerFileDir = project.getBasedir();
+        }
+    }
+
     /**
      * Returns the tags to be applied for this image
      *
      * @return The tags to be applied
      */
-    @Override
     public List<String> getAllTags() {
         List<String> allTags = new ArrayList<>();
         if (tags != null) {
@@ -242,29 +280,8 @@ public abstract class AbstractImageBuildConfiguration implements ImageBuildConfi
         return valid;
     }
 
-    public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
-        if (containerFile == null) {
-            containerFile = DEFAULT_CONTAINERFILE;
-        }
-
-        if (labels == null) {
-            labels = new HashMap<>();
-        }
-
-        if (format == null) {
-            format = OCI;
-        }
-
-        if (pull == null) {
-            pull = true;
-        }
-
-        if (pullAlways == null) {
-            pullAlways = false;
-        }
-
-        this.mavenProjectVersion = project.getVersion();
-        this.outputDirectory = new File(project.getBuild().getDirectory());
+    public boolean isCreateLatestTag() {
+        return createLatestTag;
     }
 
     protected boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {
@@ -298,4 +315,39 @@ public abstract class AbstractImageBuildConfiguration implements ImageBuildConfi
         }
     }
 
+    public void setNoCache(boolean noCache) {
+        this.noCache = noCache;
+    }
+
+    public void setPull(Boolean pull) {
+        this.pull = pull;
+    }
+
+    public void setPullAlways(Boolean pullAlways) {
+        this.pullAlways = pullAlways;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
+    }
+
+    public void setContainerFile(String containerFile) {
+        this.containerFile = containerFile;
+    }
+
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
+
+    public void setTagWithMavenProjectVersion(boolean tagWithMavenProjectVersion) {
+        this.tagWithMavenProjectVersion = tagWithMavenProjectVersion;
+    }
+
+    public void setCreateLatestTag(boolean createLatestTag) {
+        this.createLatestTag = createLatestTag;
+    }
+
+    public void setFormat(ContainerFormat format) {
+        this.format = format;
+    }
 }

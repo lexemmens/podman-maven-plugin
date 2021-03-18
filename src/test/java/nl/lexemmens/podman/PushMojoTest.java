@@ -1,11 +1,10 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.ImageConfiguration;
-import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
-import nl.lexemmens.podman.enumeration.TlsVerify;
-import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
 import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -335,7 +334,7 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.deleteLocalImageAfterPush = deleteLocalImageAfterPush;
         SingleImageConfiguration[] imageConfigurations = new SingleImageConfiguration[1];
         imageConfigurations[0] = image;
-        pushMojo.images = imageConfigurations;
+//        pushMojo.images = imageConfigurations;
         pushMojo.failOnMissingContainerfile = failOnMissingContainerFile;
     }
 

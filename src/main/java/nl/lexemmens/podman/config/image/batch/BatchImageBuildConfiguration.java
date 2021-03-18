@@ -1,40 +1,47 @@
 package nl.lexemmens.podman.config.image.batch;
 
 import nl.lexemmens.podman.config.image.AbstractImageBuildConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageBuildConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BatchImageBuildConfiguration extends AbstractImageBuildConfiguration {
 
-    /**
-     * Root directory in which the Containerfiles should be searched. Search is recursive.
-     */
-    @Parameter
-    protected File containerFileRootDir;
+    public List<Path> getAllContainerFiles() throws MojoExecutionException {
+        List<Path> allContainerFiles;
+        try {
+            allContainerFiles = Files.walk(Paths.get(containerFileDir.toURI()))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().equals(containerFile))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to find Containerfiles with name '" + containerFile + "'in directory " + containerFileDir, e);
+        }
 
-    /**
-     * Constructor
-     */
-    public BatchImageBuildConfiguration() {
-        // Empty - will be injected
+        return allContainerFiles;
     }
 
-    /**
-     * Validates this class by giving all null properties a default value.
-     *
-     * @param project The MavenProject used to derive some of the default values from.
-     * @param log     Access to Maven's log system for writing errors
-     * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
-     * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
-     */
-    @Override
-    public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
-        super.validate(project, log, failOnMissingContainerfile);
+    public File getContainerFileDir() {
+        return containerFileDir;
+    }
 
-        // TODO Find all Containerfiles and ensure they are not empty
+    public void setContainerFileDir(File path) {
+        this.containerFileDir = path;
+    }
+
+    protected String[] getTags() {
+        return tags;
+    }
+
+    protected boolean isTagWithMavenProjectVersion() {
+        return tagWithMavenProjectVersion;
     }
 }

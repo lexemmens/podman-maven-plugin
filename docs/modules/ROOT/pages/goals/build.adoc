@@ -101,6 +101,20 @@ Supported values are:
 </configuration>
 ----
 
+=== Batch Configuration
+:navtitle: Batch Configuration
+[#batchconfig]
+
+When using the `<batch/>` configuration option, some configuration options are interpreted slightly different, compared to the explanation in the table above. The table below lists all these configuration options that are interpreted differently.
+
+|===
+|Element |Description
+
+|`containerFileDir`
+|The directory in which all `Containerfile` s should be found. `Containerfile` s are searched for recursively and do not need to be at this exact level.
+
+|==
+
 === Labels
 :navtitle: Labels
 [#labels]

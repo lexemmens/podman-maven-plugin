@@ -13,13 +13,6 @@ import java.util.List;
  */
 public final class CommandExecutorDelegateImpl implements CommandExecutorDelegate {
 
-    /**
-     * Constructs a new instance of this class
-     */
-    public CommandExecutorDelegateImpl() {
-        // No-op
-    }
-
     @Override
     public List<String> executeCommand(ProcessExecutor processExecutor) throws MojoExecutionException {
         try {

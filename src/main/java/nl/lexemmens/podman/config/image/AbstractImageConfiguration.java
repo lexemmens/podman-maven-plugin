@@ -3,11 +3,10 @@ package nl.lexemmens.podman.config.image;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
 import java.util.*;
 
-public abstract class AbstractImageConfiguration implements ImageConfiguration {
+public abstract class AbstractImageConfiguration<T extends AbstractImageBuildConfiguration> {
 
     /**
      * The name of the image without the target registry. May contain the repository. Must be all lowercase and no special characters.
@@ -30,6 +29,15 @@ public abstract class AbstractImageConfiguration implements ImageConfiguration {
     protected StageConfiguration[] stages;
 
     /**
+     * <p>
+     * Returns the build configuration
+     * </p>
+     *
+     * @return the configuration used for building the image
+     */
+    public abstract T getBuild();
+
+    /**
      * Set after the image is built.
      */
     private String finalImageHash;
@@ -37,7 +45,7 @@ public abstract class AbstractImageConfiguration implements ImageConfiguration {
     /**
      * Stores the image hashes per stage in case of a multi stage Containerfile
      */
-    private Map<String, String> imageHashPerStage = new HashMap<>();
+    private final Map<String, String> imageHashPerStage = new HashMap<>();
 
     /**
      * <p>
@@ -75,6 +83,7 @@ public abstract class AbstractImageConfiguration implements ImageConfiguration {
      *
      * @return true when certain stages in a multistage Containerfile should have unique names.
      */
+    
     public boolean useCustomImageNameForMultiStageContainerfile() {
         return customImageNameForMultiStageContainerfile;
     }
@@ -129,8 +138,8 @@ public abstract class AbstractImageConfiguration implements ImageConfiguration {
         return imageNames;
     }
 
-    @Override
-    public void initAndValidate(MavenProject mavenProject, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
+    
+    public void initAndValidate(Log log) throws MojoExecutionException {
         if (!customImageNameForMultiStageContainerfile && name == null) {
             String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
             log.error(msg);
@@ -161,5 +170,17 @@ public abstract class AbstractImageConfiguration implements ImageConfiguration {
      */
     public boolean isValid() {
         return getBuild().isValid();
+    }
+
+    public void setImageName(String name) {
+        this.name = name;
+    }
+
+    public void setCustomImageNameForMultiStageContainerfile(boolean customImageNameForMultiStageContainerfile) {
+        this.customImageNameForMultiStageContainerfile = customImageNameForMultiStageContainerfile;
+    }
+
+    public void setStages(StageConfiguration[] stages) {
+        this.stages = stages;
     }
 }
