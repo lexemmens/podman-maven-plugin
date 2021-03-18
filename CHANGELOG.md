@@ -2,6 +2,7 @@
 ### UNRELEASED CHANGES
 #### Improvements 
 * Documentation has now moved towards [Github Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/).
+* ([#36](https://github.com/lexemmens/podman-maven-plugin/issues/36)) Implemented a retry mechanism for Podman push 
 
 ### 1.5.0 (09-02-2021)
 #### Bugs

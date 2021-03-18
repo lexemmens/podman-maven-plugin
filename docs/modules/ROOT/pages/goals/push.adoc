@@ -21,6 +21,12 @@ This goal uploads images to the registry which have a `<build>` configuration se
 **Default value is**: `false`
 |`podman.image.delete.after.push`
 
+|retries
+|The number of times pushing the image should be retried before giving up.
+
+**Default value is**: 0
+|`podman.push.retries`
+
 |===
 
 NOTE: When using the `deleteLocalImageAfterPush` option, be advised that any base images that may have been pulled as part of building the image continue to exist.
