@@ -353,6 +353,33 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(2)).push(eq(targetRegistry));
     }
 
+    @Test
+    public void testPushRunsOutOfRetries() throws MojoExecutionException {
+        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+                .setTags(new String[]{})
+                .setUseMavenProjectVersion(true)
+                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .build();
+        configureMojo(image, true, false, false, "registry.example.com", true, true, 1);
+
+        String targetRegistry = "registry.example.com/sample:1.0.0";
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target/podman-test");
+        when(mavenProject.getVersion()).thenReturn("1.0.0");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+
+        // Simulate failure
+        doThrow(new MojoExecutionException("Execution failed")).when(podmanExecutorService).push(eq(targetRegistry));
+
+        Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
+
+        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
+        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
+        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
+        verify(podmanExecutorService, times(2)).push(eq(targetRegistry));
+    }
+
     private void configureMojo(ImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, boolean deleteLocalImageAfterPush, boolean failOnMissingContainerFile, int retries) {
         pushMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         pushMojo.skip = skipAll;
