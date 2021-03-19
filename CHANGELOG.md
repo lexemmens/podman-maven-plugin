@@ -2,6 +2,7 @@
 ### UNRELEASED CHANGES
 #### Improvements 
 * Documentation has now moved towards [Github Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/).
+* ([#32](https://github.com/lexemmens/podman-maven-plugin/issues/32) - When tagging an image, the plugin might skip one or more steps due to unexpected multiline output for a build step)
 * ([#35](https://github.com/lexemmens/podman-maven-plugin/issues/35)) Introduced option to configure a batch of images to build, tag and push
 
 ### 1.5.0 (09-02-2021)

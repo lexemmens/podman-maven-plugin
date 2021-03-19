@@ -94,6 +94,7 @@ public class PodmanConfiguration {
      * Validates and initializes this configuration
      *
      * @param log Access to Maven's log system for informational purposes.
+     * @param project The Maven Project
      * @throws MojoExecutionException In case validation fails.
      */
     public void initAndValidate(MavenProject project, Log log) throws MojoExecutionException {
