@@ -27,7 +27,8 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
     /**
      * Initializes this configuration and fills any null values with default values.
      *
-     * @param log The log for logging any errors that occur during validation
+     * @param log     The log for logging any errors that occur during validation
+     * @param project The Maven Project required for validating the build configuration
      * @throws MojoExecutionException In case validation fails.
      */
     public void initAndValidate(Log log, MavenProject project) throws MojoExecutionException {
