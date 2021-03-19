@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Image Configuration :: Podman Maven Plugin - Documentation</title>
-    <link rel="prev" href="general-configuration.html">
-    <link rel="next" href="goals/build.html">
+    <title>Authentication :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="general-configuration.html">
     <meta name="generator" content="Antora 2.3.4">
 <link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
   </head>
@@ -41,7 +41,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="docs" data-version="1.5.0">
+<div class="nav-container" data-component="docs" data-version="1.6.0-alpha1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -57,13 +57,13 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="index.html">Introduction</a>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="authentication.html">Authentication</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="general-configuration.html">General Configuration</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="image-configuration.html">Image Configuration</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -119,7 +119,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">Podman Maven Plugin</span>
-    <span class="version">1.5.0</span>
+    <span class="version">1.6.0-alpha1</span>
   </div>
   <ul class="components">
     <li class="component is-current">
@@ -128,11 +128,11 @@
         <li class="version is-latest">
           <a href="../index.html">latest</a>
         </li>
-        <li class="version">
-          <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
-        </li>
         <li class="version is-current">
-          <a href="index.html">1.5.0</a>
+          <a href="index.html">1.6.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.5.0/index.html">1.5.0</a>
         </li>
       </ul>
     </li>
@@ -148,144 +148,101 @@
   <ul>
     <li><a href="index.html">Podman Maven Plugin</a></li>
     <li>Maven Plugin</li>
-    <li><a href="image-configuration.html">Image Configuration</a></li>
+    <li><a href="authentication.html">Authentication</a></li>
   </ul>
 </nav>
 <div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">1.5.0</button>
+  <button class="version-menu-toggle" title="Show other versions of page">1.6.0-alpha1</button>
   <div class="version-menu">
-    <a class="version" href="../image-configuration.html">latest</a>
-    <a class="version" href="../1.6.0-alpha1/image-configuration.html">1.6.0-alpha1</a>
-    <a class="version is-current" href="image-configuration.html">1.5.0</a>
+    <a class="version" href="../authentication.html">latest</a>
+    <a class="version is-current" href="authentication.html">1.6.0-alpha1</a>
+    <a class="version" href="../1.5.0/authentication.html">1.5.0</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.5.0/docs/modules/ROOT/pages/image-configuration.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.6.0-alpha1/docs/modules/ROOT/pages/authentication.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Image Configuration</h1>
+<h1 class="page">Authentication</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The plugin’s configuration is centered around images.
-These are specified for each image within the <code>&lt;images&gt;</code> element of the configuration with one <code>&lt;image&gt;</code> element per image to use.</p>
-</div>
-<div class="paragraph">
-<p>The <code>&lt;image&gt;</code> element can contain the following sub elements:</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Image configuration options</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Each <code>&lt;image&gt;</code> configuration has a mandatory, unique container repository name.
-This can include registry and tag parts.
-This name does not support placeholer characters.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">customImageNameForMultiStageContainerfile</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A <code>Containerfile</code> can define multiple stages.
-When set to <code>true</code>, the result of each stage can have a different image name.</p>
-<p class="tableblock">When set to false, but the <code>Containerfile</code> does define one or more stages, a warning will be logged and the value from the <code>name</code> property will be used.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#stageconfig">stages</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Defines a list of custom image names per stage listed in a <code>Containerfile</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="goals/build.html#buildconfig" class="page">build</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Element that contains all the configuration aspects when doing a podman:build.</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>A <code>&lt;build&gt;</code> section must be present for each image configuration.</p>
-</div>
-<div class="listingblock">
-<div class="title">Listing 1. Example configuration</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
-    ...
-    &lt;images&gt;
-        &lt;image&gt;
-            &lt;name&gt;your-image-name&lt;/name&gt;
-            &lt;customImageNameForMultiStageContainerfile&gt;true&lt;/customImageNameForMultiStageContainerfile&gt;
-            &lt;stages&gt;...&lt;/stages&gt;
-            &lt;build&gt;...&lt;/build&gt;
-        &lt;/image&gt;
-    &lt;/images&gt;
-    ...
-&lt;/configuration&gt;</code></pre>
-</div>
+<p>The <code>podman-maven-plugin</code> currently supports one method of authentication, which is by providing authentication details via the Maven settings file.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="stage-configuration"><a class="anchor" href="#stage-configuration"></a>Stage Configuration</h2>
+<h2 id="maven-settings"><a class="anchor" href="#maven-settings"></a>Maven Settings</h2>
 <div class="sectionbody">
-<div id="stageconfig" class="paragraph">
-<p>The <code>stages</code> configuration section is useful when working with multi-stage <code>Containerfiles</code>.</p>
+<div id="mavensettings" class="paragraph">
+<p>Before you start using this plugin, you must configure the registries in your Maven settings file. The first step of <code>podman-maven-plugin</code>, before any of the goals is executed, is to authenticate you with all the registries that are configured in your <code>pom.xml</code>.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Stage configuration options</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
+<div class="admonitionblock warning">
+<table>
 <tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The id of the server <strong>must</strong> match the registries configured in the plugin (see below). The plugin will fail if credentials are missing for any of the provided registries.
+</td>
 </tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the stage in a <code>Containerfile</code>. A stage in a <code>Containerfile</code> is usually defined as: <code>FROM &lt;image&gt; AS &lt;stageName&gt;</code>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">imageName</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The target name that the image, which was built in stage with <code>&lt;name&gt;</code>, should get.</p></td>
-</tr>
-</tbody>
 </table>
-<div class="listingblock">
-<div class="title">Listing 2. Example configuration</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
-    ...
-    &lt;images&gt;
-        &lt;image&gt;
-            &lt;stages&gt;
-                &lt;stage&gt;
-                    &lt;name&gt;some_stage&lt;/name&gt;
-                    &lt;imageName&gt;my-fancy-image&lt;/imageName&gt;
-                &lt;/stage&gt;
-            &lt;/stages&gt;
-        &lt;/image&gt;
-    &lt;/images&gt;
-    ...
-&lt;/configuration&gt;</code></pre>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+This plugin will also fail if there are no registries configured, but authentication is not skipped. Please refer to the table below for all configuration options.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Listing 1. Excerpt of a Maven Settings file.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-XML hljs" data-lang="XML">&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
+
+    &lt;servers&gt;
+        &lt;server&gt;
+            &lt;id&gt;container-registry.host.com&lt;/id&gt;
+            &lt;username&gt;username&lt;/username&gt;
+            &lt;password&gt;password&lt;/password&gt;
+        &lt;/server&gt;
+        &lt;server&gt;
+            &lt;id&gt;container-registry.anotherhost.com:12345&lt;/id&gt;
+            &lt;username&gt;username&lt;/username&gt;
+            &lt;password&gt;{gsuybjVYiL4HK1S++3xiE9sHnHtzRGBlajGkQE5IH78=}&lt;/password&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        &lt;/server&gt;
+    &lt;/servers&gt;
+
+    &lt;!-- Other settings omitted --&gt;
+
+&lt;/settings&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Both encrypted and unencrypted passwords are supported.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="general-configuration.html">General Configuration</a></span>
-  <span class="next"><a href="goals/build.html">build</a></span>
+  <span class="prev"><a href="index.html">Introduction</a></span>
+  <span class="next"><a href="general-configuration.html">General Configuration</a></span>
 </nav>
 </article>
   </div>

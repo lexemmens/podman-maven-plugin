@@ -7,7 +7,7 @@
     <link rel="prev" href="../image-configuration.html">
     <link rel="next" href="push.html">
     <meta name="generator" content="Antora 2.3.4">
-<link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
+<link rel="stylesheet" href="../../../_/css/podman.css">    <script>var uiRootPath = '../../../_'</script>
   </head>
   <body class="article">
 <header class="header" role="banner">
@@ -41,7 +41,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="docs" data-version="master">
+<div class="nav-container" data-component="docs" data-version="1.6.0-alpha1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -119,20 +119,20 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">Podman Maven Plugin</span>
-    <span class="version">latest</span>
+    <span class="version">1.6.0-alpha1</span>
   </div>
   <ul class="components">
     <li class="component is-current">
-      <a class="title" href="../index.html">Podman Maven Plugin</a>
+      <a class="title" href="../../index.html">Podman Maven Plugin</a>
       <ul class="versions">
-        <li class="version is-current is-latest">
-          <a href="../index.html">latest</a>
+        <li class="version is-latest">
+          <a href="../../index.html">latest</a>
+        </li>
+        <li class="version is-current">
+          <a href="../index.html">1.6.0-alpha1</a>
         </li>
         <li class="version">
-          <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
-        </li>
-        <li class="version">
-          <a href="../1.5.0/index.html">1.5.0</a>
+          <a href="../../1.5.0/index.html">1.5.0</a>
         </li>
       </ul>
     </li>
@@ -153,14 +153,14 @@
   </ul>
 </nav>
 <div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">latest</button>
+  <button class="version-menu-toggle" title="Show other versions of page">1.6.0-alpha1</button>
   <div class="version-menu">
-    <a class="version is-current" href="build.html">latest</a>
-    <a class="version" href="../1.6.0-alpha1/goals/build.html">1.6.0-alpha1</a>
-    <a class="version" href="../1.5.0/goals/build.html">1.5.0</a>
+    <a class="version" href="../../goals/build.html">latest</a>
+    <a class="version is-current" href="build.html">1.6.0-alpha1</a>
+    <a class="version" href="../../1.5.0/goals/build.html">1.5.0</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/master/docs/modules/ROOT/pages/goals/build.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.6.0-alpha1/docs/modules/ROOT/pages/goals/build.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
@@ -303,25 +303,28 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 </div>
 </div>
 <div class="sect2">
-<h3 id="labels"><a class="anchor" href="#labels"></a>Labels</h3>
-<div id="labels" class="paragraph">
-<p>Labels are a mechanism for applying metadata to container images. Labels can be used to order images. A label is a key-value pair, stored as a string. You can specify multiple labels for an object, but each key-value pair must be unique within an object. If the same key is given multiple values, the most-recently-written value overwrites all previous values.</p>
+<h3 id="batch-configuration"><a class="anchor" href="#batch-configuration"></a>Batch Configuration</h3>
+<div id="batchconfig" class="paragraph">
+<p>When using the <code>&lt;batch/&gt;</code> configuration option, some configuration options are interpreted slightly different, compared to the explanation in the table above. The table below lists all these configuration options that are interpreted differently.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="key-format-recommendations"><a class="anchor" href="#key-format-recommendations"></a>Key format recommendations</h3>
-<div id="keyformatrecommendations" class="paragraph">
-<p>A label key is the left-hand side of the key-value pair. Keys are alphanumeric strings which may contain periods (<code>.</code>) and hyphens (<code>-</code>). Most Podman users use images created by other organizations, and the following guidelines help to prevent inadvertent duplication of labels across objects, especially if you plan to use labels as a mechanism for automation.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="value-guidelines"><a class="anchor" href="#value-guidelines"></a>Value guidelines</h3>
-<div id="valuefuidelines" class="paragraph">
-<p>Label values can contain any data type that can be represented as a string, including (but not limited to) JSON, XML, CSV, or YAML. The only requirement is that the value be serialized to a string first, using a mechanism specific to the type of structure. For instance, to serialize JSON into a string, you might use the <code>JSON.stringify()</code> JavaScript method.</p>
-</div>
-<div class="paragraph">
-<p>Since Podman does not deserialize the value, you cannot treat a JSON or XML document as a nested structure when querying or filtering by label value unless you build this functionality into third-party tooling.</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>containerFileDir</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The directory in which all <code>Containerfile</code> s should be found. <code>Containerfile</code> s are searched for recursively and do not need to be at this exact level.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -337,7 +340,7 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
   <p>Copyright (C) 2019-2021 <a href="https://www.lexemmens.nl">Lex Emmens</a> and individual contributors to the <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>.</p>
   <p>This project is available under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. This website was generated using Antora.
 </footer>
-<script src="../../_/js/site.js"></script>
-<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
   </body>
 </html>

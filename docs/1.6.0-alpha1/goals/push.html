@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Contributing :: Podman Maven Plugin - Documentation</title>
-    <link rel="prev" href="../further-reading.html">
-    <link rel="next" href="copyright.html">
+    <title>Push :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="build.html">
+    <link rel="next" href="save.html">
     <meta name="generator" content="Antora 2.3.4">
-<link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
+<link rel="stylesheet" href="../../../_/css/podman.css">    <script>var uiRootPath = '../../../_'</script>
   </head>
   <body class="article">
 <header class="header" role="banner">
@@ -41,7 +41,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="docs" data-version="master">
+<div class="nav-container" data-component="docs" data-version="1.6.0-alpha1">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -71,16 +71,16 @@
     <span class="nav-text">Goals</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../goals/build.html">build</a>
+    <a class="nav-link" href="build.html">build</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="push.html">push</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../goals/push.html">push</a>
+    <a class="nav-link" href="save.html">save</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../goals/save.html">save</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../goals/clean.html">clean</a>
+    <a class="nav-link" href="clean.html">clean</a>
   </li>
 </ul>
   </li>
@@ -103,11 +103,11 @@
     <button class="nav-item-toggle"></button>
     <span class="nav-text">Project Documentation</span>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="contributing.html">Contributing</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../project/contributing.html">Contributing</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="copyright.html">Copyright and License</a>
+    <a class="nav-link" href="../project/copyright.html">Copyright and License</a>
   </li>
 </ul>
   </li>
@@ -119,20 +119,20 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">Podman Maven Plugin</span>
-    <span class="version">latest</span>
+    <span class="version">1.6.0-alpha1</span>
   </div>
   <ul class="components">
     <li class="component is-current">
-      <a class="title" href="../index.html">Podman Maven Plugin</a>
+      <a class="title" href="../../index.html">Podman Maven Plugin</a>
       <ul class="versions">
-        <li class="version is-current is-latest">
-          <a href="../index.html">latest</a>
+        <li class="version is-latest">
+          <a href="../../index.html">latest</a>
+        </li>
+        <li class="version is-current">
+          <a href="../index.html">1.6.0-alpha1</a>
         </li>
         <li class="version">
-          <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
-        </li>
-        <li class="version">
-          <a href="../1.5.0/index.html">1.5.0</a>
+          <a href="../../1.5.0/index.html">1.5.0</a>
         </li>
       </ul>
     </li>
@@ -147,44 +147,80 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">Podman Maven Plugin</a></li>
-    <li>Project Documentation</li>
-    <li><a href="contributing.html">Contributing</a></li>
+    <li>Maven Plugin</li>
+    <li>Goals</li>
+    <li><a href="push.html">push</a></li>
   </ul>
 </nav>
 <div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">latest</button>
+  <button class="version-menu-toggle" title="Show other versions of page">1.6.0-alpha1</button>
   <div class="version-menu">
-    <a class="version is-current" href="contributing.html">latest</a>
-    <a class="version" href="../1.6.0-alpha1/project/contributing.html">1.6.0-alpha1</a>
-    <a class="version" href="../1.5.0/project/contributing.html">1.5.0</a>
+    <a class="version" href="../../goals/push.html">latest</a>
+    <a class="version is-current" href="push.html">1.6.0-alpha1</a>
+    <a class="version" href="../../1.5.0/goals/push.html">1.5.0</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/master/docs/modules/project/pages/contributing.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.6.0-alpha1/docs/modules/ROOT/pages/goals/push.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Contributing</h1>
-<div id="preamble">
-<div class="sectionbody">
+<h1 class="page">Push</h1>
 <div class="paragraph">
-<p>This plugin is fully open source.Together we can make this plugin better.Please feel free to write an issue or, even better, open a pull request if you want to contribute!</p>
+<p>This goal uploads images to the registry which have a <code>&lt;build&gt;</code> configuration section. The default registry where images are pushed to is docker.io, but can be specified as part of the images’s name the Docker way. E.g. <code>containers.host.com:12345/sample:1.2</code> will push the image data with tag 1.2 to the registry <code>containers.host.com</code> at port 12345. Security information (i.e. user and password) can be specified as described in section <a href="../authentication.html" class="page">Authentication</a>.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="troubleshooting"><a class="anchor" href="#troubleshooting"></a>Troubleshooting</h2>
-<div class="sectionbody">
-<div id="troubleshooting" class="paragraph">
-<p>Before writing a ticket, it is good to check the <code>Containerfile</code> that is being build first. Because the plugin allows to use Maven&#8217;s filtering option, it takes the file from the given location and copies it to the target directory to decorate it. If the target <code>Containerfile</code> looks okay and you are sill running into issues, please feel free to write an issue.</p>
-</div>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Push options</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipPush</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t push any images that have been built.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>podman.skip.push</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deleteLocalImageAfterPush</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When set to true, the locally created image will be deleted after it has been pushed to the registry.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>podman.image.delete.after.push</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">retries</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of times pushing the image should be retried before giving up.</p>
+<p class="tableblock"><strong>Default value is</strong>: 0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>podman.push.retries</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When using the <code>deleteLocalImageAfterPush</code> option, be advised that any base images that may have been pulled as part of building the image continue to exist.
+</td>
+</tr>
+</table>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="../further-reading.html">Further Reading</a></span>
-  <span class="next"><a href="copyright.html">Copyright and License</a></span>
+  <span class="prev"><a href="build.html">build</a></span>
+  <span class="next"><a href="save.html">save</a></span>
 </nav>
 </article>
   </div>
@@ -194,7 +230,7 @@
   <p>Copyright (C) 2019-2021 <a href="https://www.lexemmens.nl">Lex Emmens</a> and individual contributors to the <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>.</p>
   <p>This project is available under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. This website was generated using Antora.
 </footer>
-<script src="../../_/js/site.js"></script>
-<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
   </body>
 </html>
