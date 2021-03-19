@@ -325,7 +325,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithRetries() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -354,7 +354,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushRunsOutOfRetries() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
