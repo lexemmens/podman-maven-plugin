@@ -131,6 +131,7 @@ public class AuthenticationService {
         if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
             Path customRegistryAuthFile = Paths.get(System.getenv(REGISTRY_AUTH_FILE));
             if (Files.exists(customRegistryAuthFile)) {
+                log.debug("Found custom registry authentication file at: " + customRegistryAuthFile);
                 registryAuthFiles.add(customRegistryAuthFile);
             }
         }
@@ -139,6 +140,7 @@ public class AuthenticationService {
             Path xdgRuntimeDir = Paths.get(System.getenv(XDG_RUNTIME_DIR));
             Path defaultAuthFile = xdgRuntimeDir.resolve(AUTH_JSON_SUB_PATH);
             if (Files.exists(defaultAuthFile)) {
+                log.debug("Found default registry authentication file at: " + defaultAuthFile);
                 registryAuthFiles.add(defaultAuthFile);
             }
         }
@@ -146,6 +148,7 @@ public class AuthenticationService {
         // Check docker auth file
         Path dockerConfigFile = Paths.get(System.getProperty("user.home")).resolve(DOCKER_CONFIG_FILE);
         if (Files.exists(dockerConfigFile)) {
+            log.debug("Found Docker registry authentication file at: " + dockerConfigFile);
             registryAuthFiles.add(dockerConfigFile);
         }
 
@@ -204,6 +207,7 @@ public class AuthenticationService {
             }
         }
 
+        log.debug("Found authentication details for the following registries: " + authenticatedRegistries);
         return authenticatedRegistries;
     }
 
