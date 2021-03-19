@@ -3,7 +3,7 @@
 :listing-caption: Listing
 :table-caption: Table
 
-The plugin’s configuration is centered around images. Images can be either configured individually, as part of a batch or a combination of both.
+The plugin’s configuration is centered around images.Images can be either configured individually, as part of a batch or a combination of both.
 When configured individually, each image is specified in the `<images>` element of the configuration with one `<image>` element per image to use.
 
 The `<image>` element can contain the following sub elements:
@@ -14,8 +14,9 @@ The `<image>` element can contain the following sub elements:
 
 |name
 |Each `<image>` configuration has a mandatory, unique container repository name.
-This can include registry and tag parts.
-This name does not support placeholer characters.
+This name does not support placeholer characters, see xref:image-configuration.adoc#imagenames[Image Names].
+
+**NOTE:** Currently image names cannot include registry and tag parts.
 
 |customImageNameForMultiStageContainerfile
 |A `Containerfile` can define multiple stages.
@@ -114,7 +115,10 @@ The `stages` configuration section is useful when working with multi-stage `Cont
 ----
 
 == Image Names
-When providing an image name in either the `<image/>` or `<batch/`> configuration with the `<name>` field, there are several placeholders available for use. These placeholders are replaced by this plugin at runtime, before each goal executes. In addition you can use regular Maven properties which are resolved by Maven itself.
+:navtitle: Image Names
+[#imagenames]
+
+When providing an image name in either the `<image/>` or `<batch/`> configuration with the `<name>` field, there are several placeholders available for use.These placeholders are replaced by this plugin at runtime, before each goal executes.In addition you can use regular Maven properties which are resolved by Maven itself.
 
 NOTE: These placeholders also work when using a custom image name per stage.
 
@@ -123,7 +127,7 @@ NOTE: These placeholders also work when using a custom image name per stage.
 |Placeholder |Description
 
 |a
-|Sanitized version of the artifactId that can be used as part of a container image name. The artifactId is converted to lowercase as per container naming conventions.
+|Sanitized version of the artifactId that can be used as part of a container image name.The artifactId is converted to lowercase as per container naming conventions.
 
 |d
 |A sanitized version of the directory name where the `Containerfile` is located. E.g. `/tmp/subFolder/Containerfile` will be result in `subFolder`.

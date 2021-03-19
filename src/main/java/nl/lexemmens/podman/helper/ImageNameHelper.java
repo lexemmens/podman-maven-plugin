@@ -112,7 +112,7 @@ public class ImageNameHelper {
 
         @Override
         public String get() {
-            return mavenProject.getVersion();
+            return alignWithNamingConvention(mavenProject.getVersion());
         }
     }
 
@@ -133,7 +133,7 @@ public class ImageNameHelper {
             if (version.endsWith("-SNAPSHOT")) {
                 version = "latest";
             }
-            return version;
+            return alignWithNamingConvention(version);
         }
     }
 
@@ -155,7 +155,7 @@ public class ImageNameHelper {
             if (idx != -1) {
                 groupId = groupId.substring(idx, groupId.length() - 1);
             }
-            return groupId;
+            return alignWithNamingConvention(groupId);
         }
     }
 
@@ -176,7 +176,7 @@ public class ImageNameHelper {
         public String get() {
             Calendar now = Calendar.getInstance();
             dateFormat.setTimeZone(now.getTimeZone());
-            return "snapshot-" + dateFormat.format(now.getTime());
+            return alignWithNamingConvention("snapshot-" + dateFormat.format(now.getTime()));
         }
     }
 
@@ -196,7 +196,7 @@ public class ImageNameHelper {
         @Override
         public String get() {
             // /someDirectory/subFolder/Containerfile => subFolder
-            return containerFileDirectory.getParent().getFileName().toString();
+            return alignWithNamingConvention(containerFileDirectory.getParent().getFileName().toString());
         }
     }
 
@@ -214,8 +214,62 @@ public class ImageNameHelper {
 
         @Override
         public String get() {
-            return String.format("%s", imageNumber.getAndIncrement());
+            return alignWithNamingConvention(String.format("%s", imageNumber.getAndIncrement()));
         }
+    }
+
+    /**
+     * As per Docker's naming conventions, image names must meet the following criteria:
+     * <ul>
+     * <li>Name components may contain lowercase letters, digits and separators.</li>
+     * <li>A separator is defined as:
+     * <ul>
+     *     <li>a period</li>
+     *     <li>one or two underscores</li>
+     *     <li>one or more dashes</li>
+     * </ul>
+     * </li>
+     * <li>A name component may not start or end with a separator.</li>
+     * </ul>
+     *
+     * @param imageName The image name to
+     * @return The image name, meeting the image naming conventions
+     * @see <a href="https://docs.docker.com/engine/reference/commandline/tag/">Docker docs</a>
+     */
+    private static String alignWithNamingConvention(String imageName) {
+        StringBuilder ret = new StringBuilder();
+        int underscores = 0;
+        boolean lastWasADot = false;
+        for (char character : imageName.toCharArray()) {
+            if (character == '_') {
+                underscores++;
+
+                // Max 2 underscores after eachother
+                if (underscores <= 2) {
+                    ret.append(character);
+                }
+
+                continue;
+            }
+
+            if (character == '.') {
+                // Only one dot is allowed
+                if (!lastWasADot) {
+                    ret.append(character);
+                }
+                lastWasADot = true;
+                continue;
+            }
+
+            underscores = 0;
+            lastWasADot = false;
+            if (Character.isLetter(character) || Character.isDigit(character) || character == '-') {
+                ret.append(character);
+            }
+        }
+
+        // All characters must be lowercase
+        return ret.toString().toLowerCase();
     }
 
 }
