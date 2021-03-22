@@ -29,7 +29,7 @@ public abstract class AbstractImageBuildConfiguration {
      * This is the regular expression to be used to determine a multistage Containerfiles. For now we only support
      * named stages.
      */
-    protected static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile(".*(FROM\\s.*)([ASas]\\s)([a-zA-Z].*)");
+    protected static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile("(FROM\\s[a-zA-Z0-9./:_\\-]{0,255}\\s)([ASas]{2}\\s)([a-zA-Z0-9./:_\\-]{1,128})");
 
     /**
      * The default name of the Containerfile to build.
