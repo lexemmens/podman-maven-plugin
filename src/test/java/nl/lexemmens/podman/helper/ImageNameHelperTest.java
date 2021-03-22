@@ -45,8 +45,6 @@ public class ImageNameHelperTest {
 
     @Test
     public void testContainerFileDirectoryReplacement() {
-        when(mavenProject.getArtifactId()).thenReturn("my-artifact");
-
         SingleImageBuildConfiguration build = new SingleImageBuildConfiguration();
         build.setContainerFile("Containerfile");
         build.setContainerFileDir(new File("/some/directory/hello/world"));
