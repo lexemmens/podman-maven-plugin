@@ -153,7 +153,7 @@ public class ImageNameHelper {
             String groupId = mavenProject.getGroupId();
             int idx = groupId.lastIndexOf('.');
             if (idx != -1) {
-                groupId = groupId.substring(idx, groupId.length() - 1);
+                groupId = groupId.substring(idx + 1);
             }
             return alignWithNamingConvention(groupId);
         }
