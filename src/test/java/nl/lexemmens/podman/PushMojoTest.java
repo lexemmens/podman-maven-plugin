@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
@@ -147,7 +149,6 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(1)).error(Mockito.eq("Failed to push container images. No registry specified. Configure the registry by adding the <pushRegistry><!-- registry --></pushRegistry> tag to your configuration."));
 
     }
-
 
 
     @Test
@@ -332,9 +333,9 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.pushRegistry = targetRegistry;
         pushMojo.registries = new String[]{targetRegistry};
         pushMojo.deleteLocalImageAfterPush = deleteLocalImageAfterPush;
-        SingleImageConfiguration[] imageConfigurations = new SingleImageConfiguration[1];
-        imageConfigurations[0] = image;
-//        pushMojo.images = imageConfigurations;
+        List<SingleImageConfiguration> imageConfigurations = new ArrayList<>();
+        imageConfigurations.add(image);
+        pushMojo.images = imageConfigurations;
         pushMojo.failOnMissingContainerfile = failOnMissingContainerFile;
     }
 

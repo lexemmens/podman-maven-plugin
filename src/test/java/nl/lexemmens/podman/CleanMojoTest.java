@@ -4,7 +4,7 @@ import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -86,6 +86,6 @@ public class CleanMojoTest extends AbstractMojoTest {
         cleanMojo.skip = skipAll;
         cleanMojo.skipAuth = true;
         cleanMojo.skipClean = skipClean;
-//        cleanMojo.images = images;
+        cleanMojo.images = images;
     }
 }

@@ -4,7 +4,7 @@ import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.config.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -72,7 +72,7 @@ public class SaveMojoTest extends AbstractMojoTest {
                 .setUseMavenProjectVersion(false)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
-        configureMojo(image,false, false, null, true);
+        configureMojo(image, false, false, null, true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -111,7 +111,7 @@ public class SaveMojoTest extends AbstractMojoTest {
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
-        configureMojo(image,false, false, "registry.example.com", true);
+        configureMojo(image, false, false, "registry.example.com", true);
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
@@ -212,7 +212,7 @@ public class SaveMojoTest extends AbstractMojoTest {
         saveMojo.skipAuth = true;
         saveMojo.skipSave = skipSave;
         saveMojo.pushRegistry = pushRegistry;
-//        saveMojo.images = images;
+        saveMojo.images = images;
         saveMojo.failOnMissingContainerfile = failOnMissingContainerfile;
     }
 }

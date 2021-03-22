@@ -1,6 +1,7 @@
 package nl.lexemmens.podman.config;
 
 import nl.lexemmens.podman.config.image.StageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageBuildConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.enumeration.ContainerFormat;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -19,59 +20,54 @@ public class TestImageConfigurationBuilder {
 
     public TestImageConfigurationBuilder(String name) {
         image = new SingleImageConfiguration();
-//        image.name = name;
-//        image.build = new BuildImageConfiguration_();
+        image.setImageName(name);
+        image.setBuild(new SingleImageBuildConfiguration());
     }
 
     public TestImageConfigurationBuilder setNoCache(boolean noCache) {
-//        image.build.noCache = noCache;
+        image.getBuild().setNoCache(noCache);
         return this;
     }
 
     public TestImageConfigurationBuilder setPull(boolean pull) {
-//        image.build.pull = pull;
+        image.getBuild().setPull(pull);
         return this;
     }
 
     public TestImageConfigurationBuilder setLabels(Map<String, String> labels) {
-//        image.build.labels = labels;
+        image.getBuild().setLabels(labels);
         return this;
     }
 
     public TestImageConfigurationBuilder setContainerfile(String containerfile) {
-//        image.build.containerFile = containerfile;
+        image.getBuild().setContainerFile(containerfile);
         return this;
     }
 
     public TestImageConfigurationBuilder setContainerfileDir(String containerfileDir) {
-        if(containerfileDir != null) {
-//            image.build.containerFileDir = new File(containerfileDir);
+        if (containerfileDir != null) {
+            image.getBuild().setContainerFileDir(new File(containerfileDir));
         }
         return this;
     }
 
     public TestImageConfigurationBuilder setTags(String[] tags) {
-//        image.build.tags = tags;
+        image.getBuild().setTags(tags);
         return this;
     }
 
     public TestImageConfigurationBuilder setUseMavenProjectVersion(boolean useMavenProjectVersion) {
-//        image.build.tagWithMavenProjectVersion = useMavenProjectVersion;
-        return this;
-    }
-
-    public TestImageConfigurationBuilder setMavenProjectVersion(String mavenProjectVersion) {
-//        image.build.mavenProjectVersion = mavenProjectVersion;
+        image.getBuild().setTagWithMavenProjectVersion(useMavenProjectVersion);
         return this;
     }
 
     public TestImageConfigurationBuilder setCreateLatestTag(boolean createLatestTag) {
-//        image.build.createLatestTag = createLatestTag;
+        image.getBuild().setCreateLatestTag(createLatestTag);
         return this;
     }
 
     public TestImageConfigurationBuilder setFormat(ContainerFormat format) {
-//        image.build.format = format;
+        image.getBuild().setFormat(format);
         return this;
     }
 
@@ -81,26 +77,26 @@ public class TestImageConfigurationBuilder {
     }
 
     public TestImageConfigurationBuilder addCustomImageNameForBuildStage(String stage, String imageName) {
-//        StageConfiguration[] currentStagesConfigurations = image.stages;
-//
-//        if(currentStagesConfigurations == null) {
-//            currentStagesConfigurations = new StageConfiguration[0];
-//        }
-//
-//        List<StageConfiguration> stageConfigurationList = new ArrayList<>(Arrays.asList(currentStagesConfigurations));
-//
-//        StageConfiguration newStageConfiguration = new StageConfiguration();
-//        newStageConfiguration.imageName = imageName;
-//        newStageConfiguration.name = stage;
-//        stageConfigurationList.add(newStageConfiguration);
-//
-//        image.stages = stageConfigurationList.toArray(new StageConfiguration[]{});
+        StageConfiguration[] currentStagesConfigurations = image.getStages();
+
+        if(currentStagesConfigurations == null) {
+            currentStagesConfigurations = new StageConfiguration[0];
+        }
+
+        List<StageConfiguration> stageConfigurationList = new ArrayList<>(Arrays.asList(currentStagesConfigurations));
+
+        StageConfiguration newStageConfiguration = new StageConfiguration();
+        newStageConfiguration.setImageName(imageName);
+        newStageConfiguration.setStageName(stage);
+        stageConfigurationList.add(newStageConfiguration);
+
+        image.setStages(stageConfigurationList.toArray(new StageConfiguration[]{}));
 
         return this;
     }
 
     public TestImageConfigurationBuilder setPullAlways(boolean pullAlways) {
-//        image.build.pullAlways = pullAlways;
+        image.getBuild().setPullAlways(pullAlways);
         return this;
     }
 
@@ -109,7 +105,7 @@ public class TestImageConfigurationBuilder {
     }
 
     public TestImageConfigurationBuilder setUseCustomImageNameForMultiStageContainerfile(boolean useCustomImageNameForMultiStageContainerfile) {
-//        image.customImageNameForMultiStageContainerfile = useCustomImageNameForMultiStageContainerfile;
+        image.setCustomImageNameForMultiStageContainerfile(useCustomImageNameForMultiStageContainerfile);
         return this;
     }
 }
