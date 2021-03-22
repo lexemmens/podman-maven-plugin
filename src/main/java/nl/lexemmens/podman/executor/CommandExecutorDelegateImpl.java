@@ -19,6 +19,10 @@ public final class CommandExecutorDelegateImpl implements CommandExecutorDelegat
             ProcessResult process = processExecutor.execute();
             return process.getOutput().getLinesAsUTF8();
         } catch (Exception e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+
             String msg = String.format("Failed to execute command '%s' - caught %s", StringUtils.join(processExecutor.getCommand(), " "), e.getMessage());
             throw new MojoExecutionException(msg);
         }
