@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class ParameterReplacer {
 
-    private static final Pattern FORMATTER_PATTERN = Pattern.compile("^(.*?)%([a-z])(.*)$");
+    private static final Pattern FORMATTER_PATTERN = Pattern.compile("^([a-z0-9.-_].*?)%([a-z])([a-z0-9.\\-_].*)$");
 
     private final Map<String, Replacement> replacementMap;
 
