@@ -34,18 +34,6 @@ public class SingleImageConfiguration extends AbstractImageConfiguration<SingleI
             throw new MojoExecutionException("Missing <build/> section in image configuration!");
         }
 
-        if (!customImageNameForMultiStageContainerfile && name == null) {
-            String msg = "Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        }
-
-        if (customImageNameForMultiStageContainerfile && stages == null) {
-            String msg = "Plugin is configured for multistage Containerfiles, but there are no custom image names configured.";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        }
-
         if (build.isMultistageContainerFile() && !customImageNameForMultiStageContainerfile) {
             log.warn("Detected multistage Containerfile, but there are no image names specified for (some of) these stages. Only tagging final image!");
         }

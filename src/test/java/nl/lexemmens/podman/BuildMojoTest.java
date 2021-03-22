@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -91,6 +93,53 @@ public class BuildMojoTest extends AbstractMojoTest {
         configureMojo(podman, null, true, false, false, true, true);
 
         Assertions.assertThrows(MojoExecutionException.class, buildMojo::execute);
+    }
+
+    @Test
+    public void testNoImageNameThrowsException() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        SingleImageConfiguration image = new TestImageConfigurationBuilder(null).build();
+
+        configureMojo(podman, image, true, false, false, true, true);
+
+        try {
+            buildMojo.execute();
+            fail("Expected an exception, however none was thrown.");
+        } catch (Exception e) {
+            assertEquals("Image name must not be null, must be alphanumeric and may contain slashes, such as: valid/image/name", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testNoStageConfigurationWhileCustomImageNameForStagesHasBeenSetToTrue() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        SingleImageConfiguration image = new TestImageConfigurationBuilder(null).build();
+
+        configureMojo(podman, image, true, false, false, true, true);
+        image.setCustomImageNameForMultiStageContainerfile(true);
+
+        try {
+            buildMojo.execute();
+            fail("Expected an exception, however none was thrown.");
+        } catch (Exception e) {
+            assertEquals("Plugin is configured for multistage Containerfiles, but there are no custom image names configured.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testImageWithoutBuildSectionThrowsException() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample-image").build();
+
+        configureMojo(podman, image, true, false, false, true, true);
+        image.setBuild(null);
+
+        try {
+            buildMojo.execute();
+            fail("Expected an exception, however none was thrown.");
+        } catch (Exception e) {
+            assertEquals("Missing <build/> section in image configuration!", e.getMessage());
+        }
     }
 
     @Test
