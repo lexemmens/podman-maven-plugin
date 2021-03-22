@@ -126,25 +126,25 @@ NOTE: These placeholders also work when using a custom image name per stage.
 |===
 |Placeholder |Description
 
-|a
+|%a
 |Sanitized version of the artifactId that can be used as part of a container image name.The artifactId is converted to lowercase as per container naming conventions.
 
-|d
+|%d
 |A sanitized version of the directory name where the `Containerfile` is located. E.g. `/tmp/subFolder/Containerfile` will be result in `subFolder`.
 
-|g
+|%g
 |The last part of the Maven groupId. Everything after the last `.` is used, i.e. `com.example.sample` will result in `sample`
 
-|n
+|%n
 |Returns a sequence number, which could be useful in e.g. a batch image configuration. An image named `someImage-%n` will be updated to `someImage-0`
 
-|l
+|%l
 |If the project version ends with `-SNAPSHOT` then this placeholder results in `latest`, otherwise the full Maven version is used (same as `%v`)
 
-|t
+|%t
 |Resolves to `snapshot-<timestamp>` where the timestamp is formatted as `yyMMdd-HHmmss-SSSS`
 
-|v
+|%v
 |The project version. See also: `${project.version}`
 
 |===
