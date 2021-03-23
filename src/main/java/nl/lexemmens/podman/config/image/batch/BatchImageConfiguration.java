@@ -1,6 +1,7 @@
 package nl.lexemmens.podman.config.image.batch;
 
 import nl.lexemmens.podman.config.image.AbstractImageConfiguration;
+import nl.lexemmens.podman.config.image.StageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageBuildConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -66,7 +67,7 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
             SingleImageConfiguration imageConfiguration = new SingleImageConfiguration();
             imageConfiguration.setImageName(getImageName());
             imageConfiguration.setCustomImageNameForMultiStageContainerfile(useCustomImageNameForMultiStageContainerfile());
-            imageConfiguration.setStages(getStages());
+            imageConfiguration.setStages(convertStages(getStages()));
 
             SingleImageBuildConfiguration buildConfiguration = new SingleImageBuildConfiguration();
             buildConfiguration.setContainerFile(containerFile.getFileName().toString());
@@ -85,6 +86,23 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
         }
 
         return imageConfigurations;
+    }
+
+    private StageConfiguration[] convertStages(StageConfiguration[] stages) {
+        StageConfiguration[] convertedStages = null;
+        if (stages != null) {
+            convertedStages = new StageConfiguration[stages.length];
+
+            for (int i = 0; i < stages.length; i++) {
+                StageConfiguration convertedStage = new StageConfiguration();
+                convertedStage.setName(stages[i].getName());
+                convertedStage.setImageName(stages[i].getImageName());
+
+                convertedStages[i] = convertedStage;
+            }
+        }
+
+        return convertedStages;
     }
 
     @Override

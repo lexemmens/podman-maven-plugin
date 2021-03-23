@@ -33,6 +33,15 @@ public class StageConfiguration {
     }
 
     /**
+     * Sets the name of the stage
+     *
+     * @param name the name of the stage to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the name of the image.
      *
      * @param imageName The name of the image to set.
