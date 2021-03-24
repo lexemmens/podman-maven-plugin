@@ -1,9 +1,9 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.config.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -326,7 +326,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithRetries() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -355,7 +355,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushRunsOutOfRetries() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
