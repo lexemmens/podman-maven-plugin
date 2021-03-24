@@ -47,6 +47,11 @@ public class AuthenticationService {
      */
     private static final String AUTH_JSON_SUB_PATH = "containers/auth.json";
 
+    /**
+     * Default Docker credential file
+     */
+    private static final String DOCKER_CONFIG_FILE = ".docker/config.json";
+
     private final Log log;
     private final PodmanExecutorService podmanExecutorService;
     private final AuthConfigFactory authConfigFactory;
@@ -54,10 +59,10 @@ public class AuthenticationService {
     /**
      * Constructs a new instance of this service
      *
-     * @param log                Provides access to Maven's log system
+     * @param log                   Provides access to Maven's log system
      * @param podmanExecutorService Service for executing commands with Podman
-     * @param mavenSetings       Provides access to the Maven Settings
-     * @param settingsDecrypter  Provides access to Maven's SettingsDecrypter service from Maven core
+     * @param mavenSetings          Provides access to the Maven Settings
+     * @param settingsDecrypter     Provides access to Maven's SettingsDecrypter service from Maven core
      */
     public AuthenticationService(Log log, PodmanExecutorService podmanExecutorService, Settings mavenSetings, SettingsDecrypter settingsDecrypter) {
         this.podmanExecutorService = podmanExecutorService;
@@ -96,13 +101,13 @@ public class AuthenticationService {
             throw new MojoExecutionException(msg);
         }
 
-        Optional<Path> registryAuthFile = getRegistryAuthFile();
-        if (registryAuthFile.isPresent()) {
-            log.debug("Checking unauthenticated registries...");
-            authenticateUnauthenticatedRegistries(registries, registryAuthFile.get());
-        } else {
+        List<Path> registryAuthFiles = getRegistryAuthFiles();
+        if (registryAuthFiles.isEmpty()) {
             log.info("Authentication file not (yet) present. Authenticating...");
             authenticateRegistries(registries);
+        } else {
+            log.debug("Checking unauthenticated registries...");
+            authenticateUnauthenticatedRegistries(registries, registryAuthFiles);
         }
 
         log.debug("Authentication status: OK!");
@@ -121,27 +126,41 @@ public class AuthenticationService {
      *
      * @return An Optional potentially holding the location of an authentication file.
      */
-    private Optional<Path> getRegistryAuthFile() {
+    private List<Path> getRegistryAuthFiles() {
+        List<Path> registryAuthFiles = new ArrayList<>();
         if (System.getenv().containsKey(REGISTRY_AUTH_FILE)) {
             Path customRegistryAuthFile = Paths.get(System.getenv(REGISTRY_AUTH_FILE));
             if (Files.exists(customRegistryAuthFile)) {
-                return Optional.of(customRegistryAuthFile);
+                log.debug("Found custom registry authentication file at: " + customRegistryAuthFile);
+                registryAuthFiles.add(customRegistryAuthFile);
             }
-        } else if(System.getenv().containsKey(XDG_RUNTIME_DIR)){
+        }
+
+        if (System.getenv().containsKey(XDG_RUNTIME_DIR)) {
             Path xdgRuntimeDir = Paths.get(System.getenv(XDG_RUNTIME_DIR));
             Path defaultAuthFile = xdgRuntimeDir.resolve(AUTH_JSON_SUB_PATH);
             if (Files.exists(defaultAuthFile)) {
-                return Optional.of(defaultAuthFile);
+                log.debug("Found default registry authentication file at: " + defaultAuthFile);
+                registryAuthFiles.add(defaultAuthFile);
             }
-        } else {
-            log.warn("Could not locate Podman's default credential storage location. If this error persists, try running with <skipAuth>true</skipAuth>.");
         }
 
-        return Optional.empty();
+        // Check docker auth file
+        Path dockerConfigFile = Paths.get(System.getProperty("user.home")).resolve(DOCKER_CONFIG_FILE);
+        if (Files.exists(dockerConfigFile)) {
+            log.debug("Found Docker registry authentication file at: " + dockerConfigFile);
+            registryAuthFiles.add(dockerConfigFile);
+        }
+
+        if (registryAuthFiles.isEmpty()) {
+            log.warn("Could not locate suitable credentials for Podman. If this error persists, try running with <skipAuth>true</skipAuth>.");
+        }
+
+        return registryAuthFiles;
     }
 
-    private void authenticateUnauthenticatedRegistries(String[] registries, Path registryAuthFilePath) throws MojoExecutionException {
-        Set<String> authenticatedRegistries = getAuthenticatedRegistries(registryAuthFilePath);
+    private void authenticateUnauthenticatedRegistries(String[] registries, List<Path> registryAuthFilePaths) throws MojoExecutionException {
+        Set<String> authenticatedRegistries = getAuthenticatedRegistries(registryAuthFilePaths);
         List<String> unauthenticatedRegistries = new ArrayList<>();
         for (String registry : registries) {
             if (!authenticatedRegistries.contains(registry)) {
@@ -172,20 +191,23 @@ public class AuthenticationService {
         podmanExecutorService.login(registry, username, password);
     }
 
-    private Set<String> getAuthenticatedRegistries(Path registryAuthFilePath) throws MojoExecutionException {
+    private Set<String> getAuthenticatedRegistries(List<Path> registryAuthFilePaths) throws MojoExecutionException {
         Set<String> authenticatedRegistries = new HashSet<>();
-        JSONObject podmanConfigJson = readPodmanConfig(registryAuthFilePath);
-        if (podmanConfigJson == null || !podmanConfigJson.has(AUTHS_KEY_PODMAN_CFG)) {
-            log.debug("No authenticated registries were found.");
-        } else {
-            Object auths = podmanConfigJson.get(AUTHS_KEY_PODMAN_CFG);
-            if (auths instanceof JSONObject) {
-                authenticatedRegistries = ((JSONObject) auths).keySet();
+        for(Path registryAuthFilePath : registryAuthFilePaths) {
+            JSONObject podmanConfigJson = readPodmanConfig(registryAuthFilePath);
+            if (podmanConfigJson == null || !podmanConfigJson.has(AUTHS_KEY_PODMAN_CFG)) {
+                log.debug("No authenticated registries were found.");
             } else {
-                log.warn("Failed to read authenticated registries. Maven might re-authenticate...");
+                Object auths = podmanConfigJson.get(AUTHS_KEY_PODMAN_CFG);
+                if (auths instanceof JSONObject) {
+                    authenticatedRegistries.addAll(((JSONObject) auths).keySet());
+                } else {
+                    log.warn("Failed to read authenticated registries. Maven might re-authenticate...");
+                }
             }
         }
 
+        log.debug("Found authentication details for the following registries: " + authenticatedRegistries);
         return authenticatedRegistries;
     }
 

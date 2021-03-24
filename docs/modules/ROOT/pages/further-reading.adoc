@@ -1,4 +1,6 @@
 = Further Reading
+[#furtherreading]
+:navtitle: Further Reading
 
 * Official Podman Documentation: https://docs.podman.io/en/latest/
 * Changelog: https://github.com/lexemmens/podman-maven-plugin/blob/master/CHANGELOG.md

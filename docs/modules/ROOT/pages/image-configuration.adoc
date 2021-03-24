@@ -1,4 +1,5 @@
 = Image Configuration
+[#imageconfig]
 :navtitle: Image Configuration
 :listing-caption: Listing
 :table-caption: Table
