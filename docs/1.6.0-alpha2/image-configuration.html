@@ -41,7 +41,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="docs" data-version="1.5.0">
+<div class="nav-container" data-component="docs" data-version="1.6.0-alpha2">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -119,7 +119,7 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">Podman Maven Plugin</span>
-    <span class="version">1.5.0</span>
+    <span class="version">1.6.0-alpha2</span>
   </div>
   <ul class="components">
     <li class="component is-current">
@@ -128,14 +128,14 @@
         <li class="version is-latest">
           <a href="../index.html">latest</a>
         </li>
-        <li class="version">
-          <a href="../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
+        <li class="version is-current">
+          <a href="index.html">1.6.0-alpha2</a>
         </li>
         <li class="version">
           <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
         </li>
-        <li class="version is-current">
-          <a href="index.html">1.5.0</a>
+        <li class="version">
+          <a href="../1.5.0/index.html">1.5.0</a>
         </li>
       </ul>
     </li>
@@ -155,15 +155,15 @@
   </ul>
 </nav>
 <div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">1.5.0</button>
+  <button class="version-menu-toggle" title="Show other versions of page">1.6.0-alpha2</button>
   <div class="version-menu">
     <a class="version" href="../image-configuration.html">latest</a>
-    <a class="version" href="../1.6.0-alpha2/image-configuration.html">1.6.0-alpha2</a>
+    <a class="version is-current" href="image-configuration.html">1.6.0-alpha2</a>
     <a class="version" href="../1.6.0-alpha1/image-configuration.html">1.6.0-alpha1</a>
-    <a class="version is-current" href="image-configuration.html">1.5.0</a>
+    <a class="version" href="../1.5.0/image-configuration.html">1.5.0</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.5.0/docs/modules/ROOT/pages/image-configuration.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.6.0-alpha2/docs/modules/ROOT/pages/image-configuration.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
@@ -174,8 +174,8 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The plugin’s configuration is centered around images.
-These are specified for each image within the <code>&lt;images&gt;</code> element of the configuration with one <code>&lt;image&gt;</code> element per image to use.</p>
+<p>The plugin’s configuration is centered around images.Images can be either configured individually, as part of a batch or a combination of both.
+When configured individually, each image is specified in the <code>&lt;images&gt;</code> element of the configuration with one <code>&lt;image&gt;</code> element per image to use.</p>
 </div>
 <div class="paragraph">
 <p>The <code>&lt;image&gt;</code> element can contain the following sub elements:</p>
@@ -196,8 +196,8 @@ These are specified for each image within the <code>&lt;images&gt;</code> elemen
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Each <code>&lt;image&gt;</code> configuration has a mandatory, unique container repository name.
-This can include registry and tag parts.
-This name does not support placeholer characters.</p></td>
+This name does not support placeholer characters, see <a href="#imagenames">Image Names</a>.</p>
+<p class="tableblock"><strong>NOTE:</strong> Currently image names cannot include registry and tag parts.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">customImageNameForMultiStageContainerfile</p></td>
@@ -238,6 +238,46 @@ When set to <code>true</code>, the result of each stage can have a different ima
 </div>
 </div>
 <div class="sect1">
+<h2 id="batch-configuration"><a class="anchor" href="#batch-configuration"></a>Batch Configuration</h2>
+<div class="sectionbody">
+<div id="batchconfig" class="paragraph">
+<p>In some special cases it may be convenient to configure a series of images at once, e.g. if there are multiple <code>Containerfiles</code> in your project which all share the same configuration but only differ by name.</p>
+</div>
+<div class="paragraph">
+<p>A batch configuraion can be configured within the <code>&lt;batch/&gt;</code> element of the configuration. It is possible to specify one batch configuration.</p>
+</div>
+<div class="paragraph">
+<p>The <code>&lt;batch/&gt;</code> element supports the same elements as the <code>&lt;image/&gt;</code> element. An example configuration is provided below.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Resulting image names must be unique, otherwise one image may overwrite another.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Listing 2. Example batch configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
+    ...
+    &lt;batch&gt;
+        &lt;name&gt;your-image-name&lt;/name&gt;
+        &lt;customImageNameForMultiStageContainerfile&gt;true&lt;/customImageNameForMultiStageContainerfile&gt;
+        &lt;stages&gt;...&lt;/stages&gt;
+        &lt;build&gt;...&lt;/build&gt;
+    &lt;/batch&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="stage-configuration"><a class="anchor" href="#stage-configuration"></a>Stage Configuration</h2>
 <div class="sectionbody">
 <div id="stageconfig" class="paragraph">
@@ -267,7 +307,7 @@ When set to <code>true</code>, the result of each stage can have a different ima
 </tbody>
 </table>
 <div class="listingblock">
-<div class="title">Listing 2. Example configuration</div>
+<div class="title">Listing 3. Example configuration</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
     ...
@@ -285,6 +325,69 @@ When set to <code>true</code>, the result of each stage can have a different ima
 &lt;/configuration&gt;</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="image-names"><a class="anchor" href="#image-names"></a>Image Names</h2>
+<div class="sectionbody">
+<div id="imagenames" class="paragraph">
+<p>When providing an image name in either the <code>&lt;image/&gt;</code> or <code>&lt;batch/</code>&gt; configuration with the <code>&lt;name&gt;</code> field, there are several placeholders available for use.These placeholders are replaced by this plugin at runtime, before each goal executes.In addition you can use regular Maven properties which are resolved by Maven itself.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+These placeholders also work when using a custom image name per stage.
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Image name placeholders</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Placeholder</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%a</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sanitized version of the artifactId that can be used as part of a container image name.The artifactId is converted to lowercase as per container naming conventions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%d</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A sanitized version of the directory name where the <code>Containerfile</code> is located. E.g. <code>/tmp/subFolder/Containerfile</code> will be result in <code>subFolder</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%g</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The last part of the Maven groupId. Everything after the last <code>.</code> is used, i.e. <code>com.example.sample</code> will result in <code>sample</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%n</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns a sequence number, which could be useful in e.g. a batch image configuration. An image named <code>someImage-%n</code> will be updated to <code>someImage-0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%l</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the project version ends with <code>-SNAPSHOT</code> then this placeholder results in <code>latest</code>, otherwise the full Maven version is used (same as <code>%v</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%t</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves to <code>snapshot-&lt;timestamp&gt;</code> where the timestamp is formatted as <code>yyMMdd-HHmmss-SSSS</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%v</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project version. See also: <code>${project.version}</code></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <nav class="pagination">
