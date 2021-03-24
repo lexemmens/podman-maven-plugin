@@ -237,6 +237,7 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>

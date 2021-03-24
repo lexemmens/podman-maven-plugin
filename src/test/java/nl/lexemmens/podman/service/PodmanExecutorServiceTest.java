@@ -22,6 +22,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;
@@ -197,7 +198,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -219,7 +220,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -242,7 +243,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -269,7 +270,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -296,7 +297,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -324,7 +325,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);

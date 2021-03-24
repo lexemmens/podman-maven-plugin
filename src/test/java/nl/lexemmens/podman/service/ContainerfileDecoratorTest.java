@@ -22,8 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -98,7 +98,7 @@ public class ContainerfileDecoratorTest {
 
         SingleImageConfiguration image = new TestImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
-                .setLabels(Map.of("testLabelKey", "testLabelValue"))
+                .setLabels(Collections.singletonMap("testLabelKey", "testLabelValue"))
                 .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
@@ -122,7 +122,7 @@ public class ContainerfileDecoratorTest {
 
         SingleImageConfiguration image = new TestImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
-                .setLabels(Map.of("testLabelKey", "testLabelValue"))
+                .setLabels(Collections.singletonMap("testLabelKey", "testLabelValue"))
                 .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));

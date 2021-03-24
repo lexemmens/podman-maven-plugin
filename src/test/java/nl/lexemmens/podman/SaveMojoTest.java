@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -205,7 +206,7 @@ public class SaveMojoTest extends AbstractMojoTest {
     }
 
     private void configureMojo(SingleImageConfiguration image, boolean skipAll, boolean skipSave, String pushRegistry, boolean failOnMissingContainerfile) {
-        List<SingleImageConfiguration> images = List.of(image);
+        List<SingleImageConfiguration> images = Collections.singletonList(image);
 
         saveMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         saveMojo.skip = skipAll;

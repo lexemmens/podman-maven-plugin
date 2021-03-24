@@ -13,6 +13,8 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -95,7 +97,7 @@ public class PodmanExecutorService {
      */
     public void tag(String imageHash, String fullImageName) throws MojoExecutionException {
         // Ignore output
-        runCommand(PodmanCommand.TAG, List.of(imageHash, fullImageName));
+        runCommand(PodmanCommand.TAG, Arrays.asList(imageHash, fullImageName));
     }
 
     /**
@@ -132,7 +134,7 @@ public class PodmanExecutorService {
     public void push(String fullImageName) throws MojoExecutionException {
         // Apparently, actually pushing the blobs to a registry causes some output on stderr.
         // Ignore output
-        runCommand(BASE_DIR, false, PodmanCommand.PUSH, List.of(fullImageName));
+        runCommand(BASE_DIR, false, PodmanCommand.PUSH, Collections.singletonList(fullImageName));
     }
 
     /**
@@ -195,7 +197,7 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the container image could not be removed.
      */
     public void removeLocalImage(String fullImageName) throws MojoExecutionException {
-        runCommand(PodmanCommand.RMI, List.of(fullImageName));
+        runCommand(PodmanCommand.RMI, Collections.singletonList(fullImageName));
     }
 
     private List<String> decorateCommands(PodmanCommand podmanCommand, List<String> subCommands) {
