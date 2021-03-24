@@ -177,7 +177,7 @@ public class AuthenticationServiceTest {
         server.setUsername("username");
         server.setPassword("password");
 
-        List<Server> serverList = List.of(server);
+        List<Server> serverList = Collections.singletonList(server);
 
         when(settings.getServer(eq(registryName))).thenReturn(server);
         when(settings.getServers()).thenReturn(serverList);
