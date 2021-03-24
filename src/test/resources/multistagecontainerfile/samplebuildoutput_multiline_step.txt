@@ -1,0 +1,55 @@
+Building container image...
+STEP 1: FROM nexus.example:15000/adoptopenjdk/openjdk11:11.0.3 AS base
+Getting image source signatures
+Copying blob sha256:df15d82c4ffe976522b836c1f0c300e289f797cb2e302df1b7d0b917af7d3795
+Copying blob sha256:c29f4698c17768b4bf36dde25d584231424db9f4b9c9e67cce8980cfc50efbc1
+Copying blob sha256:b08df05e829707fdd711d6669671a0dd0431a20ca7ae89d7cd415e0025ba3a84
+Copying blob sha256:ad26192fb1166465550d702a8418c67ecda7b089149870f48673d8f0fb5ab8c1
+Copying blob sha256:95c2c089cb32f9959093f091b223b04c3a8e0e0aa8b703c0052ebfe9be5f0b3c
+Copying blob sha256:67300986eedeec2c7442a3b30e65142200b72dc72dc6da2e945a0f06d5e9183b
+Copying config sha256:c83be72afce332f5c3c3ae4992f3340479fee3115d7f449afebf39d0b6eb16b6
+Writing manifest to image destination
+Storing signatures
+STEP 2: LABEL Build-User=example Git-Repository-Url=null
+--> ab579b718da
+STEP 3: ENV RUN_CMD="exec java -jar a-sample-jar-file.jar"
+--> d8874e40423
+STEP 4: ls -al
+some_file
+other_file
+another_file
+blabla
+test
+--> 642d8df202a
+STEP 5: WORKDIR /application
+--> 932d8db203e
+STEP 6: ENTRYPOINT /application
+--> 7e72c870614
+STEP 7: FROM 7e72c870614c842cefe268dec15cd84d8abd64be16a0c4f76d4883846b1e6104 AS phase
+STEP 8: LABEL Build-User=sample-user2 Git-Repository-Url=null
+--> f6d4d237662
+STEP 9: COPY target/a-sample-jar-file.jar ./
+--> 1149d5e6695
+STEP 10: ls -al
+some_file
+other_file
+another_file
+blabla
+test
+STEP 11: ENTRYPOINT ${RUN_CMD}
+--> 7f55eab001a
+STEP 12: FROM 7e72c870614c842cefe268dec15cd84d8abd64be16a0c4f76d4883846b1e6104 AS phase2
+STEP 13: LABEL Build-User=another-user Git-Repository-Url=null
+--> 521e4fbdc40
+STEP 14: COPY target/some-other-jar-file.jar ./
+--> 15db404a6fb
+STEP 15: ls -al
+some_file
+other_file
+another_file
+blabla
+test
+STEP 16: ENTRYPOINT ${RUN_CMD}
+STEP 17: COMMIT
+--> d2efc6645cb
+7f55eab001adf2dfeas8adc03ef847dd3d2b4fa42b4fa418ca4cdeb6eaef8f3b

@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -9,17 +10,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * BuildMojo for building container images using Podman
  */
 @Mojo(name = "build", defaultPhase = LifecyclePhase.INSTALL)
 public class BuildMojo extends AbstractPodmanMojo {
-
-    private static final Pattern IMAGE_HASH_PATTERN = Pattern.compile("\\b([A-Fa-f0-9]{11,64})\\b");
 
     /**
      * Indicates if building container images should be skipped
@@ -32,6 +29,17 @@ public class BuildMojo extends AbstractPodmanMojo {
      */
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
     boolean skipTag;
+
+    private final MultiStageBuildOutputHelper buildOutputHelper;
+
+    /**
+     * Constructor
+     */
+    public BuildMojo() {
+        super();
+
+        this.buildOutputHelper = new MultiStageBuildOutputHelper();
+    }
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
@@ -74,78 +82,8 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         if (image.getBuild().isMultistageContainerFile()) {
             getLog().info("Detected multistage Containerfile...");
-            determineImageHashes(image, processOutput);
+            buildOutputHelper.recordImageHashes(getLog(), image, processOutput);
         }
-    }
-
-    private void determineImageHashes(SingleImageConfiguration image, List<String> processOutput) {
-        // Use size -2 as the last line is the image hash of the final image, which we already captured before.
-        Pattern stagePattern = image.getBuild().getMultistageContainerfilePattern();
-        getLog().debug("Using regular expression: " + stagePattern);
-
-        // We are interested in output that starts either with:
-        // * STEP
-        // * -->
-        //
-        // STEP means a build step
-        // --> means the result of a build step
-        //
-        // The last line always contain the final image hash, which not interesting in this case.
-
-
-        String currentStage = null;
-        String lastKnownImageHash = null;
-        for (int i = 0; i <= processOutput.size() - 2; i++) {
-            // Read current line and next line (this is safe as we only loop until size - 2)
-            String currentLine = processOutput.get(i);
-            String nextLine = processOutput.get(i + 1);
-
-            // Check if the current line defines a new stage
-            Matcher stageMatcher = stagePattern.matcher(currentLine);
-            boolean currentLineDefinesStage = stageMatcher.find();
-
-            getLog().debug("Processing line: '" + currentLine + "', matches: " + currentLineDefinesStage);
-
-            // Check if the next line contains a hash
-            Optional<String> imageHashOptional = retrieveImageHashFromLine(nextLine);
-
-            if(currentLineDefinesStage) {
-                boolean isFirstStage = currentStage == null;
-
-                if(!isFirstStage) {
-                    // If it is not the first stage, then we must save the image hash of the previous stage
-                    getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
-                    image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
-                }
-
-                currentStage = stageMatcher.group(3);
-                lastKnownImageHash = null;
-
-                getLog().debug("Found stage in Containerfile: " + currentStage);
-            } else if(currentLine.startsWith("STEP") && imageHashOptional.isPresent()) {
-                lastKnownImageHash = imageHashOptional.get();
-                getLog().debug("Stage " + currentStage + ", current image hash: " + lastKnownImageHash);
-            } else {
-                getLog().debug("Not a (valid) step output, continuing...");
-            }
-        }
-
-        // Save the last image hash we know
-        getLog().info("Final image for stage " + currentStage + " is: " + lastKnownImageHash);
-        image.getImageHashPerStage().put(currentStage, lastKnownImageHash);
-
-        getLog().debug("Collected hashes: " + image.getImageHashPerStage());
-    }
-
-
-    private Optional<String> retrieveImageHashFromLine(String line) {
-        String imageHash = null;
-        Matcher matcher = IMAGE_HASH_PATTERN.matcher(line);
-        if (matcher.find()) {
-            imageHash = matcher.group(1);
-        }
-
-        return Optional.ofNullable(imageHash);
     }
 
     private void tagContainerImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
