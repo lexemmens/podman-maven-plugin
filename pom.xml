@@ -6,7 +6,7 @@
 
     <groupId>nl.lexemmens</groupId>
     <artifactId>podman-maven-plugin</artifactId>
-    <version>1.6.0-alpha2</version>
+    <version>1.6.0-alpha3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Podman Maven Plugin</name>
@@ -388,7 +388,7 @@
         <connection>scm:git:git://github.com/lexemmens/podman-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:lexemmens/podman-maven-plugin.git</developerConnection>
         <url>https://github.com/lexemmens/podman-maven-plugin</url>
-        <tag>1.6.0-alpha2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
