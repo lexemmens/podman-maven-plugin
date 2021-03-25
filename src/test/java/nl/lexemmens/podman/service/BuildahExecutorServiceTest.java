@@ -1,8 +1,8 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
-import nl.lexemmens.podman.image.PodmanConfiguration;
-import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;

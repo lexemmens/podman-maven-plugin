@@ -1,0 +1,15 @@
+FROM ${container.base.image} as base
+
+ENV RUN_CMD="exec java -jar executable.jar"
+
+WORKDIR /application
+ENTRYPOINT /application
+
+
+FROM base as phase
+COPY target/executable.jar ./
+ENTRYPOINT ${RUN_CMD}
+
+FROM base as phase2
+COPY target/other-executable.jar ./
+ENTRYPOINT ${RUN_CMD}

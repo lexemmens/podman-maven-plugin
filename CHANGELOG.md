@@ -1,6 +1,10 @@
 ## Changelog
 ### UNRELEASED CHANGES
-#### Improvements 
+#### Improvements
+* ([#35](https://github.com/lexemmens/podman-maven-plugin/issues/35)) Introduced option to configure a batch of images to build, tag and push
+
+#### Other
+* This plugin now requires Java 8 rather than Java 9.
 * Documentation has now moved towards [Github Pages](https://lexemmens.github.io/podman-maven-plugin/docs/1.6.0/).
 
 ### 1.5.0 (09-02-2021)
