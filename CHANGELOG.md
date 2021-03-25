@@ -1,5 +1,8 @@
 ## Changelog
 ### UNRELEASED CHANGES
+#### Bugs
+* ([#32](https://github.com/lexemmens/podman-maven-plugin/issues/32) - When tagging an image, the plugin might skip one or more steps due to unexpected multiline output for a build step)
+
 #### Improvements
 * ([#35](https://github.com/lexemmens/podman-maven-plugin/issues/35)) Introduced option to configure a batch of images to build, tag and push
 * ([#38](https://github.com/lexemmens/podman-maven-plugin/issues/38) The plugin now checks `~/.docker/config.json` for credentials.
