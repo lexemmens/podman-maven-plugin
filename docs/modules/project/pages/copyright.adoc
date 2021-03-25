@@ -1,4 +1,5 @@
 = Copyright and License
+[#copyright]
 :navtitle: Copyright and License
 
 Copyright © 2019-2021 Lex Emmens and individual contributors. Use of this software is granted under the terms of the https://www.apache.org/licenses/LICENSE-2.0[Apache License, Version 2.0]. This site was built using Antora Default UI.

@@ -1,4 +1,6 @@
 = Registry Handling
+[#registryhandling]
+:navtitle: Registry Handling
 
 Podman uses registries to store container images. The registry is usually specified as part of the name of the container image. I.e. if the first part (everything before the first `/`) contains a dot (`.`) or colon (`:`) this part is interpreted as an address (optionally, a port may be specified) of a remote registry. This registry is used during push and pull operations. Podman uses `docker.io` by default, but this plugin requires specifying the registries explicitly. Authentication is explained in the next xref:authentication.adoc[] section.
 

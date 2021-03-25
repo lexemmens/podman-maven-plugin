@@ -3,13 +3,60 @@
 :navtitle: Authentication
 :listing-caption: Listing
 
-The `podman-maven-plugin` currently supports one method of authentication, which is by providing authentication details via the Maven settings file.
+The first step of `podman-maven-plugin`, before any of the goals is executed, is to authenticate you with all the registries that are configured in your `pom.xml`. The `podman-maven-plugin` currently supports three methods of authentication:
+
+* Authentication via Podman's default authentication file;
+* Authentication via Docker authentication file.
+* Authentication via Maven settings;
+
+This plugin will use these mechanisms in the order listed.
+
+NOTE: Registries listed in the Maven Settings are used for authentication. Registries listed in either the Podman's default auth file, or the Docker config file are assumed to be already authenticated.
+
+== Podman's authentication file
+[#podmanauth]
+:navtitle: Podman authentication
+
+The first method of authentication that is supported by this plugin is the default authentication mechanism of Podman.
+The default authentication mechanism is the `auth.json` file located at `$XDG_RUNTIME_DIR/containers/`.
+
+An `auth.json` file is automatically created by Podman when performing a `podman login <registry>` on the command line. Podman will then use this file when performing future commands.
+
+.Sample Podman auth config.
+[source,json]
+----
+{
+	"auths": {
+		"registry.example.com": {
+			"auth": "bGV4OnRlc3Q="
+		}
+	}
+}
+----
+
+== Docker configuration file
+[#dockerauth]
+:navtitle: Docker authentication
+
+The second method of authentication is by using Docker's configuration file. This file is located at `~/.docker/config.json`. This file is structured in an identical way compared to Podman's authentication file.
+
+.Sample Docker configuration file.
+[source,json]
+----
+{
+	"auths": {
+		"registry.example.com": {
+			"auth": "bGV4OnRlc3Q="
+		}
+	}
+}
+----
 
 == Maven Settings
 [#mavensettings]
 :navtitle: Maven Settings
 
-Before you start using this plugin, you must configure the registries in your Maven settings file. The first step of `podman-maven-plugin`, before any of the goals is executed, is to authenticate you with all the registries that are configured in your `pom.xml`.
+When a registry that is being used, is neither fount in the Podman authentication file, nor the Docker configuration file, than this plugin will attempt to authenticate those registries using information available in the Mave Settings file. Therefore, you must configure the registries in your Maven settings file.
 
 WARNING: The id of the server **must** match the registries configured in the plugin (see below). The plugin will fail if credentials are missing for any of the provided registries.
 
