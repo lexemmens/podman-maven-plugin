@@ -41,7 +41,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="docs" data-version="1.6.0-alpha1">
+<div class="nav-container" data-component="docs" data-version="1.6.0">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -119,14 +119,14 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">Podman Maven Plugin</span>
-    <span class="version">1.6.0-alpha1</span>
+    <span class="version">1.6.0</span>
   </div>
   <ul class="components">
     <li class="component is-current">
-      <a class="title" href="../1.6.0/index.html">Podman Maven Plugin</a>
+      <a class="title" href="index.html">Podman Maven Plugin</a>
       <ul class="versions">
-        <li class="version is-latest">
-          <a href="../1.6.0/index.html">1.6.0</a>
+        <li class="version is-current is-latest">
+          <a href="index.html">1.6.0</a>
         </li>
         <li class="version">
           <a href="../1.6.0-alpha3/index.html">1.6.0-alpha3</a>
@@ -134,8 +134,8 @@
         <li class="version">
           <a href="../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
         </li>
-        <li class="version is-current">
-          <a href="index.html">1.6.0-alpha1</a>
+        <li class="version">
+          <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
         </li>
         <li class="version">
           <a href="../1.5.0/index.html">1.5.0</a>
@@ -158,16 +158,16 @@
   </ul>
 </nav>
 <div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">1.6.0-alpha1</button>
+  <button class="version-menu-toggle" title="Show other versions of page">1.6.0</button>
   <div class="version-menu">
-    <a class="version" href="../1.6.0/authentication.html">1.6.0</a>
+    <a class="version is-current" href="authentication.html">1.6.0</a>
     <a class="version" href="../1.6.0-alpha3/authentication.html">1.6.0-alpha3</a>
     <a class="version" href="../1.6.0-alpha2/authentication.html">1.6.0-alpha2</a>
-    <a class="version is-current" href="authentication.html">1.6.0-alpha1</a>
+    <a class="version" href="../1.6.0-alpha1/authentication.html">1.6.0-alpha1</a>
     <a class="version" href="../1.5.0/authentication.html">1.5.0</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.6.0-alpha1/docs/modules/ROOT/pages/authentication.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/master/docs/modules/ROOT/pages/authentication.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
@@ -178,7 +178,79 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <code>podman-maven-plugin</code> currently supports one method of authentication, which is by providing authentication details via the Maven settings file.</p>
+<p>The first step of <code>podman-maven-plugin</code>, before any of the goals is executed, is to authenticate you with all the registries that are configured in your <code>pom.xml</code>. The <code>podman-maven-plugin</code> currently supports three methods of authentication:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Authentication via Podman&#8217;s default authentication file;</p>
+</li>
+<li>
+<p>Authentication via Docker authentication file.</p>
+</li>
+<li>
+<p>Authentication via Maven settings;</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This plugin will use these mechanisms in the order listed.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Registries listed in the Maven Settings are used for authentication. Registries listed in either the Podman&#8217;s default auth file, or the Docker config file are assumed to be already authenticated.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="podmans-authentication-file"><a class="anchor" href="#podmans-authentication-file"></a>Podman&#8217;s authentication file</h2>
+<div class="sectionbody">
+<div id="podmanauth" class="paragraph">
+<p>The first method of authentication that is supported by this plugin is the default authentication mechanism of Podman.
+The default authentication mechanism is the <code>auth.json</code> file located at <code>$XDG_RUNTIME_DIR/containers/</code>.</p>
+</div>
+<div class="paragraph">
+<p>An <code>auth.json</code> file is automatically created by Podman when performing a <code>podman login &lt;registry&gt;</code> on the command line. Podman will then use this file when performing future commands.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 1. Sample Podman auth config.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+	"auths": {
+		"registry.example.com": {
+			"auth": "bGV4OnRlc3Q="
+		}
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="docker-configuration-file"><a class="anchor" href="#docker-configuration-file"></a>Docker configuration file</h2>
+<div class="sectionbody">
+<div id="dockerauth" class="paragraph">
+<p>The second method of authentication is by using Docker&#8217;s configuration file. This file is located at <code>~/.docker/config.json</code>. This file is structured in an identical way compared to Podman&#8217;s authentication file.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 2. Sample Docker configuration file.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+	"auths": {
+		"registry.example.com": {
+			"auth": "bGV4OnRlc3Q="
+		}
+	}
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -186,7 +258,7 @@
 <h2 id="maven-settings"><a class="anchor" href="#maven-settings"></a>Maven Settings</h2>
 <div class="sectionbody">
 <div id="mavensettings" class="paragraph">
-<p>Before you start using this plugin, you must configure the registries in your Maven settings file. The first step of <code>podman-maven-plugin</code>, before any of the goals is executed, is to authenticate you with all the registries that are configured in your <code>pom.xml</code>.</p>
+<p>When a registry that is being used, is neither fount in the Podman authentication file, nor the Docker configuration file, than this plugin will attempt to authenticate those registries using information available in the Mave Settings file. Therefore, you must configure the registries in your Maven settings file.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -213,7 +285,7 @@ This plugin will also fail if there are no registries configured, but authentica
 </table>
 </div>
 <div class="listingblock">
-<div class="title">Listing 1. Excerpt of a Maven Settings file.</div>
+<div class="title">Listing 3. Excerpt of a Maven Settings file.</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-XML hljs" data-lang="XML">&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
