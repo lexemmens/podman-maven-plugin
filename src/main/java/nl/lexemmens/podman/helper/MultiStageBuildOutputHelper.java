@@ -1,6 +1,6 @@
 package nl.lexemmens.podman.helper;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.List;
@@ -57,7 +57,7 @@ public final class MultiStageBuildOutputHelper {
      * @param image         The image configuration
      * @param processOutput The output of a Podman build command
      */
-    public void recordImageHashes(Log log, ImageConfiguration image, List<String> processOutput) {
+    public void recordImageHashes(Log log, SingleImageConfiguration image, List<String> processOutput) {
         // Use size -2 as the last line is the image hash of the final image, which we already captured before.
         Pattern stagePattern = image.getBuild().getMultistageContainerfilePattern();
         log.debug("Using regular expression: " + stagePattern);
@@ -106,7 +106,7 @@ public final class MultiStageBuildOutputHelper {
         log.debug("Collected hashes: " + image.getImageHashPerStage());
     }
 
-    private static void recordImageHash(Log log, ImageConfiguration image, String currentStage, ImageHashSearchResult imageHashSearchResult) {
+    private static void recordImageHash(Log log, SingleImageConfiguration image, String currentStage, ImageHashSearchResult imageHashSearchResult) {
         if (imageHashSearchResult.imageHash == null) {
             log.warn("No image hash found for stage: '" + currentStage + "'");
         } else {

@@ -1,7 +1,9 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
+import nl.lexemmens.podman.config.image.batch.BatchImageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.helper.ImageNameHelper;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
 import org.apache.maven.plugin.AbstractMojo;
@@ -13,6 +15,7 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
@@ -25,7 +28,9 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
 
-    // Settings holding authentication info
+    /**
+     * Holds the authentication data from Maven.
+     */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
 
@@ -42,10 +47,16 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected String pushRegistry;
 
     /**
-     * Image configuration
+     * Single Image configuration: 1 configuration to 1 image
      */
     @Parameter
-    protected List<ImageConfiguration> images;
+    protected List<SingleImageConfiguration> images;
+
+    /**
+     * Batch Image Configuration: 1 configuration to n images.
+     */
+    @Parameter
+    protected BatchImageConfiguration batch;
 
     /**
      * Podman specific configuration
@@ -81,6 +92,8 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Component
     private SettingsDecrypter settingsDecrypter;
 
+    protected final List<SingleImageConfiguration> resolvedImages;
+
     /**
      * Determines whether to skip initializing configurations
      */
@@ -91,6 +104,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     protected AbstractPodmanMojo() {
         this.requireImageConfiguration = true;
+        this.resolvedImages = new ArrayList<>();
     }
 
     /**
@@ -100,6 +114,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      */
     protected AbstractPodmanMojo(boolean requireImageConfiguration) {
         this.requireImageConfiguration = requireImageConfiguration;
+        this.resolvedImages = new ArrayList<>();
     }
 
     @Override
@@ -133,15 +148,33 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
         podman.initAndValidate(project, getLog());
         if (requireImageConfiguration) {
-            if (images == null || images.isEmpty()) {
+            resolveImages();
+
+            if (resolvedImages.isEmpty()) {
                 throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
             } else {
-                for (ImageConfiguration image : images) {
+                ImageNameHelper imageNameHelper = new ImageNameHelper(project);
+                for (SingleImageConfiguration image : resolvedImages) {
                     image.initAndValidate(project, getLog(), failOnMissingContainerfile);
+
+                    imageNameHelper.adaptReplacemeents(image);
+                    imageNameHelper.formatImageName(image);
                 }
             }
         } else {
             getLog().debug("Validating image configuration is skipped.");
+        }
+    }
+
+    private void resolveImages() throws MojoExecutionException {
+        if(batch != null) {
+            getLog().warn("NOTE: Batch mode enabled.");
+            batch.initAndValidate(getLog(), project);
+            resolvedImages.addAll(batch.resolve(getLog()));
+        }
+
+        if(images != null && !images.isEmpty()) {
+            resolvedImages.addAll(images);
         }
     }
 

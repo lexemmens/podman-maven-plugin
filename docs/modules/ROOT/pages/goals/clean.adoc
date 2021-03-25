@@ -1,0 +1,19 @@
+= Clean
+[#cleanmojo]
+:navtitle: Clean
+:listing-caption: Listing
+:table-caption: Table
+
+This goal cleans the custom root directory when specified. This goal runs before the Maven's clean goal, because files ccreated by Podman, that are stored in the project directory are created in a different user namespace. Those files cannot be removed by a simple `rm -rf` or similar command and that's where this goal comes in.
+
+When configured, this goal executes `buildah unshare rm -rf <custom-root>` on the custom root directory.
+
+NOTE: When no custom `<root>` has been specified (See: xref:general-configuration.adoc#podmanconfig[Podman Configuration]) this goal does nothing.
+
+.Build configuration options
+|===
+|Element |Description
+
+|skipClean
+|When set to `true`, the custom `root` will not be cleaned.
+|===

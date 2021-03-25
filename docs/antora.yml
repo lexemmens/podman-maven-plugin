@@ -1,0 +1,12 @@
+name: docs
+title: Podman Maven Plugin
+version: 'master'
+display_version: 'latest'
+asciidoc:
+  attributes:
+    release-version: master
+    maven-site-plugin-version: 3.9.0
+    project-repo: lexemmens/podman-maven-plugin
+nav:
+  - modules/ROOT/nav.adoc
+  - modules/project/nav.adoc

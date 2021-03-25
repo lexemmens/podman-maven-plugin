@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
-import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -50,7 +50,7 @@ public class BuildMojo extends AbstractPodmanMojo {
 
         checkAuthentication(hub);
 
-        for (ImageConfiguration image : images) {
+        for (SingleImageConfiguration image : resolvedImages) {
             if (!image.isValid()) {
                 getLog().warn("Skipping build of container image with name " + image.getImageName()
                         + ". Configuration is not valid for this module!");
@@ -65,12 +65,12 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void decorateContainerfile(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void decorateContainerfile(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Filtering Containerfile...");
         hub.getContainerfileDecorator().decorateContainerfile(image);
     }
 
-    private void buildContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void buildContainerImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Building container image...");
 
         List<String> processOutput = hub.getPodmanExecutorService().build(image);
@@ -86,7 +86,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void tagContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void tagContainerImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         if (skipTag) {
             getLog().info("Tagging container images is skipped.");
             return;
@@ -115,7 +115,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void tagFinalImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void tagFinalImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         if (image.getFinalImageHash().isPresent()) {
             String imageHash = image.getFinalImageHash().get();
             for (String imageNameWithTag : image.getImageNames()) {

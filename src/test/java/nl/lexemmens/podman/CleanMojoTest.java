@@ -1,10 +1,10 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.enumeration.TlsVerify;
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
-import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -75,12 +76,12 @@ public class CleanMojoTest extends AbstractMojoTest {
     }
 
     private void configureMojo(boolean skipAll, boolean skipClean, File customRoot) {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
                 .build();
 
-        List<ImageConfiguration> images = List.of(image);
+        List<SingleImageConfiguration> images = Collections.singletonList(image);
 
         cleanMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).setRoot(customRoot).build();
         cleanMojo.skip = skipAll;

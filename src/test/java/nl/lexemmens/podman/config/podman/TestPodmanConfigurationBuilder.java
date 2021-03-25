@@ -1,4 +1,4 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config.podman;
 
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;

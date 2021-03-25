@@ -1,0 +1,69 @@
+= Introduction
+[#introduction]
+:navtitle: Introduction
+:listing-caption: Listing
+
+The `podman-maven-plugin` is a maven plugin that allows you to build, tag and push OCI compliant containe images that are configured using a `Dockerfile` or a `Containerfile` using Podman.
+
+== About
+:navtitle: About
+
+This plugin was created based on the need to build container images with Podman, whilst not having an appropriate plugin to do so. Initially using the docker-maven-plugin from fabric8io it quickly became clear that simply swapping Docker for Podman (alias docker=podman) did not work as the plugin requires a Docker outlet to communicate with. With other plugins currently not yet available, the idea was born.
+
+This plugin uses a ProcessExecutor from ZeroTurnaround to do its magic under water. Although this plugins' structure is similar to that from the docker-maven-plugin, its implementation is not. In an effort to keep things simple, I have chosen to use a ProcessExecutor to run podman rather than implementing the logic myself.
+
+Also, only a subset of the podmans capabilities have been implemented (build, push and save).
+
+This plugin is mainly inspired by the docker-maven-plugin and shows some similarities in configuration.
+
+== Goals Overview
+[#goals]
+:navtitle: Goals
+
+This plugin has three goals:
+
+xref:goals/build.adoc[podman:build]::
+Builds _and_ tags a configured container image. This goal is bound to the `install` phase.
+
+xref:goals/push.adoc[podman:push]::
+Pushes a container image to the registry. This goal is bound to the `deploy` phase
+
+xref:goals/clean.adoc[podman:clean]::
+Cleans up the local Podman root storage. This goal is bound to the `pre-clean` phase.
+
+xref:goals/save.adoc[podman:save]::
+Saves an image as a `tar.gz` file to the local disk. This goal is not bound to any phase.
+
+== Requirements
+[#requirements]
+:navtitle: Requirements
+
+- Maven 3.6.2 or later
+- Java 8 or later
+- Podman to be installed on the OS where this plugin will run
+- Registry configuration to be present in Maven settings.
+- Dockerfile or Containerfile to be present in the module
+
+NOTE: This Plugin only works when a Containerfile is in your module's folder. You cannot create a complete Containerfile via configuration in the `pom.xml`.
+
+NOTE: To stay in line with terminology used by Podman, we'll be using the term Containerfile instead of Dockerfile.
+
+== Command line
+[#commandline]
+:navtitle: Command line
+You can also call this plugin from the command line by invoking either of its Mojo's directly, i.e. via `mvn podman:build` or `mvn podman:push` after running a `mvn install`.
+
+== Using parameters in your Containerfile
+[#usingparams]
+:navtitle: Parameters
+
+It is possible to specify properties in your pom file and use those properties in the Containerfile, just like you would in a pom file:
+
+.Example Containerfile
+[source,Dockerfile]
+----
+FROM ${container.base.image}
+
+WORKDIR /application
+COPY ${project.artifactId}.jar ./
+----

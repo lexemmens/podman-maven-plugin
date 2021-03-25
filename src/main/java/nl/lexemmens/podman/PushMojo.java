@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.StageConfiguration;
+import nl.lexemmens.podman.config.image.StageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -27,6 +27,12 @@ public class PushMojo extends AbstractPodmanMojo {
     @Parameter(property = "podman.image.delete.after.push", defaultValue = "false", required = true)
     boolean deleteLocalImageAfterPush;
 
+    /**
+     * Sets the number of attempts for a Podman push.
+     */
+    @Parameter(property = "podman.push.retries", defaultValue = "0", required = true)
+    int retries;
+
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
         if (skipPush) {
@@ -45,8 +51,8 @@ public class PushMojo extends AbstractPodmanMojo {
         }
 
 
-        for (ImageConfiguration image : images) {
-            if(!image.isValid()) {
+        for (SingleImageConfiguration image : resolvedImages) {
+            if (!image.isValid()) {
                 getLog().warn("Skipping push of container image with name " + image.getImageName()
                         + ". Configuration is not valid for this module!");
                 continue;
@@ -62,7 +68,7 @@ public class PushMojo extends AbstractPodmanMojo {
         getLog().info("All images have been successfully pushed to the registry");
     }
 
-    private void pushContainerImages(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void pushContainerImages(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Pushing container images to registry ...");
 
         if (image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
@@ -83,7 +89,7 @@ public class PushMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void pushRegularContainerImage(ImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void pushRegularContainerImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         for (String imageNameWithTag : image.getImageNames()) {
             String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
             doPushContainerImage(hub, fullImageName);
@@ -93,7 +99,18 @@ public class PushMojo extends AbstractPodmanMojo {
     private void doPushContainerImage(ServiceHub hub, String fullImageName) throws MojoExecutionException {
         getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
 
-        hub.getPodmanExecutorService().push(fullImageName);
+        for (int i = 0; i <= retries; i++) {
+            try {
+                hub.getPodmanExecutorService().push(fullImageName);
+                break;
+            } catch (MojoExecutionException e) {
+                if (i != retries) {
+                    getLog().warn("Failed to push image " + fullImageName + ", retrying...");
+                } else {
+                    throw e;
+                }
+            }
+        }
 
         if (deleteLocalImageAfterPush) {
             getLog().info("Removing image " + fullImageName + " from the local repository");

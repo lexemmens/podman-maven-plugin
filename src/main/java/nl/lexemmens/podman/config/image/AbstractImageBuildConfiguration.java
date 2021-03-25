@@ -1,4 +1,4 @@
-package nl.lexemmens.podman.image;
+package nl.lexemmens.podman.config.image;
 
 import nl.lexemmens.podman.enumeration.ContainerFormat;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -19,18 +19,28 @@ import java.util.stream.Stream;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
 
-public class BuildImageConfiguration {
+/**
+ * Contains the shared configuration used by both single image configurations as well
+ * as batch configurations.
+ */
+public abstract class AbstractImageBuildConfiguration {
 
     /**
      * This is the regular expression to be used to determine a multistage Containerfiles. For now we only support
      * named stages.
      */
-    private static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile(".*(FROM\\s.*)([ASas]\\s)([a-zA-Z].*)");
+    protected static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile("(FROM\\s[a-zA-Z0-9./:_\\-]{0,255}\\s)([ASas]{2}\\s)([a-zA-Z0-9./:_\\-]{1,128})");
 
     /**
      * The default name of the Containerfile to build.
      */
-    private static final String DEFAULT_CONTAINERFILE = "Containerfile";
+    protected static final String DEFAULT_CONTAINERFILE = "Containerfile";
+
+    /**
+     * Directory containing the Containerfile
+     */
+    @Parameter
+    protected File containerFileDir;
 
     /**
      * Configures whether caching should be used to build images.
@@ -47,7 +57,7 @@ public class BuildImageConfiguration {
 
     /**
      * Configures whether from-images should always be pulled from the first registry it is found in.
-     *
+     * <p>
      * From Podman docs:
      * Pull the image from the first registry it is found in as listed in registries.conf.
      * Raise an error if not found in the registries, even if the image is present locally.
@@ -70,11 +80,6 @@ public class BuildImageConfiguration {
     @Parameter
     protected String containerFile;
 
-    /**
-     * Directory containing the Containerfile
-     */
-    @Parameter
-    protected File containerFileDir;
 
     /**
      * Specify any labels to be applied to the image
@@ -92,7 +97,6 @@ public class BuildImageConfiguration {
     /**
      * The Maven project version to use (only when useMavenProjectVersion is set to true)
      */
-    @Parameter
     protected String mavenProjectVersion;
 
     /**
@@ -110,7 +114,7 @@ public class BuildImageConfiguration {
     /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
-    private File outputDirectory;
+    protected File outputDirectory;
 
     /**
      * Will be set to true when the Containerfile is a multistage Containerfile.
@@ -120,20 +124,7 @@ public class BuildImageConfiguration {
     /**
      * Represents the validity of this configuration
      */
-    private boolean valid;
-
-    /**
-     * List of all build stages (only populated in case of multistage Containerfile)
-     */
-    private List<String> stages = new ArrayList<>();
-
-
-    /**
-     * Constructor
-     */
-    public BuildImageConfiguration() {
-        // Empty - will be injected
-    }
+    protected boolean valid;
 
     /**
      * Returns which value should be used for the --no-cache property
@@ -162,6 +153,35 @@ public class BuildImageConfiguration {
         return pullAlways;
     }
 
+    public void validate(MavenProject project) {
+        if (containerFile == null) {
+            containerFile = DEFAULT_CONTAINERFILE;
+        }
+
+        if (pull == null) {
+            pull = true;
+        }
+
+        if (pullAlways == null) {
+            pullAlways = false;
+        }
+
+        if (labels == null) {
+            labels = new HashMap<>();
+        }
+
+        if (format == null) {
+            format = OCI;
+        }
+
+        this.mavenProjectVersion = project.getVersion();
+        this.outputDirectory = new File(project.getBuild().getDirectory());
+
+        if (containerFileDir == null) {
+            containerFileDir = project.getBasedir();
+        }
+    }
+
     /**
      * Returns the tags to be applied for this image
      *
@@ -181,16 +201,6 @@ public class BuildImageConfiguration {
             allTags.add(mavenProjectVersion);
         }
         return allTags;
-    }
-
-    /**
-     * Returns the directory containing the original raw Containerfile
-     *
-     * @return A {@link File} object referencing the location of the Containerfile
-     */
-    public Path getSourceContainerFileDir() {
-        Path containerFileDirPath = Paths.get(containerFileDir.toURI());
-        return containerFileDirPath.resolve(containerFile);
     }
 
     /**
@@ -226,16 +236,6 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Returns the location of the raw Containerfile. This location is used
-     * as the context dir when running podman.
-     *
-     * @return The location of the raw Containerfile as a File.
-     */
-    public File getContainerFileDir() {
-        return containerFileDir;
-    }
-
-    /**
      * Returns the format for the built image's manifest and configuration data.
      *
      * @return The format for the built image's manifest and configuration data
@@ -254,15 +254,6 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Returns a list of all stages present in the Containerfile
-     *
-     * @return a list of all stages.
-     */
-    public List<String> getStages() {
-        return stages;
-    }
-
-    /**
      * Returns the Pattern that is used to determine if a line matches a multi-stage Containerfile
      *
      * @return The pattern to determine if a line matches the expected pattern for a multi-stage Containerfile.
@@ -273,6 +264,7 @@ public class BuildImageConfiguration {
 
     /**
      * Returns a boolean indicating whether this configuration is valid
+     *
      * @return true if this configuration is valid. False otherwise.
      */
     public boolean isValid() {
@@ -280,62 +272,15 @@ public class BuildImageConfiguration {
     }
 
     /**
-     * Validates this class by giving all null properties a default value.
+     * Returns true when a latest tag should be created
      *
-     * @param project The MavenProject used to derive some of the default values from.
-     * @param log     Access to Maven's log system for writing errors
-     * @param failOnMissingContainerfile Whether an exception should be thrown if no Containerfile is found
-     * @throws MojoExecutionException In case there is no Containerfile at the specified source location or the Containerfile is empty
+     * @return true if an image should be tagged 'latest'
      */
-    public void validate(MavenProject project, Log log, boolean failOnMissingContainerfile) throws MojoExecutionException {
-        if (containerFile == null) {
-            containerFile = DEFAULT_CONTAINERFILE;
-        }
-
-        if (containerFileDir == null) {
-            containerFileDir = project.getBasedir();
-        }
-
-        if (labels == null) {
-            labels = new HashMap<>();
-        }
-
-        if (format == null) {
-            format = OCI;
-        }
-
-        if (pull == null) {
-            pull = true;
-        }
-
-        if (pullAlways == null) {
-            pullAlways = false;
-        }
-
-        this.mavenProjectVersion = project.getVersion();
-        this.outputDirectory = new File(project.getBuild().getDirectory());
-
-        Path sourceContainerFile = getSourceContainerFileDir();
-        if (!Files.exists(sourceContainerFile) && failOnMissingContainerfile) {
-            String msg = "No Containerfile found at " + sourceContainerFile + ". Check your the containerFileDir and containerFile parameters in the configuration.";
-            log.error(msg);
-            throw new MojoExecutionException(msg);
-        } else if(!Files.exists(sourceContainerFile)) {
-            log.warn("No Containerfile was found at " + sourceContainerFile + ", however this will be ignored due to current plugin configuration.");
-            valid = false;
-        } else {
-            if (isContainerFileEmpty(log, sourceContainerFile)) {
-                String msg = "The specified Containerfile at " + sourceContainerFile + " is empty!";
-                log.error(msg);
-                throw new MojoExecutionException(msg);
-            }
-
-            determineBuildStages(log, sourceContainerFile);
-            valid = true;
-        }
+    public boolean isCreateLatestTag() {
+        return createLatestTag;
     }
 
-    private boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {
+    protected boolean isContainerFileEmpty(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         try {
             return 0 == Files.size(fullContainerFilePath);
         } catch (IOException e) {
@@ -345,7 +290,7 @@ public class BuildImageConfiguration {
         }
     }
 
-    private void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
+    protected void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
             List<String> content = containerFileStream.collect(Collectors.toList());
             for (String line : content) {
@@ -356,7 +301,6 @@ public class BuildImageConfiguration {
                     String stage = matcher.group(3);
 
                     log.debug("Found a stage named: " + stage);
-                    stages.add(stage);
                 }
             }
         } catch (IOException e) {
@@ -365,4 +309,97 @@ public class BuildImageConfiguration {
             throw new MojoExecutionException(msg, e);
         }
     }
+
+    /**
+     * Sets the noCache option. Allows configuring whether caching should be used
+     * to cache images
+     *
+     * @param noCache Sets the noCache option on and off.
+     */
+    public void setNoCache(boolean noCache) {
+        this.noCache = noCache;
+    }
+
+    /**
+     * Configures whether from-images should be pulled so that the image will
+     * always be build on the latest base.
+     *
+     * @param pull The value to set
+     */
+    public void setPull(Boolean pull) {
+        this.pull = pull;
+    }
+
+    /**
+     * Configures whether from-images should always be pulled from the first registry it is found in.
+     *
+     * @param pullAlways The value to set
+     */
+    public void setPullAlways(Boolean pullAlways) {
+        this.pullAlways = pullAlways;
+    }
+
+    /**
+     * Sets the tags that should be used for this image
+     *
+     * @param tags The tags this image should receive
+     */
+    public void setTags(String[] tags) {
+        this.tags = tags;
+    }
+
+    /**
+     * Sets the name of the Containerfile (defaults to Containerfile)
+     *
+     * @param containerFile The name of the Containerfile to set
+     */
+    public void setContainerFile(String containerFile) {
+        this.containerFile = containerFile;
+    }
+
+    /**
+     * Sets the labels to add to the container image.
+     *
+     * @param labels The labels to set.
+     */
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
+
+    /**
+     * Specifies whether the image should be tagged with the Maven Project version
+     *
+     * @param tagWithMavenProjectVersion whether the image should be tagged with the Maven project version
+     */
+    public void setTagWithMavenProjectVersion(boolean tagWithMavenProjectVersion) {
+        this.tagWithMavenProjectVersion = tagWithMavenProjectVersion;
+    }
+
+    /**
+     * Specifies whether a latest tag should be created
+     *
+     * @param createLatestTag If true, the image will receive the tag 'latest'
+     */
+    public void setCreateLatestTag(boolean createLatestTag) {
+        this.createLatestTag = createLatestTag;
+    }
+
+    /**
+     * The format of the container image to use.
+     *
+     * @param format The format to use
+     */
+    public void setFormat(ContainerFormat format) {
+        this.format = format;
+    }
+
+    /**
+     * Sets the directory where the Containerfile is located (copied from BatchImageBuildCOnfiguration).
+     *
+     * @param containerFileDir The directory to set
+     */
+    public void setContainerFileDir(File containerFileDir) {
+        this.containerFileDir = containerFileDir;
+    }
+
 }
