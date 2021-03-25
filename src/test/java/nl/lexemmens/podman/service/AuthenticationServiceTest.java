@@ -101,7 +101,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void authenticateNoRegistryAuthFileNoEnvVarNoCredentials() throws IOException, MojoExecutionException {
+    public void authenticateNoRegistryAuthFileNoEnvVarNoCredentials() throws IOException {
         // Ensure that /run/user/1000/containers/invalidauth.json is not present
         Path authFilePath = Paths.get("/run/user/1000/containers/auth.json");
         Files.deleteIfExists(authFilePath);
@@ -148,7 +148,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testCustomRegistryAuthFile() throws MojoExecutionException, IOException {
+    public void testCustomRegistryAuthFile() throws MojoExecutionException {
         Path customAuthFile = Paths.get("src", "test", "resources", "validauth.json").toAbsolutePath();
         env.set("REGISTRY_AUTH_FILE", customAuthFile.toString());
 
@@ -156,14 +156,14 @@ public class AuthenticationServiceTest {
         env.set("XDG_RUNTIME_DIR", "/path/does/not/exist");
 
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
-        authenticationService.authenticate(new String[] {"unknown-registry.example.com"});
+        authenticationService.authenticate(new String[]{"unknown-registry.example.com"});
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("Found custom registry authentication file at: " + customAuthFile));
         verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
     }
 
     @Test
-    public void testRegistryNotInAuthenticationFile() throws MojoExecutionException, IOException {
+    public void testRegistryNotInAuthenticationFile() throws MojoExecutionException {
         Path customAuthFile = Paths.get("src", "test", "resources", "validauth.json").toAbsolutePath();
         env.set("REGISTRY_AUTH_FILE", customAuthFile.toString());
 
@@ -177,7 +177,7 @@ public class AuthenticationServiceTest {
         server.setUsername("username");
         server.setPassword("password");
 
-        List<Server> serverList = List.of(server);
+        List<Server> serverList = Collections.singletonList(server);
 
         when(settings.getServer(eq(registryName))).thenReturn(server);
         when(settings.getServers()).thenReturn(serverList);
@@ -185,7 +185,7 @@ public class AuthenticationServiceTest {
         when(settingsDecrypter.decrypt(isA(SettingsDecryptionRequest.class))).thenReturn(createSettingsDecryptionResult(serverList, new ArrayList<>()));
 
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
-        authenticationService.authenticate(new String[] {registryName});
+        authenticationService.authenticate(new String[]{registryName});
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("Found custom registry authentication file at: " + customAuthFile));
         verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
@@ -193,7 +193,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testConfigFileWithoutAuthsSection() throws MojoExecutionException, IOException {
+    public void testConfigFileWithoutAuthsSection() {
         Path customAuthFile = Paths.get("src", "test", "resources", "configwithoutauth.json").toAbsolutePath();
         env.set("REGISTRY_AUTH_FILE", customAuthFile.toString());
 
@@ -201,7 +201,7 @@ public class AuthenticationServiceTest {
         env.set("XDG_RUNTIME_DIR", "/path/does/not/exist");
 
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
-        Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(new String[] {"unknown-registry.example.com"}));
+        Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(new String[]{"unknown-registry.example.com"}));
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
         verify(log, Mockito.times(1)).debug(Mockito.eq("No authenticated registries were found."));
@@ -214,7 +214,7 @@ public class AuthenticationServiceTest {
         env.set("XDG_RUNTIME_DIR", customAuthFileDir.toString());
 
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
-        authenticationService.authenticate(new String[] {"unknown-registry.example.com"});
+        authenticationService.authenticate(new String[]{"unknown-registry.example.com"});
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("Found default registry authentication file at: " + customAuthFile));
         verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
@@ -230,7 +230,7 @@ public class AuthenticationServiceTest {
         Files.copy(fileToUseAsDockerConfigFile, dockerConfigFile);
 
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
-        authenticationService.authenticate(new String[] {"unknown-registry.example.com"});
+        authenticationService.authenticate(new String[]{"unknown-registry.example.com"});
 
         verify(log, Mockito.times(1)).debug(Mockito.eq("Found Docker registry authentication file at: " + dockerConfigFile));
         verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
