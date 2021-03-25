@@ -27,6 +27,12 @@ public class PushMojo extends AbstractPodmanMojo {
     @Parameter(property = "podman.image.delete.after.push", defaultValue = "false", required = true)
     boolean deleteLocalImageAfterPush;
 
+    /**
+     * Sets the number of attempts for a Podman push.
+     */
+    @Parameter(property = "podman.push.retries", defaultValue = "0", required = true)
+    int retries;
+
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
         if (skipPush) {
@@ -46,7 +52,7 @@ public class PushMojo extends AbstractPodmanMojo {
 
 
         for (SingleImageConfiguration image : resolvedImages) {
-            if(!image.isValid()) {
+            if (!image.isValid()) {
                 getLog().warn("Skipping push of container image with name " + image.getImageName()
                         + ". Configuration is not valid for this module!");
                 continue;
@@ -93,7 +99,18 @@ public class PushMojo extends AbstractPodmanMojo {
     private void doPushContainerImage(ServiceHub hub, String fullImageName) throws MojoExecutionException {
         getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
 
-        hub.getPodmanExecutorService().push(fullImageName);
+        for (int i = 0; i <= retries; i++) {
+            try {
+                hub.getPodmanExecutorService().push(fullImageName);
+                break;
+            } catch (MojoExecutionException e) {
+                if (i != retries) {
+                    getLog().warn("Failed to push image " + fullImageName + ", retrying...");
+                } else {
+                    throw e;
+                }
+            }
+        }
 
         if (deleteLocalImageAfterPush) {
             getLog().info("Removing image " + fullImageName + " from the local repository");

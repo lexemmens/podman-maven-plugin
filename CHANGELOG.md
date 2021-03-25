@@ -3,6 +3,7 @@
 #### Improvements
 * ([#35](https://github.com/lexemmens/podman-maven-plugin/issues/35)) Introduced option to configure a batch of images to build, tag and push
 * ([#38](https://github.com/lexemmens/podman-maven-plugin/issues/38) The plugin now checks `~/.docker/config.json` for credentials.
+* ([#36](https://github.com/lexemmens/podman-maven-plugin/issues/36)) Implemented a retry mechanism for Podman push
 
 #### Other
 * This plugin now requires Java 8 rather than Java 9.
