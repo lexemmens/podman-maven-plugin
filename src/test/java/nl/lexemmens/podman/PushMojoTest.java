@@ -1,10 +1,10 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.enumeration.TlsVerify;
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
-import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -39,7 +40,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipAllActions() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -53,7 +54,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPush() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -70,7 +71,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsNull() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(null)
                 .setUseMavenProjectVersion(false)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -93,7 +94,7 @@ public class PushMojoTest extends AbstractMojoTest {
         Path targetLocation = currentDir.resolve(containerFileDir);
         String targetLocationAsString = targetLocation.normalize().toFile().getAbsolutePath();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setContainerfileDir(containerFileDir)
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
@@ -110,7 +111,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testSkipPushWhenTagsEmpty() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(false)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -128,7 +129,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithoutTargetRegistryFails() {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -150,10 +151,9 @@ public class PushMojoTest extends AbstractMojoTest {
     }
 
 
-
     @Test
     public void testPushWithoutCleaningUpLocalImage() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -178,7 +178,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithValidAuthentication() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -207,7 +207,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithValidAuthenticationPrintPodmanVersion() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -238,7 +238,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithCleaningUpLocalImage() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -268,8 +268,8 @@ public class PushMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testMultiStagePushOnlyFinalImage() throws MojoExecutionException, IOException, URISyntaxException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+    public void testMultiStagePushOnlyFinalImage() throws MojoExecutionException {
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"1.0.0"})
                 .setCreateLatestTag(false)
@@ -292,8 +292,8 @@ public class PushMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void testMultiStagePushWithCustomTagPerStage() throws MojoExecutionException, IOException, URISyntaxException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+    public void testMultiStagePushWithCustomTagPerStage() throws MojoExecutionException {
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setContainerfileDir("src/test/resources/multistagecontainerfile")
                 .setTags(new String[]{"0.2.1"})
                 .setCreateLatestTag(false)
@@ -326,7 +326,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushWithRetries() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -355,7 +355,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
     @Test
     public void testPushRunsOutOfRetries() throws MojoExecutionException {
-        ImageConfiguration image = new TestImageConfigurationBuilder("sample")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
                 .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
@@ -380,7 +380,7 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(2)).push(eq(targetRegistry));
     }
 
-    private void configureMojo(ImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, boolean deleteLocalImageAfterPush, boolean failOnMissingContainerFile, int retries) {
+    private void configureMojo(SingleImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, boolean deleteLocalImageAfterPush, boolean failOnMissingContainerFile, int retries) {
         pushMojo.podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.NOT_SPECIFIED).build();
         pushMojo.skip = skipAll;
         pushMojo.skipAuth = skipAuth;
@@ -388,7 +388,9 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.pushRegistry = targetRegistry;
         pushMojo.registries = new String[]{targetRegistry};
         pushMojo.deleteLocalImageAfterPush = deleteLocalImageAfterPush;
-        pushMojo.images = List.of(image);
+        List<SingleImageConfiguration> imageConfigurations = new ArrayList<>();
+        imageConfigurations.add(image);
+        pushMojo.images = imageConfigurations;
         pushMojo.failOnMissingContainerfile = failOnMissingContainerFile;
         pushMojo.retries = retries;
     }
