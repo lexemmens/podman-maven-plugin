@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -124,7 +125,7 @@ public class AuthenticationServiceTest {
         server.setUsername("username");
         server.setPassword("password");
 
-        List<Server> serverList = List.of(server);
+        List<Server> serverList = Collections.singletonList(server);
 
         when(settings.getServer(eq(registryName))).thenReturn(server);
         when(settings.getServers()).thenReturn(serverList);

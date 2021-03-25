@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +59,7 @@ public class AuthConfigFactoryTest {
         server.setUsername("username");
         server.setUsername("password");
 
-        List<Server> serverList = List.of(server);
+        List<Server> serverList = Collections.singletonList(server);
 
         when(settings.getServers()).thenReturn(serverList);
         when(settings.getProxies()).thenReturn(new ArrayList<>());
@@ -76,7 +77,7 @@ public class AuthConfigFactoryTest {
         server.setUsername("username");
         server.setPassword("password");
 
-        List<Server> serverList = List.of(server);
+        List<Server> serverList = Collections.singletonList(server);
 
         when(settings.getServer(eq("registry.example.com"))).thenReturn(server);
         when(settings.getServers()).thenReturn(serverList);
@@ -101,14 +102,14 @@ public class AuthConfigFactoryTest {
         incorrectServer.setId("the-incorrect-registry.example.com");
         incorrectServer.setUsername("username");
         incorrectServer.setUsername("password");
-        List<Server> incorrectServerList = List.of(incorrectServer);
+        List<Server> incorrectServerList = Collections.singletonList(incorrectServer);
 
         Server requestedServer= new Server();
         requestedServer.setId("registry.example.com");
         requestedServer.setUsername("username");
         requestedServer.setUsername("password");
 
-        List<Server> requestedServerList = List.of(requestedServer);
+        List<Server> requestedServerList = Collections.singletonList(requestedServer);
 
         when(settings.getServers()).thenReturn(requestedServerList);
         when(settings.getServer(eq("registry.example.com"))).thenReturn(requestedServer);

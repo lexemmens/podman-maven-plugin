@@ -1,7 +1,7 @@
 package nl.lexemmens.podman.service;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -22,8 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -62,7 +62,7 @@ public class ContainerfileDecoratorTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
                 .build();
@@ -77,7 +77,7 @@ public class ContainerfileDecoratorTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
                 .build();
@@ -96,9 +96,9 @@ public class ContainerfileDecoratorTest {
         Files.deleteIfExists(Paths.get("target/podman-test/Containerfile"));
         Files.copy(Paths.get("src/test/resources/Containerfile"), Paths.get("target/podman-test/Containerfile"));
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
-                .setLabels(Map.of("testLabelKey", "testLabelValue"))
+                .setLabels(Collections.singletonMap("testLabelKey", "testLabelValue"))
                 .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
@@ -120,9 +120,9 @@ public class ContainerfileDecoratorTest {
         Files.deleteIfExists(Paths.get("target/podman-test/Containerfile"));
         Files.copy(Paths.get("src/test/resources/Containerfile"), Paths.get("target/podman-test/Containerfile"));
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setContainerfileDir("src/test/resources")
-                .setLabels(Map.of("testLabelKey", "testLabelValue"))
+                .setLabels(Collections.singletonMap("testLabelKey", "testLabelValue"))
                 .initAndValidate(mavenProject, log, true)
                 .build();
         Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));

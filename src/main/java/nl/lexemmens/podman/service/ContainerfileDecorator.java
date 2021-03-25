@@ -1,6 +1,6 @@
 package nl.lexemmens.podman.service;
 
-import nl.lexemmens.podman.image.ImageConfiguration;
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -76,12 +76,12 @@ public class ContainerfileDecorator {
      * @param image The BuildContext that contains the source and target Dockerfile paths
      * @throws MojoExecutionException When the Dockerfile cannot be filtered.
      */
-    public void decorateContainerfile(ImageConfiguration image) throws MojoExecutionException {
+    public void decorateContainerfile(SingleImageConfiguration image) throws MojoExecutionException {
         filterContainerfile(image);
         addLabelsToContainerfile(image);
     }
 
-    private void filterContainerfile(ImageConfiguration image) throws MojoExecutionException {
+    private void filterContainerfile(SingleImageConfiguration image) throws MojoExecutionException {
         log.debug("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile());
         try {
             MavenFileFilterRequest fileFilterRequest = new MavenFileFilterRequest();
@@ -99,7 +99,7 @@ public class ContainerfileDecorator {
         }
     }
 
-    private void addLabelsToContainerfile(ImageConfiguration image) throws MojoExecutionException {
+    private void addLabelsToContainerfile(SingleImageConfiguration image) throws MojoExecutionException {
         if (image.getBuild().getLabels().isEmpty()) {
             log.debug("No labels to add to the Containerfile");
             return;

@@ -1,10 +1,10 @@
 package nl.lexemmens.podman.service;
 
+import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
-import nl.lexemmens.podman.image.ImageConfiguration;
-import nl.lexemmens.podman.image.PodmanConfiguration;
-import nl.lexemmens.podman.image.TestImageConfigurationBuilder;
-import nl.lexemmens.podman.image.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -22,6 +22,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;
@@ -191,13 +192,13 @@ public class PodmanExecutorServiceTest {
         when(build.getDirectory()).thenReturn("target");
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -212,14 +213,14 @@ public class PodmanExecutorServiceTest {
         when(build.getDirectory()).thenReturn("target");
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
                 .setFormat(DOCKER)
                 .setContainerfileDir("src/test/resources")
                 .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -234,7 +235,7 @@ public class PodmanExecutorServiceTest {
         when(build.getDirectory()).thenReturn("target");
 
         PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
                 .setFormat(OCI)
                 .setPullAlways(true)
                 .setContainerfileDir("src/test/resources")
@@ -242,7 +243,7 @@ public class PodmanExecutorServiceTest {
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -262,14 +263,14 @@ public class PodmanExecutorServiceTest {
                 .initAndValidate(mavenProject, log)
                 .build();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -289,14 +290,14 @@ public class PodmanExecutorServiceTest {
                 .initAndValidate(mavenProject, log)
                 .build();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
@@ -317,14 +318,14 @@ public class PodmanExecutorServiceTest {
                 .initAndValidate(mavenProject, log)
                 .build();
 
-        ImageConfiguration image = new TestImageConfigurationBuilder("test_image")
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
                 .setContainerfileDir("src/test/resources")
                 .setFormat(OCI)
                 .initAndValidate(mavenProject, log, true)
                 .build();
 
         String sampleImageHash = "this_would_normally_be_an_image_hash";
-        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(List.of(sampleImageHash));
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
 
         podmanExecutorService.build(image);
