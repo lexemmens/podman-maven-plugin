@@ -206,8 +206,10 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         assertNotNull(image1.getBuild());
         assertEquals(1, image1.getBuild().getAllTags().size());
         assertEquals("latest", image1.getBuild().getAllTags().get(0));
-        assertTrue(image1.getBuild().isPull());
-        assertTrue(image1.getBuild().isPullAlways());
+        assertTrue(image1.getBuild().getPull().isPresent());
+        assertTrue(image1.getBuild().getPull().get());
+        assertTrue(image1.getBuild().getPullAlways().isPresent());
+        assertTrue(image1.getBuild().getPullAlways().get());
         assertEquals(ContainerFormat.DOCKER, image1.getBuild().getFormat());
     }
 

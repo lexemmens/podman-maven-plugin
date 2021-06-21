@@ -79,8 +79,15 @@ public class PodmanExecutorService {
         subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
         subCommand.add(CONTAINERFILE_CMD + image.getBuild().getTargetContainerFile());
         subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
-        subCommand.add(PULL_CMD + image.getBuild().isPull());
-        subCommand.add(PULL_ALWAYS_CMD + image.getBuild().isPullAlways());
+
+        if(image.getBuild().getPull().isPresent()) {
+            subCommand.add(PULL_CMD + image.getBuild().getPull().get());
+        }
+
+        if(image.getBuild().getPullAlways().isPresent()) {
+            subCommand.add(PULL_ALWAYS_CMD + image.getBuild().getPullAlways().get());
+        }
+
         subCommand.add(".");
 
         return runCommand(podmanRunDirectory, false, PodmanCommand.BUILD, subCommand);

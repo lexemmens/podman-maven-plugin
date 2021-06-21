@@ -140,8 +140,8 @@ public abstract class AbstractImageBuildConfiguration {
      *
      * @return When set to true, podman will build with --pull
      */
-    public boolean isPull() {
-        return pull;
+    public Optional<Boolean> getPull() {
+        return Optional.ofNullable(pull);
     }
 
     /**
@@ -149,21 +149,13 @@ public abstract class AbstractImageBuildConfiguration {
      *
      * @return When set to true, podman will build with --pull-always
      */
-    public boolean isPullAlways() {
-        return pullAlways;
+    public Optional<Boolean> getPullAlways() {
+        return Optional.ofNullable(pullAlways);
     }
 
-    public void validate(MavenProject project) {
+    public void validate(MavenProject project) throws MojoExecutionException {
         if (containerFile == null) {
             containerFile = DEFAULT_CONTAINERFILE;
-        }
-
-        if (pull == null) {
-            pull = true;
-        }
-
-        if (pullAlways == null) {
-            pullAlways = false;
         }
 
         if (labels == null) {
