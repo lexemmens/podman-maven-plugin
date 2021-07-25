@@ -203,8 +203,8 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true " +
-                        "--pull-always=false .", delegate.getCommandAsString());
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+                delegate.getCommandAsString());
     }
 
     @Test
@@ -225,8 +225,8 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --format=docker --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false " +
-                        "--pull=true --pull-always=false .", delegate.getCommandAsString());
+        Assertions.assertEquals("podman build --tls-verify=true --format=docker --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+                delegate.getCommandAsString());
     }
 
     @Test
@@ -249,7 +249,30 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService.build(image);
 
         Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false " +
-                "--pull=true --pull-always=true .", delegate.getCommandAsString());
+                "--pull-always=true .", delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildPull() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setFormat(OCI)
+                .setPull(true)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false " +
+                "--pull=true .", delegate.getCommandAsString());
     }
 
     @Test
@@ -276,7 +299,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService.build(image);
 
         Assertions.assertEquals("podman --root=/some/custom/root/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() +
-                        " --no-cache=false --pull=true --pull-always=false .", delegate.getCommandAsString());
+                        " --no-cache=false .", delegate.getCommandAsString());
     }
 
     @Test
@@ -303,7 +326,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService.build(image);
 
         Assertions.assertEquals("podman --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() +
-                        " --no-cache=false --pull=true --pull-always=false .", delegate.getCommandAsString());
+                        " --no-cache=false .", delegate.getCommandAsString());
     }
 
     @Test
@@ -331,7 +354,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService.build(image);
 
         Assertions.assertEquals("podman --root=/some/custom/root/dir --runroot=/some/custom/runroot/dir build --tls-verify=true --format=oci " +
-                        "--file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --pull=true --pull-always=false .",
+                        "--file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
                 delegate.getCommandAsString());
     }
 

@@ -1,6 +1,10 @@
 ## Changelog
 ### UNRELEASED CHANGES
 #### Bugs
+* ([#42](https://github.com/lexemmens/podman-maven-plugin/issues/42)) - Podman `pull` and `pullAlways` options cannot be enabled simultaneously.
+
+### 1.6.0 (25-03-2021)
+#### Bugs
 * ([#32](https://github.com/lexemmens/podman-maven-plugin/issues/32) - When tagging an image, the plugin might skip one or more steps due to unexpected multiline output for a build step)
 
 #### Improvements

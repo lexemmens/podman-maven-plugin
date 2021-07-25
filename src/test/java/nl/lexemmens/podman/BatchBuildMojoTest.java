@@ -27,9 +27,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import static net.bytebuddy.matcher.ElementMatchers.anyOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -206,8 +211,10 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         assertNotNull(image1.getBuild());
         assertEquals(1, image1.getBuild().getAllTags().size());
         assertEquals("latest", image1.getBuild().getAllTags().get(0));
-        assertTrue(image1.getBuild().isPull());
-        assertTrue(image1.getBuild().isPullAlways());
+        assertTrue(image1.getBuild().getPull().isPresent());
+        assertTrue(image1.getBuild().getPull().get());
+        assertTrue(image1.getBuild().getPullAlways().isPresent());
+        assertTrue(image1.getBuild().getPullAlways().get());
         assertEquals(ContainerFormat.DOCKER, image1.getBuild().getFormat());
     }
 
@@ -240,8 +247,16 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
 
         assertEquals(2, buildMojo.resolvedImages.size());
 
+
+        // The order in which the directories are resolved is not defined.
+        // See: https://stackoverflow.com/questions/10396649/order-of-traversal-in-files-walkfiletree
+        // As such, we cannot make any assumptions on the expected order with respect to naming.
+        List<String> expectedImageNames = new ArrayList<>();
+        expectedImageNames.add("sample-image-batch");
+        expectedImageNames.add("sample-image-subdir");
+
         SingleImageConfiguration image1 = buildMojo.resolvedImages.get(0);
-        assertEquals("sample-image-batch", image1.getImageName());
+        assertTrue(expectedImageNames.contains(image1.getImageName()));
         assertEquals(1, image1.getStages().length);
         assertFalse(image1.useCustomImageNameForMultiStageContainerfile());
         assertNotNull(image1.getBuild());
@@ -249,7 +264,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         assertEquals("1.0.0", image1.getBuild().getAllTags().get(0));
 
         SingleImageConfiguration image2 = buildMojo.resolvedImages.get(1);
-        assertEquals("sample-image-subdir", image2.getImageName());
+        assertTrue(expectedImageNames.contains(image1.getImageName()));
         assertEquals(1, image2.getStages().length);
         assertFalse(image2.useCustomImageNameForMultiStageContainerfile());
         assertNotNull(image2.getBuild());
