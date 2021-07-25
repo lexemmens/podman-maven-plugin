@@ -8,6 +8,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,9 @@ public class SaveMojo extends AbstractPodmanMojo {
 
     @Parameter(property = "podman.skip.save", defaultValue = "false")
     boolean skipSave;
+
+    @Parameter(property = "podman.save.directory", defaultValue = "${project.build.directory}/" + PODMAN_DIRECTORY)
+    File targetDirectory;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
@@ -46,14 +50,13 @@ public class SaveMojo extends AbstractPodmanMojo {
     private void exportContainerImages(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Exporting container images to local disk ...");
 
-        Path targetPodmanDir = Paths.get(image.getBuild().getOutputDirectory().toURI()).resolve(PODMAN_DIRECTORY);
+        Path targetPodmanDir = targetDirectory.toPath().normalize().toAbsolutePath();
         createTargetFolder(targetPodmanDir);
 
         if (image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
             for (StageConfiguration stage : image.getStages()) {
                 for (String imageNameWithTag : image.getImageNamesByStage(stage.getName())) {
-                    String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
-                    doExportContainerImage(hub, fullImageName, targetPodmanDir);
+                    doExportContainerImage(hub, imageNameWithTag, targetPodmanDir);
                 }
             }
         } else if (image.getBuild().isMultistageContainerFile()) {
@@ -70,26 +73,25 @@ public class SaveMojo extends AbstractPodmanMojo {
     }
 
     private void exportContainerImage(SingleImageConfiguration image, ServiceHub hub, Path targetPodmanDir) throws MojoExecutionException {
-        for (String imageName : image.getImageNames()) {
-            String fullImageName = getFullImageNameWithPushRegistry(imageName);
-
-            String archiveName = String.format("%s.tar.gz", normaliseImageName(fullImageName));
-
-            getLog().info("Exporting image " + fullImageName + " to " + targetPodmanDir + "/" + archiveName);
-            hub.getPodmanExecutorService().save(archiveName, fullImageName);
+        for (String imageNameWithTag : image.getImageNames()) {
+            doExportContainerImage(hub, imageNameWithTag, targetPodmanDir);
         }
     }
 
-    private void doExportContainerImage(ServiceHub hub, String fullImageName, Path targetPodmanDir) throws MojoExecutionException {
-        String archiveName = String.format("%s.tar.gz", normaliseImageName(fullImageName));
+    private void doExportContainerImage(ServiceHub hub, String imageNameWithTag, Path targetPodmanDir) throws MojoExecutionException {
+        String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
 
-        getLog().info("Exporting image " + fullImageName + " to " + targetPodmanDir + "/" + archiveName);
-        hub.getPodmanExecutorService().save(archiveName, fullImageName);
+        String archiveName = String.format("%s.tar.gz", normaliseImageName(imageNameWithTag));
+        Path saveImageTargetPath = targetPodmanDir.resolve(archiveName).normalize();
+
+        getLog().info("Exporting image " + imageNameWithTag + " to " + saveImageTargetPath.toString());
+        hub.getPodmanExecutorService().save(saveImageTargetPath.toString(), fullImageName);
     }
 
     private void createTargetFolder(Path targetPodmanDir) throws MojoExecutionException {
         try {
             // Does not fail if folder already exists
+            getLog().debug("Creating directory if not exists: " + targetPodmanDir.toString());
             Files.createDirectories(targetPodmanDir);
         } catch (IOException e) {
             String msg = "Failed to create directory '" + targetPodmanDir + "'. An IOException occurred: " + e.getMessage();
