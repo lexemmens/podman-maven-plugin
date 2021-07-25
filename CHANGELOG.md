@@ -1,5 +1,8 @@
 ## Changelog
 ### UNRELEASED CHANGES
+* None
+
+### 1.7.0 (25-07-2021)
 #### Bugs
 * ([#42](https://github.com/lexemmens/podman-maven-plugin/issues/42)) - Podman `pull` and `pullAlways` options cannot be enabled simultaneously.
 * ([#44](https://github.com/lexemmens/podman-maven-plugin/issues/44)) - Images are now by default saved to the target directory of the Maven module where Podman is configued.
