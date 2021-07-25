@@ -181,7 +181,10 @@
 <article class="doc">
 <h1 class="page">Save</h1>
 <div class="paragraph">
-<p>This goal saves an image defined in the build configuration to a local file. This is identical to <code>podman:save</code>. The name of the container image is calculated based on the full name of the image (including the registry). The resulting file will be a <code>.tar.gz</code> file located in the project&#8217;s <code>target</code> directory.</p>
+<p>This goal saves an image defined in the build configuration to a local file. This is identical to <code>podman:save</code>. The name of the container image is calculated based on the full name of the image (excluding the registry). The resulting file will be a <code>.tar.gz</code> file located in the project&#8217;s <code>target/podman</code> directory.</p>
+</div>
+<div class="paragraph">
+<p>The resulting <code>tar.gz</code> file can later be imported using Podman&#8217;s <code>load</code> command.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -212,6 +215,11 @@ This goal is experimental.
 <td class="tableblock halign-left valign-top"><p class="tableblock">skipSave</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t save the image to the local disk.</p>
 <p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">targetDirectory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows configuration of the location where container images are stored on disk when they are exported.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>target/podman</code> (equals to <code>${project.build.directory}/podman</code>)</p></td>
 </tr>
 </tbody>
 </table>
