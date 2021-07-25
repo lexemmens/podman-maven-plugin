@@ -98,8 +98,23 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
 
         if (image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
-            for (Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
-                for (String imageName : image.getImageNamesByStage(stageImage.getKey())) {
+            tagImagesOfMultiStageContainerfile(image, hub);
+        } else if (image.getBuild().isMultistageContainerFile()) {
+            getLog().warn("Missing container names for multistage Containerfile. Falling back to tagging the final container image.");
+            tagFinalImage(image, hub);
+        } else {
+            tagFinalImage(image, hub);
+        }
+    }
+
+    private void tagImagesOfMultiStageContainerfile(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+        for (Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
+            List<String> imageNamesByStage = image.getImageNamesByStage(stageImage.getKey());
+
+            if(imageNamesByStage.isEmpty()) {
+                getLog().warn("No image name configured for build stage: " + stageImage.getKey() + ". Image " + stageImage.getValue() + " not tagged!");
+            } else {
+                for (String imageName : imageNamesByStage) {
                     String fullImageName = getFullImageNameWithPushRegistry(imageName);
 
                     getLog().info("Tagging container image " + stageImage.getValue() + " from stage " + stageImage.getKey() + " as " + fullImageName);
@@ -107,11 +122,6 @@ public class BuildMojo extends AbstractPodmanMojo {
                     hub.getPodmanExecutorService().tag(stageImage.getValue(), fullImageName);
                 }
             }
-        } else if (image.getBuild().isMultistageContainerFile()) {
-            getLog().warn("Missing container names for multistage Containerfile. Falling back to tagging the final container image.");
-            tagFinalImage(image, hub);
-        } else {
-            tagFinalImage(image, hub);
         }
     }
 

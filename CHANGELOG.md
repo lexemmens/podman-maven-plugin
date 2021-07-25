@@ -3,6 +3,7 @@
 #### Bugs
 * ([#42](https://github.com/lexemmens/podman-maven-plugin/issues/42)) - Podman `pull` and `pullAlways` options cannot be enabled simultaneously.
 * ([#44](https://github.com/lexemmens/podman-maven-plugin/issues/44)) - Images are now by default saved to the target directory of the Maven module where Podman is configued.
+* ([#41](https://github.com/lexemmens/podman-maven-plugin/issues/41)) - Implemented a warning marker when there is no image name configured for a particular stage.
 
 #### Improvements
 * ([#44](https://github.com/lexemmens/podman-maven-plugin/issues/44)) - SaveMojo: The location where images are saved on disk can now be configured. Also, the push registry is no longer part of the file name.
