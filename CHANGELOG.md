@@ -2,6 +2,10 @@
 ### UNRELEASED CHANGES
 * None
 
+### 1.7.1 (16-08-2021)
+#### Bugs
+* ([#47](https://github.com/lexemmens/podman-maven-plugin/issues/47)) - Label values are now always put between double quotes.
+
 ### 1.7.0 (25-07-2021)
 #### Bugs
 * ([#42](https://github.com/lexemmens/podman-maven-plugin/issues/42)) - Podman `pull` and `pullAlways` options cannot be enabled simultaneously.

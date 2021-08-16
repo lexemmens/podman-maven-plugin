@@ -107,7 +107,7 @@ public class ContainerfileDecorator {
 
         StringBuilder labelBuilder = new StringBuilder(LABEL_ATTRIBUTE);
         for (Map.Entry<String, String> label : image.getBuild().getLabels().entrySet()) {
-            labelBuilder.append(label.getKey()).append("=").append(label.getValue()).append(" ");
+            labelBuilder.append(label.getKey()).append("=\"").append(label.getValue()).append("\" ");
         }
         String targetLabels = labelBuilder.toString();
 
