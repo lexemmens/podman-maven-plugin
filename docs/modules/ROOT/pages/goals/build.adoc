@@ -127,6 +127,8 @@ WARNING: Please be advised that you can only configure one run directory for pod
 
 Labels are a mechanism for applying metadata to container images. Labels can be used to order images. A label is a key-value pair, stored as a string. You can specify multiple labels for an object, but each key-value pair must be unique within an object. If the same key is given multiple values, the most-recently-written value overwrites all previous values.
 
+NOTE: As of version 1.7.1 label values are always stored between double quotes to allow values with spaces.
+
 === Key format recommendations
 [#keyformatrecommendations]
 :navtitle: Key format recommendations

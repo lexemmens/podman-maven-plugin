@@ -108,7 +108,7 @@ public class ContainerfileDecoratorTest {
         List<String> collect = Files.lines(Paths.get("target/podman-test/Containerfile")).collect(Collectors.toList());
         String lastLine = collect.get(1);
 
-        Assertions.assertEquals("LABEL testLabelKey=testLabelValue ", lastLine);
+        Assertions.assertEquals("LABEL testLabelKey=\"testLabelValue\" ", lastLine);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ContainerfileDecoratorTest {
         Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));
 
         verify(log, Mockito.times(1)).debug(eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
-        verify(log, Mockito.times(1)).error(eq("Failed to add labels (LABEL testLabelKey=testLabelValue ) to Containerfile: " + image.getBuild().getTargetContainerFile()), isA(Exception.class));
+        verify(log, Mockito.times(1)).error(eq("Failed to add labels (LABEL testLabelKey=\"testLabelValue\" ) to Containerfile: " + image.getBuild().getTargetContainerFile()), isA(Exception.class));
 
     }
 }
