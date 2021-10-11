@@ -1,6 +1,7 @@
 ## Changelog
 ### UNRELEASED CHANGES
 * ([#49](https://github.com/lexemmens/podman-maven-plugin/issues/49)) - Using properties in the FROM now succeeds for multistage builds.
+* ([#51](https://github.com/lexemmens/podman-maven-plugin/issues/51)) - Building projects with packaging=pom now succeed because e.g. the target directory will succesfully be created.
 
 ### 1.7.1 (16-08-2021)
 #### Bugs
