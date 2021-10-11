@@ -1,6 +1,6 @@
 ## Changelog
 ### UNRELEASED CHANGES
-* None
+* ([#49](https://github.com/lexemmens/podman-maven-plugin/issues/49)) - Using properties in the FROM now succeeds for multistage builds.
 
 ### 1.7.1 (16-08-2021)
 #### Bugs
