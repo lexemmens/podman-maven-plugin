@@ -10,6 +10,7 @@ import org.apache.maven.shared.filtering.MavenFilteringException;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,9 +92,19 @@ public class ContainerfileDecorator {
             fileFilterRequest.setTo(image.getBuild().getTargetContainerFile().toFile());
             fileFilterRequest.setMavenProject(mavenProject);
 
+            // If the parent directories of the targetContainerFile do not exist, create them
+            Path targetContainerFileParent = image.getBuild().getTargetContainerFile().getParent();
+            if (!Files.exists(targetContainerFileParent)) {
+                Files.createDirectories(targetContainerFileParent);
+            }
+
             mavenFileFilter.copyFile(fileFilterRequest);
         } catch (MavenFilteringException e) {
             String msg = "Failed to filter Containerfile! " + e.getMessage();
+            log.error(msg, e);
+            throw new MojoExecutionException(msg, e);
+        } catch (IOException e) {
+            String msg = "Failed to create target directory for Containerfile! " + e.getMessage();
             log.error(msg, e);
             throw new MojoExecutionException(msg, e);
         }
