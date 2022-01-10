@@ -184,7 +184,7 @@ public abstract class AbstractImageBuildConfiguration {
         return Optional.ofNullable(pullAlways);
     }
 
-    public void validate(MavenProject project) throws MojoExecutionException {
+    public void validate(MavenProject project) {
         if (containerFile == null) {
             containerFile = DEFAULT_CONTAINERFILE;
         }

@@ -78,11 +78,11 @@ public class PodmanExecutorService {
      */
     public List<String> build(SingleImageConfiguration image) throws MojoExecutionException {
         List<String> subCommand = new ArrayList<>();
-        if(image.getBuild().getSquash() != null && image.getBuild().getSquash()) {
+        if(Boolean.TRUE == image.getBuild().getSquash()) {
             subCommand.add(SQUASH_CMD);
         }
 
-        if(image.getBuild().getSquashAll() != null && image.getBuild().getSquashAll()) {
+        if(Boolean.TRUE == image.getBuild().getSquashAll()) {
             subCommand.add(SQUASH_ALL_CMD);
         }
 
