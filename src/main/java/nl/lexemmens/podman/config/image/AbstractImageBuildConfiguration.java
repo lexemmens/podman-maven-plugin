@@ -362,6 +362,15 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     /**
+     * Configures whether to cache intermediate images during the build process.
+     *
+     * @param layers The value to set
+     */
+    public void setLayers(Boolean layers) {
+        this.layers = layers;
+    }
+
+    /**
      * Sets the noCache option. Allows configuring whether caching should be used
      * to cache images
      *
@@ -388,6 +397,24 @@ public abstract class AbstractImageBuildConfiguration {
      */
     public void setPullAlways(Boolean pullAlways) {
         this.pullAlways = pullAlways;
+    }
+
+    /**
+     * Configures whether to squash all newly created layers into one layer.
+     *
+     * @param squash The value to set
+     */
+    public void setSquash(Boolean squash) {
+        this.squash = squash;
+    }
+
+    /**
+     * Configures whether to squash all layers into one layer, this includes the base layer(s).
+     *
+     * @param squashAll The value to set
+     */
+    public void setSquashAll(Boolean squashAll) {
+        this.squashAll = squashAll;
     }
 
     /**

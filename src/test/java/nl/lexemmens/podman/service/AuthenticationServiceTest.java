@@ -227,6 +227,7 @@ public class AuthenticationServiceTest {
 
         Path fileToUseAsDockerConfigFile = Paths.get("src", "test", "resources", "validauth.json").toAbsolutePath();
         Path dockerConfigFile = Paths.get(System.getProperty("user.home")).resolve(".docker/config.json");
+        Files.createDirectories(dockerConfigFile.getParent());
         Files.copy(fileToUseAsDockerConfigFile, dockerConfigFile);
 
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);

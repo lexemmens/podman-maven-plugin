@@ -229,6 +229,30 @@ public class PodmanExecutorServiceTest {
                 delegate.getCommandAsString());
     }
 
+
+    @Test
+    public void testBuildNoLayers() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setFormat(OCI)
+                .setLayers(false)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --layers=false --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false .", delegate.getCommandAsString());
+    }
+
     @Test
     public void testBuildPullAlways() throws MojoExecutionException {
         when(mavenProject.getBuild()).thenReturn(build);
@@ -273,6 +297,52 @@ public class PodmanExecutorServiceTest {
 
         Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false " +
                 "--pull=true .", delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildSquash() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setFormat(OCI)
+                .setSquash(true)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --squash --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false .", delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildSquashAll() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setFormat(OCI)
+                .setSquashAll(true)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --squash-all --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false .", delegate.getCommandAsString());
     }
 
     @Test
