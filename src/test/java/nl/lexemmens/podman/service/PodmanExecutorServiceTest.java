@@ -19,11 +19,19 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.stream.PumpStreamHandler;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
@@ -36,6 +44,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @RunWith(MockitoJUnitRunner.class)
 public class PodmanExecutorServiceTest {
 
+    public static final String PASSWORD = "secretPassword";
+    public static final String USERNAME = "username";
     @Mock
     private MavenProject mavenProject;
 
@@ -61,9 +71,10 @@ public class PodmanExecutorServiceTest {
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
-        podmanExecutorService.login("registry.example.com", "username", "password");
+        podmanExecutorService.login("registry.example.com", USERNAME, PASSWORD);
 
-        Assertions.assertEquals("podman login --tls-verify=false registry.example.com -u username -p password", delegate.getCommandAsString());
+        Assertions.assertEquals("podman login --tls-verify=false registry.example.com --username=username --password-stdin", delegate.getCommandAsString());
+        validatePasswordProcessInput(PASSWORD, delegate);
     }
 
     @Test
@@ -72,9 +83,15 @@ public class PodmanExecutorServiceTest {
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
-        podmanExecutorService.login("registry.example.com", "username", "password");
+        podmanExecutorService.login("registry.example.com", USERNAME, PASSWORD);
 
-        Assertions.assertEquals("podman login registry.example.com -u username -p password", delegate.getCommandAsString());
+        Assertions.assertEquals("podman login registry.example.com --username=username --password-stdin", delegate.getCommandAsString());
+        validatePasswordProcessInput(PASSWORD, delegate);
+    }
+
+    private void validatePasswordProcessInput(String expectedPassword, InterceptorCommandExecutorDelegate delegate) {
+        Assertions.assertEquals(1, delegate.processInput.size());
+        Assertions.assertEquals(expectedPassword, delegate.processInput.get(0));
     }
 
     @Test
@@ -83,9 +100,10 @@ public class PodmanExecutorServiceTest {
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
-        podmanExecutorService.login("registry.example.com", "username", "password");
+        podmanExecutorService.login("registry.example.com", USERNAME, PASSWORD);
 
-        Assertions.assertEquals("podman login registry.example.com -u username -p password", delegate.getCommandAsString());
+        Assertions.assertEquals("podman login registry.example.com --username=username --password-stdin", delegate.getCommandAsString());
+        validatePasswordProcessInput(PASSWORD, delegate);
     }
 
     @Test
@@ -96,7 +114,7 @@ public class PodmanExecutorServiceTest {
 
         when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Login failed"));
 
-        Assertions.assertThrows(MojoExecutionException.class, () -> podmanExecutorService.login("registry.example.com", "username", "password"));
+        Assertions.assertThrows(MojoExecutionException.class, () -> podmanExecutorService.login("registry.example.com", USERNAME, PASSWORD));
     }
 
     @Test
@@ -105,29 +123,14 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
 
-        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u username -p password"));
+        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com --username=username --password-stdin"));
 
         try {
-            podmanExecutorService.login("registry.example.com", "username", "password");
+            podmanExecutorService.login("registry.example.com", USERNAME, PASSWORD);
             Assertions.fail("This should not happen");
         } catch (MojoExecutionException e) {
-            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u username -p **********", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testLoginPasswordObfuscatedUponFailureWithComplexPassword() throws MojoExecutionException {
-        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(FALSE).initAndValidate(mavenProject, log).build();
-
-        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
-
-        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u username -p hgX^@k0&)12s@"));
-
-        try {
-            podmanExecutorService.login("registry.example.com", "username", "hgX^@k0&)12s@");
-            Assertions.fail("This should not happen");
-        } catch (MojoExecutionException e) {
-            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u username -p **********", e.getMessage());
+            Assertions.assertFalse(e.getMessage().contains(PASSWORD));
+            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com --username=username --password-stdin", e.getMessage());
         }
     }
 
@@ -432,6 +435,7 @@ public class PodmanExecutorServiceTest {
     private static class InterceptorCommandExecutorDelegate implements CommandExecutorDelegate {
 
         private final List<String> processOutput;
+        private List<String> processInput;
         private List<String> executedCommands;
 
         InterceptorCommandExecutorDelegate() {
@@ -445,6 +449,15 @@ public class PodmanExecutorServiceTest {
         @Override
         public List<String> executeCommand(ProcessExecutor processExecutor) {
             executedCommands = processExecutor.getCommand();
+            if (processExecutor.streams() instanceof PumpStreamHandler) {
+                PumpStreamHandler pumpStreamHandler = (PumpStreamHandler) processExecutor.streams();
+                processInput = Optional.ofNullable(pumpStreamHandler.getInput())
+                        .map(inputStream -> new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines())
+                        .orElse(Stream.empty())
+                        .collect(Collectors.toList());
+            } else {
+                 processInput = new ArrayList<>();
+            }
             return processOutput;
         }
 

@@ -56,7 +56,7 @@ The second method of authentication is by using Docker's configuration file. Thi
 [#mavensettings]
 :navtitle: Maven Settings
 
-When a registry that is being used, is neither fount in the Podman authentication file, nor the Docker configuration file, than this plugin will attempt to authenticate those registries using information available in the Mave Settings file. Therefore, you must configure the registries in your Maven settings file.
+When a registry that is being used, is neither found in the Podman authentication file, nor the Docker configuration file, then this plugin will attempt to authenticate those registries using information available in the Maven Settings file. Therefore, you must configure the registries in your Maven settings file.
 
 WARNING: The id of the server **must** match the registries configured in the plugin (see below). The plugin will fail if credentials are missing for any of the provided registries.
 

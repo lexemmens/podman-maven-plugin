@@ -1,4 +1,8 @@
 ## Changelog
+### 1.10.0 (15-01-2022)
+#### Improvements
+* passwords are now passed through stdin of podman process instead of on then commandline.
+
 ### 1.9.0 (12-01-2022)
 #### Improvements
 * Added configuration options for `--squash`, `--squash-all` and `--layers`. Can be configured in the `<build>` section of an image.
