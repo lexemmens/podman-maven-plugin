@@ -18,6 +18,16 @@ This section covers all the possible options for the `<build>` tag.
 |===
 |Element |Description
 
+|layers
+|Cache intermediate images during the build process (Default is `true`).
+
+Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
+`export BUILDAH_LAYERS=true`
+
+**Default value is**: `null` (not specified).
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
 |noCache
 |Do not use existing cached images for the container build. Build from the start with a new set of cached layers.
 
@@ -37,6 +47,20 @@ When this option is specified _and_ `pullAlways` is also specified, builds will 
 |Pull the image from the first registry it is found in as listed in registries.conf. Raise an error if not found in the registries, even if the image is present locally.
 
 When this option is specified _and_ `pullAlways` is also specified, builds will fail as Podman does not support both options to be enabled at the same time.
+
+**Default value is**: `null` (not specified).
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
+|squash
+|Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.
+
+**Default value is**: `null` (not specified).
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
+|squashAll
+|Squash all of the new image’s layers (including those inherited from a base image) into a single new layer.
 
 **Default value is**: `null` (not specified).
 

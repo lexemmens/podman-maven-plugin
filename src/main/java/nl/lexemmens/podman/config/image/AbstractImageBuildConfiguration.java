@@ -114,6 +114,35 @@ public abstract class AbstractImageBuildConfiguration {
     protected ContainerFormat format;
 
     /**
+     * Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.
+     * <p>
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean squash;
+
+    /**
+     * Squash all of the new image’s layers (including those inherited from a base image) into a single new layer.
+     * <p>
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean squashAll;
+
+    /**
+     * Cache intermediate images during the build process (Default is true).
+     * <p>
+     * Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
+     * export BUILDAH_LAYERS=true
+     *
+     * @see "http://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected Boolean layers;
+
+    /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
     protected File outputDirectory;
@@ -155,7 +184,7 @@ public abstract class AbstractImageBuildConfiguration {
         return Optional.ofNullable(pullAlways);
     }
 
-    public void validate(MavenProject project) throws MojoExecutionException {
+    public void validate(MavenProject project) {
         if (containerFile == null) {
             containerFile = DEFAULT_CONTAINERFILE;
         }
@@ -257,6 +286,34 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     /**
+     * Returns true when all of the image’s new layers should be squashed into a single new layer; any
+     * preexisting layers are not squashed.
+     *
+     * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
+     */
+    public Boolean getSquash() {
+        return squash;
+    }
+
+    /**
+     * Returns true when all of the image’s new layers, including those inherited from a base image, into a single new layer.
+     *
+     * @return true when all of the images's new layers should be squashed into a new layer. False otherwise.
+     */
+    public Boolean getSquashAll() {
+        return squashAll;
+    }
+
+    /**
+     * Returns true if intermediate layers should be cached during a Podman build.
+     *
+     * @return true, when intermediate layers should be cached. False otherwise.
+     */
+    public Boolean getLayers() {
+        return layers;
+    }
+
+    /**
      * Returns a boolean indicating whether this configuration is valid
      *
      * @return true if this configuration is valid. False otherwise.
@@ -305,6 +362,15 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     /**
+     * Configures whether to cache intermediate images during the build process.
+     *
+     * @param layers The value to set
+     */
+    public void setLayers(Boolean layers) {
+        this.layers = layers;
+    }
+
+    /**
      * Sets the noCache option. Allows configuring whether caching should be used
      * to cache images
      *
@@ -331,6 +397,24 @@ public abstract class AbstractImageBuildConfiguration {
      */
     public void setPullAlways(Boolean pullAlways) {
         this.pullAlways = pullAlways;
+    }
+
+    /**
+     * Configures whether to squash all newly created layers into one layer.
+     *
+     * @param squash The value to set
+     */
+    public void setSquash(Boolean squash) {
+        this.squash = squash;
+    }
+
+    /**
+     * Configures whether to squash all layers into one layer, this includes the base layer(s).
+     *
+     * @param squashAll The value to set
+     */
+    public void setSquashAll(Boolean squashAll) {
+        this.squashAll = squashAll;
     }
 
     /**

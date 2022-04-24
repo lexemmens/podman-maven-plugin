@@ -22,6 +22,11 @@ public class TestSingleImageConfigurationBuilder {
         image.setBuild(new SingleImageBuildConfiguration());
     }
 
+    public TestSingleImageConfigurationBuilder setLayers(boolean layers) {
+        image.getBuild().setLayers(layers);
+        return this;
+    }
+
     public TestSingleImageConfigurationBuilder setNoCache(boolean noCache) {
         image.getBuild().setNoCache(noCache);
         return this;
@@ -29,6 +34,16 @@ public class TestSingleImageConfigurationBuilder {
 
     public TestSingleImageConfigurationBuilder setPull(boolean pull) {
         image.getBuild().setPull(pull);
+        return this;
+    }
+
+    public TestSingleImageConfigurationBuilder setSquash(boolean squash) {
+        image.getBuild().setSquash(squash);
+        return this;
+    }
+
+    public TestSingleImageConfigurationBuilder setSquashAll(boolean squashAll) {
+        image.getBuild().setSquashAll(squashAll);
         return this;
     }
 
