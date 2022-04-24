@@ -1,5 +1,8 @@
 ## Changelog
-### 1.9.0 (12-01-2022)
+### 1.9.0 UNRELEASED
+#### Bugs
+* ([#57](https://github.com/lexemmens/podman-maven-plugin/issues/57)) - mockito-junit-jupiter test dependency not scoped test
+
 #### Improvements
 * Added configuration options for `--squash`, `--squash-all` and `--layers`. Can be configured in the `<build>` section of an image.
 
