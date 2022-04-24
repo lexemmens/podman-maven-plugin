@@ -227,6 +227,14 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">layers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cache intermediate images during the build process (Default is <code>true</code>).</p>
+<p class="tableblock">Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
+<code>export BUILDAH_LAYERS=true</code></p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">noCache</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Do not use existing cached images for the container build. Build from the start with a new set of cached layers.</p>
 <p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
@@ -243,6 +251,18 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 <td class="tableblock halign-left valign-top"><p class="tableblock">pullAlways</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Pull the image from the first registry it is found in as listed in registries.conf. Raise an error if not found in the registries, even if the image is present locally.</p>
 <p class="tableblock">When this option is specified <em>and</em> <code>pullAlways</code> is also specified, builds will fail as Podman does not support both options to be enabled at the same time.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">squash</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">squashAll</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Squash all of the new image’s layers (including those inherited from a base image) into a single new layer.</p>
 <p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
 <p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
 </tr>
