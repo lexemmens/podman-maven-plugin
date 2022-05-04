@@ -7,6 +7,7 @@
 
 #### Improvements
 * Added configuration options for `--squash`, `--squash-all` and `--layers`. Can be configured in the `<build>` section of an image.
+* Added copy mojo that allows copying images from one repo to another (uses Skopeo)
 
 ### 1.8.0 (12-10-2021)
 #### Bugs

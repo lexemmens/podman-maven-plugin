@@ -1,15 +1,22 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
+import nl.lexemmens.podman.config.image.AbstractImageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -29,6 +36,13 @@ public class BuildMojo extends AbstractPodmanMojo {
      */
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
     boolean skipTag;
+
+    /**
+     * Indicates if container images should be catalogued in a separate container-catalog.txt file
+     * that is attached to the build.
+     */
+    @Parameter(property = "podman.skip.catalog", defaultValue = "false")
+    boolean skipCatalog;
 
     private final MultiStageBuildOutputHelper buildOutputHelper;
 
@@ -62,6 +76,12 @@ public class BuildMojo extends AbstractPodmanMojo {
             tagContainerImage(image, hub);
 
             getLog().info("Built container image.");
+        }
+
+        if(skipCatalog) {
+            getLog().info("Skipping cataloguing container images.");
+        } else {
+            catalogContainers(resolvedImages, hub);
         }
     }
 
@@ -140,5 +160,56 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
+    private void catalogContainers(List<SingleImageConfiguration> images, ServiceHub hub) throws MojoExecutionException {
+        List<String> containerCatalog = getContainerCatalog(images);
+        if(containerCatalog.isEmpty()) {
+            getLog().info("No containers were catalogued.");
+            return;
+        }
+
+        containerCatalog.add(0, CATALOG_HEADER);
+
+        String catalogFileName = String.format("%s.txt", CATALOG_ARTIFACT_NAME);
+        Path catalogPath = Paths.get(project.getBuild().getDirectory(), catalogFileName);
+        try {
+            Files.createDirectories(catalogPath);
+            Files.write(catalogPath, containerCatalog);
+        } catch (IOException e) {
+            getLog().error("Failed to write catalog file! Caught: " + e.getMessage());
+            throw new MojoExecutionException(e.getMessage(), e);
+        }
+
+        getLog().info("Attaching catalog artifact: " + catalogPath);
+
+        hub.getMavenProjectHelper().attachArtifact(project, "txt", CATALOG_ARTIFACT_NAME, catalogPath.toFile());
+    }
+
+    private List<String> getContainerCatalog(List<SingleImageConfiguration> images) {
+        List<String> containerCatalog = new ArrayList<>();
+
+        List<SingleImageConfiguration> rawCatalog = images.stream()
+                .filter(image -> !image.getBuild().getAllTags().isEmpty())
+                .collect(Collectors.toList());
+
+        // Multistage images
+        rawCatalog.stream()
+                .filter(image -> image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile())
+                .map(image -> getFullImageNameWithPushRegistry(image.getImageName()))
+                .forEach(containerCatalog::add);
+
+        // Single images
+        // 1. Get all image names (returns a list of lists)
+        // 2. Flatten the list of lists to a single list
+        // 3. Get full image name
+        // 4. Add to catalog
+        rawCatalog.stream()
+                .filter(image -> !image.useCustomImageNameForMultiStageContainerfile())
+                .map(AbstractImageConfiguration::getImageNames)
+                .flatMap(List::stream)
+                .map(this::getFullImageNameWithPushRegistry)
+                .forEach(containerCatalog::add);
+
+        return containerCatalog;
+    }
 
 }

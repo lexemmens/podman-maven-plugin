@@ -3,6 +3,7 @@ package nl.lexemmens.podman;
 import nl.lexemmens.podman.config.image.batch.BatchImageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.helper.ImageNameHelper;
 import nl.lexemmens.podman.service.ServiceHub;
 import nl.lexemmens.podman.service.ServiceHubFactory;
@@ -11,6 +12,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -21,6 +23,10 @@ import java.util.List;
 public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     protected static final String PODMAN_DIRECTORY = "podman";
+
+    protected static final String CATALOG_ARTIFACT_NAME = "container-catalog";
+
+    protected static final String CATALOG_HEADER = "[containers]";
 
     /**
      * The Maven project
@@ -64,6 +70,9 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Parameter
     protected PodmanConfiguration podman;
 
+    @Parameter
+    protected SkopeoConfiguration skopeo;
+
     /**
      * Skip authentication prior to execution
      */
@@ -92,28 +101,15 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Component
     private SettingsDecrypter settingsDecrypter;
 
-    protected final List<SingleImageConfiguration> resolvedImages;
+    @Component
+    private MavenProjectHelper mavenProjectHelper;
 
-    /**
-     * Determines whether to skip initializing configurations
-     */
-    private final boolean requireImageConfiguration;
+    protected final List<SingleImageConfiguration> resolvedImages;
 
     /**
      * Constructor. Initializes this abstract class with a concrete base class
      */
     protected AbstractPodmanMojo() {
-        this.requireImageConfiguration = true;
-        this.resolvedImages = new ArrayList<>();
-    }
-
-    /**
-     * Constructor. Initializes this abstract class with a concrete base class
-     *
-     * @param requireImageConfiguration Whether initialization of the configuration should be skipped
-     */
-    protected AbstractPodmanMojo(boolean requireImageConfiguration) {
-        this.requireImageConfiguration = requireImageConfiguration;
         this.resolvedImages = new ArrayList<>();
     }
 
@@ -126,7 +122,15 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
         initConfigurations();
 
-        ServiceHub hub = serviceHubFactory.createServiceHub(getLog(), project, mavenFileFilter, podman, settings, settingsDecrypter);
+        ServiceHub hub = serviceHubFactory.createServiceHub(
+                getLog(),
+                project,
+                mavenFileFilter,
+                podman,
+                settings,
+                settingsDecrypter,
+                mavenProjectHelper
+        );
 
         printPodmanVersion(hub);
         executeInternal(hub);
@@ -147,22 +151,26 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
         }
 
         podman.initAndValidate(project, getLog());
-        if (requireImageConfiguration) {
-            resolveImages();
-
-            if (resolvedImages.isEmpty()) {
-                throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
-            } else {
-                ImageNameHelper imageNameHelper = new ImageNameHelper(project);
-                for (SingleImageConfiguration image : resolvedImages) {
-                    image.initAndValidate(project, getLog(), failOnMissingContainerfile);
-
-                    imageNameHelper.adaptReplacemeents(image);
-                    imageNameHelper.formatImageName(image);
-                }
-            }
+        if (requireImageConfiguration()) {
+            initImageConfigurations();
         } else {
             getLog().debug("Validating image configuration is skipped.");
+        }
+    }
+
+    protected final void initImageConfigurations() throws MojoExecutionException {
+        resolveImages();
+
+        if (resolvedImages.isEmpty()) {
+            throw new MojoExecutionException("Cannot invoke plugin while there is no image configuration present!");
+        } else {
+            ImageNameHelper imageNameHelper = new ImageNameHelper(project);
+            for (SingleImageConfiguration image : resolvedImages) {
+                image.initAndValidate(project, getLog(), failOnMissingContainerfile);
+
+                imageNameHelper.adaptReplacemeents(image);
+                imageNameHelper.formatImageName(image);
+            }
         }
     }
 
@@ -209,4 +217,12 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      * @throws MojoExecutionException In case anything happens during execution which prevents execution from continuing
      */
     public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
+
+    /**
+     * Returns whether initialization of the configuration should be skipped
+     * @return false by default.
+     */
+    protected boolean requireImageConfiguration() {
+        return true;
+    }
 }

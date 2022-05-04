@@ -1,8 +1,10 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -27,11 +29,13 @@ public class ServiceHubFactory {
      * @param podmanConfig      Holds global configuration for Podman
      * @param mavenSettings     Access to the Maven Settings
      * @param settingsDecrypter Access to Maven's {@link SettingsDecrypter} service
+     * @param mavenProjectHelper Access to Maven's {@link MavenProjectHelper} service
      * @return A new instance of the {@link ServiceHub}
      */
     public ServiceHub createServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig,
-                                       Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
-        return new ServiceHub(log, mavenProject, mavenFileFilter, podmanConfig, mavenSettings, settingsDecrypter);
+                                       SkopeoConfiguration skopeoConfiguration,
+                                       Settings mavenSettings, SettingsDecrypter settingsDecrypter, MavenProjectHelper mavenProjectHelper) {
+        return new ServiceHub(log, mavenProject, mavenFileFilter, skopeoConfiguration, podmanConfig, mavenSettings, settingsDecrypter, mavenProjectHelper);
     }
 
 }
