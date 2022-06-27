@@ -96,7 +96,7 @@ public class ImageNameHelper {
 
         @Override
         public String get() {
-            return mavenProject.getArtifactId();
+            return alignWithNamingConvention(mavenProject.getArtifactId());
         }
     }
 
