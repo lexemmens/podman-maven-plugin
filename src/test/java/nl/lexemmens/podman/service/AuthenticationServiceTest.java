@@ -22,18 +22,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
@@ -72,7 +74,7 @@ public class AuthenticationServiceTest {
     }
 
     @Before
-    public void before() throws IOException {
+    public void before() throws IOException, InterruptedException, TimeoutException {
         // Backup docker config
         Path dockerConfigFile = Paths.get(System.getProperty("user.home")).resolve(".docker/config.json");
         Path dockerConfigBackupFile = Paths.get(System.getProperty("user.home")).resolve(".docker/config.json.bak");
@@ -81,25 +83,27 @@ public class AuthenticationServiceTest {
         }
 
         // Determine the uid of the user running the tests
-        String idCommand = "id -u " + System.getProperty("user.name");
-        Process idProcess = Runtime.getRuntime().exec(idCommand);
-        try {
-            // wait until the process is finished
-            idProcess.waitFor();
+        List<String> command = new ArrayList<>();
+        command.add("id");
+        command.add("-u");
+        command.add(System.getProperty("user.name"));
 
-            if (idProcess.exitValue() == 0) {
-                // process the output
-                BufferedReader stdout = new BufferedReader(new InputStreamReader(idProcess.getInputStream()));
-                String s = stdout.readLine();
+        List<String> idCommandOutput = new ProcessExecutor()
+                .directory(FileSystems.getDefault().getPath("").toAbsolutePath().toFile())
+                .command(command)
+                .readOutput(true)
+                .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
+                .exitValueNormal()
+                .execute()
+                .getOutput()
+                .getLinesAsUTF8();
 
-                if (s != null) {
-                    uid = Integer.parseInt(s);
-                }
-
-                stdout.close();
-            }
-        } catch (InterruptedException e) {
-            // nothing to do
+        if(idCommandOutput.isEmpty()) {
+            fail("Expected id -u <username> to provide at least some output.");
+        } else if(idCommandOutput.size() == 1){
+            uid = Integer.parseInt(idCommandOutput.get(0));
+        } else {
+            fail("Expected id -u <username> to provide a single line of output.");
         }
     }
 
