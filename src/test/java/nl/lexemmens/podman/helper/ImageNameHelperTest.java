@@ -33,7 +33,7 @@ public class ImageNameHelperTest {
 
     @Test
     public void testArtifactIdReplacement() {
-        when(mavenProject.getArtifactId()).thenReturn("my-artifact");
+        when(mavenProject.getArtifactId()).thenReturn("my-Artifact");
 
         SingleImageConfiguration image = new SingleImageConfiguration();
         image.setImageName("sample-image-%a");
