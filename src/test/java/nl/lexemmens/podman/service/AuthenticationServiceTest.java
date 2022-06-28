@@ -23,7 +23,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,6 +60,12 @@ public class AuthenticationServiceTest {
 
     private final TlsVerify tlsVerify = TlsVerify.TRUE;
 
+    // In case the UID detection does not succeed, the following uid will be used as default uid
+    private static final int DEFAULT_UID = 1000;
+
+    // The uid of the user running the tests, this is needed to determine e.g. /run/user/$UID/
+    private int uid = DEFAULT_UID;
+
     @Before
     public void setup() {
         initMocks(this);
@@ -69,6 +78,28 @@ public class AuthenticationServiceTest {
         Path dockerConfigBackupFile = Paths.get(System.getProperty("user.home")).resolve(".docker/config.json.bak");
         if (Files.exists(dockerConfigFile)) {
             Files.move(dockerConfigFile, dockerConfigBackupFile);
+        }
+
+        // Determine the uid of the user running the tests
+        String idCommand = "id -u " + System.getProperty("user.name");
+        Process idProcess = Runtime.getRuntime().exec(idCommand);
+        try {
+            // wait until the process is finished
+            idProcess.waitFor();
+
+            if (idProcess.exitValue() == 0) {
+                // process the output
+                BufferedReader stdout = new BufferedReader(new InputStreamReader(idProcess.getInputStream()));
+                String s = stdout.readLine();
+
+                if (s != null) {
+                    uid = Integer.parseInt(s);
+                }
+
+                stdout.close();
+            }
+        } catch (InterruptedException e) {
+            // nothing to do
         }
     }
 
@@ -102,8 +133,8 @@ public class AuthenticationServiceTest {
 
     @Test
     public void authenticateNoRegistryAuthFileNoEnvVarNoCredentials() throws IOException {
-        // Ensure that /run/user/1000/containers/invalidauth.json is not present
-        Path authFilePath = Paths.get("/run/user/1000/containers/auth.json");
+        // Ensure that /run/user/{uid}/containers/auth.json is not present
+        Path authFilePath = Paths.get("/run/user/" + uid + "/containers/auth.json");
         Files.deleteIfExists(authFilePath);
 
         String[] registries = new String[]{"registry.example.com"};
@@ -132,8 +163,8 @@ public class AuthenticationServiceTest {
         when(settings.getProxies()).thenReturn(new ArrayList<>());
         when(settingsDecrypter.decrypt(isA(SettingsDecryptionRequest.class))).thenReturn(createSettingsDecryptionResult(serverList, new ArrayList<>()));
 
-        // Ensure that /run/user/1000/containers/auth.json is not present
-        Path authFilePath = Paths.get("/run/user/1000/containers/auth.json");
+        // Ensure that /run/user/{uid}/containers/auth.json is not present
+        Path authFilePath = Paths.get("/run/user/" + uid + "/containers/auth.json");
         Files.deleteIfExists(authFilePath);
 
         String[] registries = new String[]{"registry.example.com"};
