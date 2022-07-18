@@ -2,30 +2,36 @@ package nl.lexemmens.podman;
 
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultRepositoryRequest;
-import org.apache.maven.artifact.repository.RepositoryRequest;
-import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.internal.impl.EnhancedLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.repository.RepositoryPolicy;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,34 +55,26 @@ public class CopyMojo extends AbstractPodmanMojo {
     EnhancedLocalRepositoryManagerFactory localRepositoryManagerFactory;
 
     @Component
-    private RepositorySystem repositorySystem;
+    RepositorySystem repositorySystem;
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
         if (skipCopy) {
-            getLog().info("Skopeo Copy is skipped.");
+            getLog().info("Skopeo copy is skipped.");
             return;
         }
 
         checkAuthentication(hub);
-
-        switch (skopeo.getCopy().getSourceType()) {
-            case CATALOG_FILE:
-                performCopyUsingCatalogFile(hub);
-                break;
-            case CONFIGURATION:
-                performCopyUsingImageConfiguration();
-                break;
-            default:
-                getLog().warn(
-                        "Unknown source type: " + skopeo.getCopy().getSourceType() + ". Skipping Skopeo copy."
-                );
-        }
+        performCopyUsingCatalogFile(hub);
     }
 
     @Override
     protected boolean requireImageConfiguration() {
         return false;
+    }
+
+    private void copyImage(ServiceHub hub, String sourceImage, String targetImage) throws MojoExecutionException {
+        hub.getSkopeoExecutorService().copy(sourceImage, targetImage);
     }
 
     private void performCopyUsingCatalogFile(ServiceHub hub) throws MojoExecutionException {
@@ -94,18 +92,18 @@ public class CopyMojo extends AbstractPodmanMojo {
 
                 getLog().info("Using temporary local repository @ " + tempRepo.getAbsolutePath());
                 tempSession.setLocalRepositoryManager(localRepositoryManagerFactory.newInstance(tempSession, new LocalRepository(tempRepo)));
-            } catch (Exception ex) {
-                getLog().warn("Failed to disable local repository path.", ex);
+            } catch (IOException | NoLocalRepositoryManagerException e) {
+                getLog().warn("Failed to disable local repository path.", e);
             }
         }
         tempSession.setReadOnly();
 
-        List<ArtifactRepository> remoteArtifactRepositories = getRemoteArtifactRepositories();
-        List<String> cataloguedImages = getCatalog(remoteArtifactRepositories);
+        List<RemoteRepository> remoteRepositories = getRemoteRepositories();
+        List<String> cataloguedImages = getCatalog(tempSession, remoteRepositories);
         Map<String, String> transformedImages = performTransformation(cataloguedImages);
 
-        for(Map.Entry<String, String> imageEntry : transformedImages.entrySet()) {
-            hub.getSkopeoExecutorService().copy(imageEntry.getKey(), imageEntry.getValue());
+        for (Map.Entry<String, String> imageEntry : transformedImages.entrySet()) {
+            copyImage(hub, imageEntry.getKey(), imageEntry.getValue());
         }
 
         if (skopeo.getCopy().getDisableLocal()) {
@@ -119,17 +117,11 @@ public class CopyMojo extends AbstractPodmanMojo {
         }
     }
 
-    private void performCopyUsingImageConfiguration() throws MojoExecutionException {
-        getLog().info("Using image configuration to perform Skopeo copy.");
-        getLog().info("Lazy loading image configuration...");
-        super.initImageConfigurations();
-    }
-
-    private List<ArtifactRepository> getRemoteArtifactRepositories() throws MojoExecutionException {
+    private List<RemoteRepository> getRemoteRepositories() throws MojoExecutionException {
         List<ArtifactRepository> remoteArtifactRepositories;
         String sourceCatalogRepository = skopeo.getCopy().getSourceCatalogRepository();
 
-        if(sourceCatalogRepository == null) {
+        if (sourceCatalogRepository == null) {
             getLog().info("Using all remote repositories to find container catalog.");
             remoteArtifactRepositories = project.getRemoteArtifactRepositories();
         } else {
@@ -137,7 +129,7 @@ public class CopyMojo extends AbstractPodmanMojo {
                     .stream()
                     .filter(r -> r.getId().equals(sourceCatalogRepository))
                     .findFirst();
-            if(repository.isPresent()) {
+            if (repository.isPresent()) {
                 getLog().info("Using repository " + repository.get() + " for finding container catalog.");
                 remoteArtifactRepositories = new ArrayList<>();
                 remoteArtifactRepositories.add(repository.get());
@@ -149,47 +141,55 @@ public class CopyMojo extends AbstractPodmanMojo {
             }
         }
 
-        return remoteArtifactRepositories;
+        return RepositoryUtils.toRepos(remoteArtifactRepositories);
     }
 
-    private List<String> getCatalog(List<ArtifactRepository> remoteRepositories) throws MojoExecutionException {
+    private List<String> getCatalog(RepositorySystemSession repositorySystemSession, List<RemoteRepository> remoteRepositories) throws MojoExecutionException {
         // Locate our text catalog classifier file. :-)
-        Artifact artifact = repositorySystem.createArtifactWithClassifier(
-                project.getGroupId(),
-                project.getArtifactId(),
-                project.getVersion(),
-                "txt",
-                CATALOG_ARTIFACT_NAME
-        );
+        try {
+            DefaultArtifact artifact = new DefaultArtifact(
+                    project.getGroupId(),
+                    project.getArtifactId(),
+                    CATALOG_ARTIFACT_NAME,
+                    "txt",
+                    project.getVersion()
+            );
 
-        RepositoryRequest repositoryRequest = new DefaultRepositoryRequest();
-        repositoryRequest.setRemoteRepositories(remoteRepositories);
-        repositoryRequest.setForceUpdate(true);
+            ArtifactRequest artifactRequest = new ArtifactRequest(artifact, remoteRepositories, null);
 
-        ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest(repositoryRequest);
-        artifactResolutionRequest.setArtifact(artifact);
-
-        ArtifactResolutionResult artifactResolutionResult = repositorySystem.resolve(artifactResolutionRequest);
-        if (artifactResolutionResult.isSuccess()) {
-            Set<Artifact> resolvedArtifacts = artifactResolutionResult.getArtifacts();
-            Optional<Artifact> firstResolvedArtifact = resolvedArtifacts.stream().findFirst();
-            if (firstResolvedArtifact.isPresent()) {
-                Path resolvedArtifactPath = Paths.get(firstResolvedArtifact.get().getFile().toURI());
-                try(Stream<String> catalogStream = Files.lines(resolvedArtifactPath)) {
+            ArtifactResult artifactResult = repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
+            if (artifactResult.isMissing()) {
+                throw new MojoExecutionException("Cannot find container catalog. All repositories were successfully " +
+                        "queried, but no such artifact was returned.");
+            }
+            if (artifactResult.isResolved()) {
+                Path resolvedArtifactPath = Paths.get(artifactResult.getArtifact().getFile().toURI());
+                try (Stream<String> catalogStream = Files.lines(resolvedArtifactPath)) {
                     return catalogStream.skip(1).collect(Collectors.toList());
                 } catch (IOException e) {
                     throw new MojoExecutionException("Failed to read container catalog.", e);
                 }
             } else {
-                throw new MojoExecutionException("Cannot find container catalog. All repositories were successfully " +
-                        "queried, but no such artifact was returned.");
+                throw new MojoExecutionException("Failed to resolve the container catalog file.");
             }
-        } else {
-            throw new MojoExecutionException("Failed to query repositories for container catalog.");
+
+        } catch (ArtifactResolutionException e) {
+            throw new MojoExecutionException("Failed retrieving container catalog file", e);
         }
     }
 
+    private String transformToTargetImageRepo(String sourceImageRepo) {
+        return sourceImageRepo.replace(skopeo.getCopy().getSearchString(), skopeo.getCopy().getReplaceString());
+    }
+
     private Map<String, String> performTransformation(List<String> cataloguedImages) {
-        return null;
+        Map<String, String> transformedImages = new HashMap<>(cataloguedImages.size());
+        for (String image : cataloguedImages) {
+            transformedImages.put(
+                    image,
+                    transformToTargetImageRepo(image)
+            );
+        }
+        return transformedImages;
     }
 }

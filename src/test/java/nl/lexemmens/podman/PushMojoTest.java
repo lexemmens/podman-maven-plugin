@@ -4,10 +4,12 @@ import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -139,7 +141,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
@@ -164,7 +166,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(targetRegistry));
 
@@ -192,7 +194,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(targetRegistry));
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
@@ -222,7 +224,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(targetRegistry));
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
@@ -252,7 +254,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         doNothing().when(podmanExecutorService).push(eq(imageName));
         doNothing().when(podmanExecutorService).removeLocalImage(eq(imageName));
@@ -278,7 +280,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         pushMojo.execute();
@@ -305,7 +307,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         pushMojo.execute();
@@ -337,7 +339,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         // Simulate failure
@@ -366,7 +368,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test");
         when(mavenProject.getVersion()).thenReturn("1.0.0");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         // Simulate failure

@@ -5,7 +5,7 @@ public enum SkopeoCommand {
     SKOPEO("skopeo"),
     COPY("copy");
 
-    private String command;
+    private final String command;
 
     SkopeoCommand(String command) {
         this.command = command;

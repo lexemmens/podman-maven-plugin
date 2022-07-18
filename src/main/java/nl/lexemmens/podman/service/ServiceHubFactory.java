@@ -27,15 +27,16 @@ public class ServiceHubFactory {
      * @param mavenProject      Reference to the current Maven Project.
      * @param mavenFileFilter   Access to Maven's file filtering service
      * @param podmanConfig      Holds global configuration for Podman
+     * @param skopeoConfig      Holds global configuration for skopeo
      * @param mavenSettings     Access to the Maven Settings
      * @param settingsDecrypter Access to Maven's {@link SettingsDecrypter} service
      * @param mavenProjectHelper Access to Maven's {@link MavenProjectHelper} service
      * @return A new instance of the {@link ServiceHub}
      */
     public ServiceHub createServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig,
-                                       SkopeoConfiguration skopeoConfiguration,
+                                       SkopeoConfiguration skopeoConfig,
                                        Settings mavenSettings, SettingsDecrypter settingsDecrypter, MavenProjectHelper mavenProjectHelper) {
-        return new ServiceHub(log, mavenProject, mavenFileFilter, skopeoConfiguration, podmanConfig, mavenSettings, settingsDecrypter, mavenProjectHelper);
+        return new ServiceHub(log, mavenProject, mavenFileFilter, podmanConfig, skopeoConfig, mavenSettings, settingsDecrypter, mavenProjectHelper);
     }
 
 }

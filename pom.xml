@@ -136,7 +136,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.3.3</version>
+            <version>4.6.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -148,9 +148,10 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.3.3</version>
+            <version>4.6.1</version>
             <scope>test</scope>
         </dependency>
+
         <!-- Required for running tests from Intellij -->
         <dependency>
             <groupId>org.junit.vintage</groupId>

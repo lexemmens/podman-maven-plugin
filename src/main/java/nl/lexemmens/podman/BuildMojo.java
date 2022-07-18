@@ -1,6 +1,5 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.AbstractImageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.service.ServiceHub;
@@ -13,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,26 +24,23 @@ import java.util.stream.Collectors;
 @Mojo(name = "build", defaultPhase = LifecyclePhase.INSTALL)
 public class BuildMojo extends AbstractPodmanMojo {
 
+    private final MultiStageBuildOutputHelper buildOutputHelper;
     /**
      * Indicates if building container images should be skipped
      */
     @Parameter(property = "podman.skip.build", defaultValue = "false")
     boolean skipBuild;
-
     /**
      * Indicates if tagging container images should be skipped
      */
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
     boolean skipTag;
-
     /**
      * Indicates if container images should be catalogued in a separate container-catalog.txt file
      * that is attached to the build.
      */
     @Parameter(property = "podman.skip.catalog", defaultValue = "false")
     boolean skipCatalog;
-
-    private final MultiStageBuildOutputHelper buildOutputHelper;
 
     /**
      * Constructor
@@ -78,7 +74,7 @@ public class BuildMojo extends AbstractPodmanMojo {
             getLog().info("Built container image.");
         }
 
-        if(skipCatalog) {
+        if (skipCatalog) {
             getLog().info("Skipping cataloguing container images.");
         } else {
             catalogContainers(resolvedImages, hub);
@@ -131,7 +127,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         for (Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
             List<String> imageNamesByStage = image.getImageNamesByStage(stageImage.getKey());
 
-            if(imageNamesByStage.isEmpty()) {
+            if (imageNamesByStage.isEmpty()) {
                 getLog().warn("No image name configured for build stage: " + stageImage.getKey() + ". Image " + stageImage.getValue() + " not tagged!");
             } else {
                 for (String imageName : imageNamesByStage) {
@@ -162,7 +158,7 @@ public class BuildMojo extends AbstractPodmanMojo {
 
     private void catalogContainers(List<SingleImageConfiguration> images, ServiceHub hub) throws MojoExecutionException {
         List<String> containerCatalog = getContainerCatalog(images);
-        if(containerCatalog.isEmpty()) {
+        if (containerCatalog.isEmpty()) {
             getLog().info("No containers were catalogued.");
             return;
         }
@@ -172,7 +168,6 @@ public class BuildMojo extends AbstractPodmanMojo {
         String catalogFileName = String.format("%s.txt", CATALOG_ARTIFACT_NAME);
         Path catalogPath = Paths.get(project.getBuild().getDirectory(), catalogFileName);
         try {
-            Files.createDirectories(catalogPath);
             Files.write(catalogPath, containerCatalog);
         } catch (IOException e) {
             getLog().error("Failed to write catalog file! Caught: " + e.getMessage());
@@ -185,31 +180,9 @@ public class BuildMojo extends AbstractPodmanMojo {
     }
 
     private List<String> getContainerCatalog(List<SingleImageConfiguration> images) {
-        List<String> containerCatalog = new ArrayList<>();
-
-        List<SingleImageConfiguration> rawCatalog = images.stream()
-                .filter(image -> !image.getBuild().getAllTags().isEmpty())
+        return images.stream()
+                .map(this::singleImageConfigurationToFullImageList)
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
-        // Multistage images
-        rawCatalog.stream()
-                .filter(image -> image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile())
-                .map(image -> getFullImageNameWithPushRegistry(image.getImageName()))
-                .forEach(containerCatalog::add);
-
-        // Single images
-        // 1. Get all image names (returns a list of lists)
-        // 2. Flatten the list of lists to a single list
-        // 3. Get full image name
-        // 4. Add to catalog
-        rawCatalog.stream()
-                .filter(image -> !image.useCustomImageNameForMultiStageContainerfile())
-                .map(AbstractImageConfiguration::getImageNames)
-                .flatMap(List::stream)
-                .map(this::getFullImageNameWithPushRegistry)
-                .forEach(containerCatalog::add);
-
-        return containerCatalog;
     }
-
 }

@@ -11,7 +11,7 @@ public enum PodmanCommand {
     RMI("rmi"),
     VERSION("version");
 
-    private String command;
+    private final String command;
 
     PodmanCommand(String command) {
         this.command = command;

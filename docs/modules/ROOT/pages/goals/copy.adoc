@@ -1,0 +1,70 @@
+= Copy
+[#copymojo]
+:navtitle: Copy
+:table-caption: Table
+
+This goal copies images listed on the `container-catalog.txt` from the listed registry to a specified registry. The `container-catalog.txt` file can be generated and deployed as part of the `build` goal (refer to section xref:goals/build.adoc). The target image repository is determined by replacing substring `searchString` by `replaceString` in the source image repository. `skopeo` is used to execute the copy. Hence, the binary must be present on the path.
+
+.General copy options
+|===
+|Element |Description |Property
+
+|skipCopy
+|If set to true the plugin won’t copy any images.
+
+**Default value is**: `false`
+|`skopeo.skip.copy`
+
+|===
+
+.Skopeo copy configuration
+The options below have to be specified in a specific skopeo copy block:
+
+[source,xml]
+----
+<configuration>
+    <skopeo>
+        <copy>
+            <searchString>docker.io</searchString>
+            <replaceString>quay.io</replaceString>
+        </copy>
+    </skopeo>
+</configuration>
+----
+
+|===
+|Element |Description| Property
+
+|`searchString`
+|This part of the image repository will be replaced for generating the target repository.
+
+**This property is required.**
+|`skopeo.copy.image.searchString`
+
+|`replaceString`
+|The `searchString` part of the image repository will be replaced by this string.
+
+**This property is required.**
+|`skopeo.copy.image.replaceString`
+
+|`srcTlsVerify`
+|Require HTTPS and verify certificates when talking to container source registry or daemon.
+
+**Default value is:** `true`.
+|`skopeo.copy.srcTlsVerify`
+|`destTlsVerify`
+|Require HTTPS and verify certificates when talking to container destination  registry or daemon.
+
+**Default value is:** `true`.
+|`skopeo.copy.destTlsVerify`
+
+|`sourceCatalogRepository`
+|Limit searching for the `container-catalog.txt` file to this repository.
+|`skopeo.copy.source.catalog.repo`
+
+|`disableLocal`
+|Disable searching for the `container-catalog.txt` file in the local Maven repository.
+
+**Default value is:** `false`
+|`skopeo.copy.catalog.repo.local.disable`
+|===

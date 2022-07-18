@@ -33,11 +33,12 @@ public class ServiceHub {
      * @param mavenProject      The MavenProject that is being built
      * @param mavenFileFilter   The {@link MavenFileFilter} service
      * @param podmanConfig      Holds global configuration for Podman
+     * @param skopeoConfiguration Holds global configuration for Skopeo
      * @param mavenSettings     Access to Maven's settings file
      * @param settingsDecrypter Access to Maven's settings decryption service
      * @param mavenProjectHelper The MavenProjectHelper service
      */
-    ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, SkopeoConfiguration skopeoConfiguration, PodmanConfiguration podmanConfig, Settings mavenSettings, SettingsDecrypter settingsDecrypter, MavenProjectHelper mavenProjectHelper) {
+    ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig, SkopeoConfiguration skopeoConfiguration, Settings mavenSettings, SettingsDecrypter settingsDecrypter, MavenProjectHelper mavenProjectHelper) {
         this.podmanExecutorService = new PodmanExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
         this.buildahExecutorService = new BuildahExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
         this.skopeoExecutorService = new SkopeoExecutorService(log, skopeoConfiguration, new CommandExecutorDelegateImpl());
@@ -83,8 +84,9 @@ public class ServiceHub {
     }
 
     /**
-     * Returns a reference to the
-     * @return
+     * Returns a reference to the {@link MavenProjectHelper}
+     *
+     * @return The {@link MavenProjectHelper}
      */
     public MavenProjectHelper getMavenProjectHelper() {
         return mavenProjectHelper;

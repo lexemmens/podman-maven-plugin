@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.image.StageConfiguration;
 import nl.lexemmens.podman.config.image.batch.BatchImageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
@@ -127,6 +128,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
                 project,
                 mavenFileFilter,
                 podman,
+                skopeo,
                 settings,
                 settingsDecrypter,
                 mavenProjectHelper
@@ -149,8 +151,13 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
             getLog().debug("Using default Podman configuration.");
             podman = new PodmanConfiguration();
         }
-
         podman.initAndValidate(project, getLog());
+
+        if (skopeo == null) {
+            getLog().debug("Using default skopeo configuration.");
+            skopeo = new SkopeoConfiguration();
+        }
+
         if (requireImageConfiguration()) {
             initImageConfigurations();
         } else {
@@ -175,13 +182,13 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     }
 
     private void resolveImages() throws MojoExecutionException {
-        if(batch != null) {
+        if (batch != null) {
             getLog().warn("NOTE: Batch mode enabled.");
             batch.initAndValidate(getLog(), project);
             resolvedImages.addAll(batch.resolve(getLog()));
         }
 
-        if(images != null && !images.isEmpty()) {
+        if (images != null && !images.isEmpty()) {
             resolvedImages.addAll(images);
         }
     }
@@ -220,9 +227,32 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
 
     /**
      * Returns whether initialization of the configuration should be skipped
+     *
      * @return false by default.
      */
     protected boolean requireImageConfiguration() {
         return true;
+    }
+
+    protected List<String> singleImageConfigurationToFullImageList(SingleImageConfiguration singleImageConfiguration) {
+        List<String> fullImages = new ArrayList<>();
+        if (singleImageConfiguration.getBuild().isMultistageContainerFile() && singleImageConfiguration.useCustomImageNameForMultiStageContainerfile()) {
+            for (StageConfiguration stage : singleImageConfiguration.getStages()) {
+                for (String imageNameWithTag : singleImageConfiguration.getImageNamesByStage(stage.getName())) {
+                    String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
+                    fullImages.add(fullImageName);
+                }
+            }
+        } else {
+            if (singleImageConfiguration.getBuild().isMultistageContainerFile()) {
+                getLog().warn("Detected multistage Containerfile, but no custom image names have been specified. Falling back to final image.");
+            }
+            // The image configuration cannot produce an empty list of image names.
+            for (String imageNameWithTag : singleImageConfiguration.getImageNames()) {
+                String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
+                fullImages.add(fullImageName);
+            }
+        }
+        return fullImages;
     }
 }

@@ -14,16 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkopeoExecutorService {
-
     private static final File BASE_DIR = new File(".");
 
-
     private final Log log;
-
     private final CommandExecutorDelegate delegate;
-
     private final SkopeoConfiguration skopeoConfiguration;
-
 
     public SkopeoExecutorService(Log log, SkopeoConfiguration skopeoConfiguration, CommandExecutorDelegate delegate) {
         this.log = log;
@@ -31,19 +26,16 @@ public class SkopeoExecutorService {
         this.delegate = delegate;
     }
 
-
-
-
     public void copy(String sourceImage, String destinationImage) throws MojoExecutionException {
         List<String> subCommands = new ArrayList<>();
-        subCommands.add("copy");
 
-        // TODO Add command options
+        subCommands.add(String.format("--src-tls-verify=%b", skopeoConfiguration.getCopy().getSrcTlsVerify()));
+        subCommands.add(String.format("--dest-tls-verify=%b", skopeoConfiguration.getCopy().getDestTlsVerify()));
 
-        subCommands.add(sourceImage);
-        subCommands.add(destinationImage);
+        subCommands.add("docker://" + sourceImage);
+        subCommands.add("docker://" + destinationImage);
 
-        runCommand(SkopeoCommand.SKOPEO, subCommands);
+        runCommand(SkopeoCommand.COPY, subCommands);
     }
 
     private List<String> decorateCommands(SkopeoCommand skopeoCommand, List<String> subCommands) {

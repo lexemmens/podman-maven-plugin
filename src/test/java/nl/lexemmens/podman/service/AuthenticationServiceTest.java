@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -38,8 +39,9 @@ import java.util.concurrent.TimeoutException;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -60,7 +62,6 @@ public class AuthenticationServiceTest {
     @Mock
     private SettingsDecrypter settingsDecrypter;
 
-    private final TlsVerify tlsVerify = TlsVerify.TRUE;
 
     // In case the UID detection does not succeed, the following uid will be used as default uid
     private static final int DEFAULT_UID = 1000;
@@ -70,7 +71,7 @@ public class AuthenticationServiceTest {
 
     @Before
     public void setup() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Before

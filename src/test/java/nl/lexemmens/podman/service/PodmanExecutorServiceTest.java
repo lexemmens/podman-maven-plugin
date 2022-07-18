@@ -1,10 +1,10 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
-import nl.lexemmens.podman.executor.CommandExecutorDelegate;
-import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -27,10 +28,11 @@ import java.util.List;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
-import static nl.lexemmens.podman.enumeration.TlsVerify.*;
+import static nl.lexemmens.podman.enumeration.TlsVerify.FALSE;
+import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
+import static nl.lexemmens.podman.enumeration.TlsVerify.TRUE;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -52,7 +54,7 @@ public class PodmanExecutorServiceTest {
 
     @Before
     public void setup() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package nl.lexemmens.podman.service;
 
-import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,8 +28,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -51,7 +54,7 @@ public class ContainerfileDecoratorTest {
 
     @Before
     public void setup() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         containerfileDecorator = new ContainerfileDecorator(log, mavenFileFilter, mavenProject);
     }

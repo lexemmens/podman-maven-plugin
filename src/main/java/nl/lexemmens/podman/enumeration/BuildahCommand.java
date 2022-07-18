@@ -5,7 +5,7 @@ public enum BuildahCommand {
     BUILDAH("buildah"),
     UNSHARE("unshare");
 
-    private String command;
+    private final String command;
 
     BuildahCommand(String command) {
         this.command = command;

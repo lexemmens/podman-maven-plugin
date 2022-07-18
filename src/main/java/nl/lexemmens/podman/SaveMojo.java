@@ -83,7 +83,7 @@ public class SaveMojo extends AbstractPodmanMojo {
         String archiveName = String.format("%s.tar.gz", normaliseImageName(imageNameWithTag));
         Path saveImageTargetPath = targetPodmanDir.resolve(archiveName).normalize();
 
-        getLog().info("Exporting image " + imageNameWithTag + " to " + saveImageTargetPath.toString());
+        getLog().info("Exporting image " + imageNameWithTag + " to " + saveImageTargetPath);
         hub.getPodmanExecutorService().save(saveImageTargetPath.toString(), fullImageName);
     }
 
