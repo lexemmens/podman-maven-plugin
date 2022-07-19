@@ -74,6 +74,7 @@ public class CopyMojo extends AbstractPodmanMojo {
     }
 
     private void copyImage(ServiceHub hub, String sourceImage, String targetImage) throws MojoExecutionException {
+        getLog().info(String.format("Copying image %s to %s...", sourceImage, targetImage));
         hub.getSkopeoExecutorService().copy(sourceImage, targetImage);
     }
 
