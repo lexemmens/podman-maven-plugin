@@ -6,6 +6,7 @@ import nl.lexemmens.podman.config.image.batch.TestBatchImageConfigurationBuilder
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.enumeration.ContainerFormat;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.service.ContainerfileDecorator;
@@ -13,6 +14,7 @@ import org.apache.maven.model.Build;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -23,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -31,13 +34,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static net.bytebuddy.matcher.ElementMatchers.anyOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * This class only tests conversion from {@link BatchImageConfiguration} to {@link SingleImageConfiguration}. Building the image itself
@@ -56,7 +60,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
 
     @Before
     public void setup() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -163,7 +167,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(mockBuild);
         when(mockBuild.getDirectory()).thenReturn("target");
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
@@ -196,9 +200,10 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(mockBuild);
         when(mavenProject.getBasedir()).thenReturn(new File("src/test/resources/batch/subdir"));
         when(mockBuild.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 
         assertDoesNotThrow(() -> buildMojo.execute());
@@ -238,9 +243,10 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(mockBuild);
         when(mockBuild.getDirectory()).thenReturn("target");
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 
         assertDoesNotThrow(() -> buildMojo.execute());

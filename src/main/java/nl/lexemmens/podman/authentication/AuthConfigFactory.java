@@ -14,7 +14,7 @@ import java.util.Optional;
  */
 public class AuthConfigFactory {
 
-    private Settings mavenSettings;
+    private final Settings mavenSettings;
     private final SettingsDecryptionResult decryptedSettings;
 
     /**

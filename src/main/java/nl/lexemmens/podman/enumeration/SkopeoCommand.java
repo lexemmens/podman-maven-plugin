@@ -1,13 +1,13 @@
 package nl.lexemmens.podman.enumeration;
 
-public enum BuildahCommand {
+public enum SkopeoCommand {
 
-    BUILDAH("buildah"),
-    UNSHARE("unshare");
+    SKOPEO("skopeo"),
+    COPY("copy");
 
     private final String command;
 
-    BuildahCommand(String command) {
+    SkopeoCommand(String command) {
         this.command = command;
     }
 

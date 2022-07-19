@@ -19,13 +19,6 @@ public class CleanMojo extends AbstractPodmanMojo {
     @Parameter(property = "podman.skip.clean", defaultValue = "false")
     boolean skipClean;
 
-    /**
-     * Creates a new instance of this Mojo.
-     */
-    public CleanMojo() {
-        super(false);
-    }
-
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
         if (skipClean) {
@@ -41,4 +34,8 @@ public class CleanMojo extends AbstractPodmanMojo {
         }
     }
 
+    @Override
+    protected boolean requireImageConfiguration() {
+        return false;
+    }
 }

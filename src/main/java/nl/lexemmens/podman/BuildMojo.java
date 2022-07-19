@@ -1,15 +1,21 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -18,19 +24,23 @@ import java.util.Map;
 @Mojo(name = "build", defaultPhase = LifecyclePhase.INSTALL)
 public class BuildMojo extends AbstractPodmanMojo {
 
+    private final MultiStageBuildOutputHelper buildOutputHelper;
     /**
      * Indicates if building container images should be skipped
      */
     @Parameter(property = "podman.skip.build", defaultValue = "false")
     boolean skipBuild;
-
     /**
      * Indicates if tagging container images should be skipped
      */
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
     boolean skipTag;
-
-    private final MultiStageBuildOutputHelper buildOutputHelper;
+    /**
+     * Indicates if container images should be catalogued in a separate container-catalog.txt file
+     * that is attached to the build.
+     */
+    @Parameter(property = "podman.skip.catalog", defaultValue = "false")
+    boolean skipCatalog;
 
     /**
      * Constructor
@@ -62,6 +72,12 @@ public class BuildMojo extends AbstractPodmanMojo {
             tagContainerImage(image, hub);
 
             getLog().info("Built container image.");
+        }
+
+        if (skipCatalog) {
+            getLog().info("Skipping cataloguing container images.");
+        } else {
+            catalogContainers(resolvedImages, hub);
         }
     }
 
@@ -111,7 +127,7 @@ public class BuildMojo extends AbstractPodmanMojo {
         for (Map.Entry<String, String> stageImage : image.getImageHashPerStage().entrySet()) {
             List<String> imageNamesByStage = image.getImageNamesByStage(stageImage.getKey());
 
-            if(imageNamesByStage.isEmpty()) {
+            if (imageNamesByStage.isEmpty()) {
                 getLog().warn("No image name configured for build stage: " + stageImage.getKey() + ". Image " + stageImage.getValue() + " not tagged!");
             } else {
                 for (String imageName : imageNamesByStage) {
@@ -140,5 +156,33 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
     }
 
+    private void catalogContainers(List<SingleImageConfiguration> images, ServiceHub hub) throws MojoExecutionException {
+        List<String> containerCatalog = getContainerCatalog(images);
+        if (containerCatalog.isEmpty()) {
+            getLog().info("No containers were catalogued.");
+            return;
+        }
 
+        containerCatalog.add(0, CATALOG_HEADER);
+
+        String catalogFileName = String.format("%s.txt", CATALOG_ARTIFACT_NAME);
+        Path catalogPath = Paths.get(project.getBuild().getDirectory(), catalogFileName);
+        try {
+            Files.write(catalogPath, containerCatalog);
+        } catch (IOException e) {
+            getLog().error("Failed to write catalog file! Caught: " + e.getMessage());
+            throw new MojoExecutionException(e.getMessage(), e);
+        }
+
+        getLog().info("Attaching catalog artifact: " + catalogPath);
+
+        hub.getMavenProjectHelper().attachArtifact(project, "txt", CATALOG_ARTIFACT_NAME, catalogPath.toFile());
+    }
+
+    private List<String> getContainerCatalog(List<SingleImageConfiguration> images) {
+        return images.stream()
+                .map(this::singleImageConfigurationToFullImageList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
 }

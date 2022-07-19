@@ -1,8 +1,10 @@
 package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -34,12 +36,18 @@ public class ServiceHubFactoryTest {
     private MavenProject mavenProject;
 
     @Mock
+    private MavenProjectHelper mavenProjectHelper;
+
+    @Mock
     private PodmanConfiguration podmanConfiguration;
+
+    @Mock
+    private SkopeoConfiguration skopeoConfiguration;
 
     @Test
     public void testServiceHubFactory() {
         ServiceHubFactory serviceHubFactory = new ServiceHubFactory();
-        ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenProject, mavenFileFilter, podmanConfiguration, mavenSettings, settingsDecrypter);
+        ServiceHub serviceHub = serviceHubFactory.createServiceHub(log, mavenProject, mavenFileFilter, podmanConfiguration, skopeoConfiguration, mavenSettings, settingsDecrypter, mavenProjectHelper);
 
         Assertions.assertNotNull(serviceHub.getPodmanExecutorService());
         Assertions.assertNotNull(serviceHub.getContainerfileDecorator());

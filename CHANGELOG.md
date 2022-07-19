@@ -1,4 +1,8 @@
 ## Changelog
+### 1.10.0 UNRELEASED
+#### Improvements
+* Added copy mojo that allows copying images from one repo to another (uses Skopeo)
+
 ### 1.9.0 (28-06-2022)
 #### Bugs
 * ([#57](https://github.com/lexemmens/podman-maven-plugin/issues/57)) - mockito-junit-jupiter test dependency not scoped test

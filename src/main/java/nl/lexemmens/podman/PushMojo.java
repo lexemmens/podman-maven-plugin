@@ -1,6 +1,5 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.StageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -71,32 +70,12 @@ public class PushMojo extends AbstractPodmanMojo {
     private void pushContainerImages(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
         getLog().info("Pushing container images to registry ...");
 
-        if (image.getBuild().isMultistageContainerFile() && image.useCustomImageNameForMultiStageContainerfile()) {
-            for (StageConfiguration stage : image.getStages()) {
-                for (String imageNameWithTag : image.getImageNamesByStage(stage.getName())) {
-                    String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
-                    doPushContainerImage(hub, fullImageName);
-                }
-            }
-        } else if (image.getBuild().isMultistageContainerFile()) {
-            getLog().warn("Detected multistage Containerfile, but no custom image names have been specified. Falling back to pushing final image.");
-
-            // The image configuration cannot produce an empty list of image names.
-            pushRegularContainerImage(image, hub);
-        } else {
-            // The image configuration cannot produce an empty list of image names.
-            pushRegularContainerImage(image, hub);
+        for (String fullImage : singleImageConfigurationToFullImageList(image)) {
+            pushImage(hub, fullImage);
         }
     }
 
-    private void pushRegularContainerImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
-        for (String imageNameWithTag : image.getImageNames()) {
-            String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
-            doPushContainerImage(hub, fullImageName);
-        }
-    }
-
-    private void doPushContainerImage(ServiceHub hub, String fullImageName) throws MojoExecutionException {
+    private void pushImage(ServiceHub hub, String fullImageName) throws MojoExecutionException {
         getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
 
         for (int i = 0; i <= retries; i++) {

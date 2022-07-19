@@ -4,10 +4,12 @@ import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuild
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -65,7 +67,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         configureMojo(false, false, customRoot);
 
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getBuildahExecutorService()).thenReturn(buildahExecutorService);
 
         cleanMojo.execute();

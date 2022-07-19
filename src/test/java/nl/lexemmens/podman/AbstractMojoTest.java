@@ -1,9 +1,15 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.service.*;
+import nl.lexemmens.podman.service.AuthenticationService;
+import nl.lexemmens.podman.service.BuildahExecutorService;
+import nl.lexemmens.podman.service.PodmanExecutorService;
+import nl.lexemmens.podman.service.ServiceHub;
+import nl.lexemmens.podman.service.ServiceHubFactory;
+import nl.lexemmens.podman.service.SkopeoExecutorService;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -23,6 +29,9 @@ public abstract class AbstractMojoTest {
     protected PodmanExecutorService podmanExecutorService;
 
     @Mock
+    protected SkopeoExecutorService skopeoExecutorService;
+
+    @Mock
     protected BuildahExecutorService buildahExecutorService;
 
     @Mock
@@ -30,6 +39,9 @@ public abstract class AbstractMojoTest {
 
     @Mock
     protected MavenProject mavenProject;
+
+    @Mock
+    protected MavenProjectHelper mavenProjectHelper;
 
     @Mock
     protected Build build;

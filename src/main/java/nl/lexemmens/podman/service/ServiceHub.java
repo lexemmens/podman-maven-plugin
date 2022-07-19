@@ -1,9 +1,11 @@
 package nl.lexemmens.podman.service;
 
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.executor.CommandExecutorDelegateImpl;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -17,8 +19,10 @@ public class ServiceHub {
 
     private final PodmanExecutorService podmanExecutorService;
     private final BuildahExecutorService buildahExecutorService;
+    private final SkopeoExecutorService skopeoExecutorService;
     private final ContainerfileDecorator containerfileDecorator;
     private final AuthenticationService authenticationService;
+    private final MavenProjectHelper mavenProjectHelper;
 
     /**
      * <p>
@@ -29,14 +33,18 @@ public class ServiceHub {
      * @param mavenProject      The MavenProject that is being built
      * @param mavenFileFilter   The {@link MavenFileFilter} service
      * @param podmanConfig      Holds global configuration for Podman
+     * @param skopeoConfiguration Holds global configuration for Skopeo
      * @param mavenSettings     Access to Maven's settings file
      * @param settingsDecrypter Access to Maven's settings decryption service
+     * @param mavenProjectHelper The MavenProjectHelper service
      */
-    ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig, Settings mavenSettings, SettingsDecrypter settingsDecrypter) {
+    ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig, SkopeoConfiguration skopeoConfiguration, Settings mavenSettings, SettingsDecrypter settingsDecrypter, MavenProjectHelper mavenProjectHelper) {
         this.podmanExecutorService = new PodmanExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
-        this.buildahExecutorService = new BuildahExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl()); 
+        this.buildahExecutorService = new BuildahExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
+        this.skopeoExecutorService = new SkopeoExecutorService(log, skopeoConfiguration, new CommandExecutorDelegateImpl());
         this.containerfileDecorator = new ContainerfileDecorator(log, mavenFileFilter, mavenProject);
         this.authenticationService = new AuthenticationService(log, podmanExecutorService, mavenSettings, settingsDecrypter);
+        this.mavenProjectHelper = mavenProjectHelper;
     }
 
     /**
@@ -73,5 +81,18 @@ public class ServiceHub {
      */
     public BuildahExecutorService getBuildahExecutorService() {
         return buildahExecutorService;
+    }
+
+    /**
+     * Returns a reference to the {@link MavenProjectHelper}
+     *
+     * @return The {@link MavenProjectHelper}
+     */
+    public MavenProjectHelper getMavenProjectHelper() {
+        return mavenProjectHelper;
+    }
+
+    public SkopeoExecutorService getSkopeoExecutorService() {
+        return skopeoExecutorService;
     }
 }

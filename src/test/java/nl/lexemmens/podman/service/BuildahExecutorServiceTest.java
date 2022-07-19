@@ -1,8 +1,8 @@
 package nl.lexemmens.podman.service;
 
-import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -25,7 +26,6 @@ import static nl.lexemmens.podman.enumeration.TlsVerify.FALSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -39,7 +39,7 @@ public class BuildahExecutorServiceTest {
 
     @Before
     public void setup() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

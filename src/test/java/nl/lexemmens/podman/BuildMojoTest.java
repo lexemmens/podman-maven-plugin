@@ -1,14 +1,16 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.service.ContainerfileDecorator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,16 +35,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -54,9 +60,16 @@ public class BuildMojoTest extends AbstractMojoTest {
 
     @Before
     public void setup() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         containerfileDecorator = new ContainerfileDecorator(log, mavenFileFilter, mavenProject);
+    }
+
+    private void verifyContainerCatalog(String... expectedImages) {
+        List<String> actualImages = assertDoesNotThrow(() ->Files.lines(Paths.get(mavenProject.getBuild().getDirectory(), "container-catalog.txt")))
+                .skip(1)
+                .collect(Collectors.toList());
+        assertEquals(Arrays.asList(expectedImages), actualImages, "Container catalog file must contain the expected images");
     }
 
     @Test
@@ -163,7 +176,7 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
@@ -184,7 +197,7 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
@@ -207,7 +220,7 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
@@ -229,7 +242,7 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("sha256:sampleimagehash"));
@@ -253,7 +266,7 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("sha256:sampleimagehash"));
@@ -281,9 +294,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList(imageHash));
 
         buildMojo.execute();
@@ -294,6 +308,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(mavenFileFilter, Mockito.times(1)).copyFile(isA(MavenFileFilterRequest.class));
         verify(podmanExecutorService, times(1)).build(isA(SingleImageConfiguration.class));
         verify(podmanExecutorService, times(1)).tag(imageHash, expectedFullImageName);
+        verifyContainerCatalog(expectedFullImageName);
     }
 
     @Test
@@ -311,9 +326,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList(imageHash));
 
         buildMojo.execute();
@@ -325,6 +341,7 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         verify(podmanExecutorService, times(1)).build(isA(SingleImageConfiguration.class));
         verify(podmanExecutorService, times(1)).tag(imageHash, expectedFullImageName);
+        verifyContainerCatalog(expectedFullImageName);
     }
 
     @Test
@@ -360,6 +377,8 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
 
         Assertions.assertDoesNotThrow(buildMojo::execute);
         verify(log, Mockito.times(1)).warn("No Containerfile was found at " + targetLocationAsString + File.separator + "Containerfile, however this will be ignored due to current plugin configuration.");
@@ -431,7 +450,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
         Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
-        List<String> buildOutputUnderTest = null;
+        List<String> buildOutputUnderTest;
         try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
             buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
         }
@@ -448,9 +467,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();
@@ -477,6 +497,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(1)).tag("d2efc6645cbb6ea012f8adcaaab6b03ef847dd3d2b4fa418ca4cde57eff28a7f", "registry.example.com/sample:1.0.0");
 
         verify(log, times(1)).info("Built container image.");
+        verifyContainerCatalog("registry.example.com/sample:1.0.0");
     }
 
     @Test
@@ -484,7 +505,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
         Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
-        List<String> buildOutputUnderTest = null;
+        List<String> buildOutputUnderTest;
         try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
             buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
         }
@@ -504,9 +525,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();
@@ -537,6 +559,11 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(1)).tag("d2efc6645cb", "registry.example.com/image-name-number-2:0.2.1");
 
         verify(log, times(1)).info("Built container image.");
+
+        verifyContainerCatalog(
+                "registry.example.com/image-name-number-1:0.2.1",
+                "registry.example.com/image-name-number-2:0.2.1"
+        );
     }
 
     @Test
@@ -544,7 +571,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput.txt").toURI();
         Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
-        List<String> buildOutputUnderTest = null;
+        List<String> buildOutputUnderTest;
         try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
             buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
         }
@@ -563,9 +590,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();
@@ -599,7 +627,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput_multiline_step.txt").toURI();
         Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
-        List<String> buildOutputUnderTest = null;
+        List<String> buildOutputUnderTest;
         try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
             buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
         }
@@ -619,9 +647,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();
@@ -652,6 +681,11 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(1)).tag("d2efc6645cb", "registry.example.com/image-name-number-2:0.2.1");
 
         verify(log, times(1)).info("Built container image.");
+
+        verifyContainerCatalog(
+                "registry.example.com/image-name-number-1:0.2.1",
+                "registry.example.com/image-name-number-2:0.2.1"
+        );
     }
 
     @Test
@@ -659,7 +693,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput2.txt").toURI();
         Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
-        List<String> buildOutputUnderTest = null;
+        List<String> buildOutputUnderTest;
         try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
             buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
         }
@@ -679,9 +713,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();
@@ -711,6 +746,11 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(1)).tag("d2efc6645cb", "registry.example.com/image-name-number-2:0.2.1");
 
         verify(log, times(1)).info("Built container image.");
+
+        verifyContainerCatalog(
+                "registry.example.com/image-name-number-1:0.2.1",
+                "registry.example.com/image-name-number-2:0.2.1"
+        );
     }
 
     @Test
@@ -718,7 +758,7 @@ public class BuildMojoTest extends AbstractMojoTest {
         URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput_podman1x.txt").toURI();
         Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
 
-        List<String> buildOutputUnderTest = null;
+        List<String> buildOutputUnderTest;
         try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
             buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
         }
@@ -738,9 +778,10 @@ public class BuildMojoTest extends AbstractMojoTest {
 
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
-        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class))).thenReturn(serviceHub);
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();
@@ -770,6 +811,11 @@ public class BuildMojoTest extends AbstractMojoTest {
         verify(podmanExecutorService, times(1)).tag("ba6cb6863b48c3487810458db4b88b238f086cef65078839d9efe30f1069bed7", "registry.example.com/image-name-number-2:0.2.1");
 
         verify(log, times(1)).info("Built container image.");
+
+        verifyContainerCatalog(
+                "registry.example.com/image-name-number-1:0.2.1",
+                "registry.example.com/image-name-number-2:0.2.1"
+        );
     }
 
     private void configureMojo(PodmanConfiguration podman, SingleImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipBuild, boolean skipTag, boolean failOnMissingContainerFile) {

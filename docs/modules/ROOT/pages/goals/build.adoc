@@ -18,6 +18,17 @@ This section covers all the possible options for the `<build>` tag.
 |===
 |Element |Description
 
+|skipBuild
+|If set to true the plugin won’t build any images.
+
+|skipCatalog
+|If set to true the plugin won’t create the `container-catalog.txt` file.
+
+|skipTag
+|If set to true the plugin won’t tag any images.
+
+**Default value is**: `false`
+
 |layers
 |Cache intermediate images during the build process (Default is `true`).
 
