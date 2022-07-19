@@ -107,13 +107,11 @@ public class CopyMojo extends AbstractPodmanMojo {
             copyImage(hub, imageEntry.getKey(), imageEntry.getValue());
         }
 
-        if (skopeo.getCopy().getDisableLocal()) {
-            if (tempRepo != null) {
-                try {
-                    FileUtils.deleteDirectory(tempRepo);
-                } catch (IOException e) {
-                    getLog().warn("Failed to cleanup temporary repository directory: " + tempRepo);
-                }
+        if (skopeo.getCopy().getDisableLocal() && tempRepo != null) {
+            try {
+                FileUtils.deleteDirectory(tempRepo);
+            } catch (IOException e) {
+                getLog().warn("Failed to cleanup temporary repository directory: " + tempRepo);
             }
         }
     }
@@ -128,7 +126,7 @@ public class CopyMojo extends AbstractPodmanMojo {
         } else {
             Optional<ArtifactRepository> repository = project.getRemoteArtifactRepositories()
                     .stream()
-                    .filter(r -> r.getId().equals(sourceCatalogRepository))
+                    .filter(repo -> repo.getId().equals(sourceCatalogRepository))
                     .findFirst();
             if (repository.isPresent()) {
                 getLog().info("Using repository " + repository.get() + " for finding container catalog.");
@@ -146,7 +144,6 @@ public class CopyMojo extends AbstractPodmanMojo {
     }
 
     private List<String> getCatalog(RepositorySystemSession repositorySystemSession, List<RemoteRepository> remoteRepositories) throws MojoExecutionException {
-        // Locate our text catalog classifier file. :-)
         try {
             DefaultArtifact artifact = new DefaultArtifact(
                     project.getGroupId(),

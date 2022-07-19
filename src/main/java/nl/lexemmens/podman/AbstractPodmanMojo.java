@@ -226,9 +226,9 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
 
     /**
-     * Returns whether initialization of the configuration should be skipped
+     * Returns whether the image configuration should be initialized
      *
-     * @return false by default.
+     * @return image configuration must be initialized
      */
     protected boolean requireImageConfiguration() {
         return true;

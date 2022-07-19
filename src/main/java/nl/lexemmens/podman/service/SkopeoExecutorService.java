@@ -13,27 +13,47 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Enables executing the skopeo binary with specific arguments.
+ */
 public class SkopeoExecutorService {
     private static final File BASE_DIR = new File(".");
+    private static final String SRC_TLS_VERIFY_CMD = "--src-tls-verify=";
+    private static final String DEST_TLS_VERIFY_CMD = "--dest-tls-verify=";
+    private static final String IMAGE_PREFIX = "docker://";
 
     private final Log log;
     private final CommandExecutorDelegate delegate;
     private final SkopeoConfiguration skopeoConfiguration;
 
+    /**
+     * Constructs a new instance of this class.
+     *
+     * @param log          Used to access Maven's log system
+     * @param skopeoConfiguration Contains skopeo specific configuration, such as getSrcTlsVerify
+     * @param delegate     A delegate executor that executed the actual command
+     */
     public SkopeoExecutorService(Log log, SkopeoConfiguration skopeoConfiguration, CommandExecutorDelegate delegate) {
         this.log = log;
         this.skopeoConfiguration = skopeoConfiguration;
         this.delegate = delegate;
     }
 
+    /**
+     * Implementation of the skopeo copy command.
+     *
+     * @param sourceImage source image to copy
+     * @param destinationImage target for the image
+     * @throws MojoExecutionException In case the skopeo copy command exits unsuccessfully.
+     */
     public void copy(String sourceImage, String destinationImage) throws MojoExecutionException {
         List<String> subCommands = new ArrayList<>();
 
-        subCommands.add(String.format("--src-tls-verify=%b", skopeoConfiguration.getCopy().getSrcTlsVerify()));
-        subCommands.add(String.format("--dest-tls-verify=%b", skopeoConfiguration.getCopy().getDestTlsVerify()));
+        subCommands.add(SRC_TLS_VERIFY_CMD + skopeoConfiguration.getCopy().getSrcTlsVerify());
+        subCommands.add(DEST_TLS_VERIFY_CMD + skopeoConfiguration.getCopy().getDestTlsVerify());
 
-        subCommands.add("docker://" + sourceImage);
-        subCommands.add("docker://" + destinationImage);
+        subCommands.add(IMAGE_PREFIX + sourceImage);
+        subCommands.add(IMAGE_PREFIX + destinationImage);
 
         runCommand(SkopeoCommand.COPY, subCommands);
     }
