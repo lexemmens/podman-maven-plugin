@@ -77,6 +77,9 @@
     <a class="nav-link" href="push.html">push</a>
   </li>
   <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="copy.html">copy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="save.html">save</a>
   </li>
   <li class="nav-item" data-depth="3">
@@ -234,6 +237,19 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 </tr>
 </thead>
 <tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipBuild</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t build any images.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipCatalog</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t create the <code>container-catalog.txt</code> file.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipTag</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t tag any images.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">layers</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Cache intermediate images during the build process (Default is <code>true</code>).</p>
