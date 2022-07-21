@@ -28,6 +28,9 @@ Builds _and_ tags a configured container image. This goal is bound to the `insta
 xref:goals/push.adoc[podman:push]::
 Pushes a container image to the registry. This goal is bound to the `deploy` phase
 
+xref:goals/copy.adoc[podman:copy]::
+Copies images listed on the `container-catalog.txt` from the listed registry to a specified registry. This goal is bound to the `deploy` phase
+
 xref:goals/clean.adoc[podman:clean]::
 Cleans up the local Podman root storage. This goal is bound to the `pre-clean` phase.
 
