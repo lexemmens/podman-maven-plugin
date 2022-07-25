@@ -1,6 +1,5 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.StageConfiguration;
 import nl.lexemmens.podman.config.image.batch.BatchImageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
@@ -20,6 +19,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractPodmanMojo extends AbstractMojo {
 
@@ -237,10 +237,17 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     protected List<String> singleImageConfigurationToFullImageList(SingleImageConfiguration singleImageConfiguration) {
         List<String> fullImages = new ArrayList<>();
         if (singleImageConfiguration.getBuild().isMultistageContainerFile() && singleImageConfiguration.useCustomImageNameForMultiStageContainerfile()) {
-            for (StageConfiguration stage : singleImageConfiguration.getStages()) {
-                for (String imageNameWithTag : singleImageConfiguration.getImageNamesByStage(stage.getName())) {
-                    String fullImageName = getFullImageNameWithPushRegistry(imageNameWithTag);
-                    fullImages.add(fullImageName);
+            for (Map.Entry<String, String> stageImage : singleImageConfiguration.getImageHashPerStage().entrySet()) {
+                List<String> imageNamesByStage = singleImageConfiguration.getImageNamesByStage(stageImage.getKey());
+
+                if (imageNamesByStage.isEmpty()) {
+                    getLog().warn("No image name configured for build stage: " + stageImage.getKey() + "." +
+                            "Image " + stageImage.getValue() + " not added to container-catalog.txt!");
+                } else {
+                    for (String imageName : imageNamesByStage) {
+                        String fullImageName = getFullImageNameWithPushRegistry(imageName);
+                        fullImages.add(fullImageName);
+                    }
                 }
             }
         } else {

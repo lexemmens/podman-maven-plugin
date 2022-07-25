@@ -190,10 +190,8 @@ public class CopyMojoTest extends AbstractMojoTest {
             try {
                 if (Files.isDirectory(path)) {
                     cleanDir(path);
-                    Files.delete(path);
-                } else {
-                    Files.delete(path);
                 }
+                Files.delete(path);
             } catch (IOException e) {
                 ioExceptions.add(e);
             }

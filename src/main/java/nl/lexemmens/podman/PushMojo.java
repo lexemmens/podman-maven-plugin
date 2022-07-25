@@ -1,17 +1,19 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.service.ServiceHub;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.eclipse.aether.repository.RemoteRepository;
+
+import java.util.List;
 
 /**
  * PushMojo for pushing container images to a registry/repository
  */
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY)
-public class PushMojo extends AbstractPodmanMojo {
+public class PushMojo extends AbstractUploadMojo {
 
     /**
      * Indicates if building container images should be skipped
@@ -49,28 +51,21 @@ public class PushMojo extends AbstractPodmanMojo {
             throw new MojoExecutionException(msg);
         }
 
+        getLog().info("Using container-catalog.txt to perform podman push");
 
-        for (SingleImageConfiguration image : resolvedImages) {
-            if (!image.isValid()) {
-                getLog().warn("Skipping push of container image with name " + image.getImageName()
-                        + ". Configuration is not valid for this module!");
-                continue;
-            }
+        List<String> cataloguedImages = readLocalCatalog();
 
-            if (image.getBuild().getAllTags().isEmpty()) {
-                getLog().info("No tags specified. Will not push container image named " + image.getImageName());
-            } else {
-                pushContainerImages(image, hub);
-            }
+        if (!cataloguedImages.isEmpty()) {
+            pushContainerImages(hub, cataloguedImages);
         }
 
         getLog().info("All images have been successfully pushed to the registry");
     }
 
-    private void pushContainerImages(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
+    private void pushContainerImages(ServiceHub hub, List<String> images) throws MojoExecutionException {
         getLog().info("Pushing container images to registry ...");
 
-        for (String fullImage : singleImageConfigurationToFullImageList(image)) {
+        for (String fullImage : images) {
             pushImage(hub, fullImage);
         }
     }
