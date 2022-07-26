@@ -1,6 +1,5 @@
 package nl.lexemmens.podman.service;
 
-import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
@@ -37,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -123,8 +121,8 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(null));
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
-        verify(log, Mockito.times(1)).error(Mockito.eq("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true"));
+        verify(log, Mockito.times(1)).info("Checking authentication status...");
+        verify(log, Mockito.times(1)).error("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true");
     }
 
     @Test
@@ -132,8 +130,8 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(new String[]{}));
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
-        verify(log, Mockito.times(1)).error(Mockito.eq("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true"));
+        verify(log, Mockito.times(1)).info("Checking authentication status...");
+        verify(log, Mockito.times(1)).error("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true");
     }
 
     @Test
@@ -147,9 +145,9 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(registries));
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
-        verify(log, Mockito.times(1)).info(Mockito.eq("Authentication file not (yet) present. Authenticating..."));
-        verify(log, Mockito.times(0)).error(Mockito.eq("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true"));
+        verify(log, Mockito.times(1)).info("Checking authentication status...");
+        verify(log, Mockito.times(1)).info("Authentication file not (yet) present. Authenticating...");
+        verify(log, Mockito.times(0)).error("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true");
     }
 
     @Test
@@ -163,7 +161,7 @@ public class AuthenticationServiceTest {
 
         List<Server> serverList = Collections.singletonList(server);
 
-        when(settings.getServer(eq(registryName))).thenReturn(server);
+        when(settings.getServer(registryName)).thenReturn(server);
         when(settings.getServers()).thenReturn(serverList);
         when(settings.getProxies()).thenReturn(new ArrayList<>());
         when(settingsDecrypter.decrypt(isA(SettingsDecryptionRequest.class))).thenReturn(createSettingsDecryptionResult(serverList, new ArrayList<>()));
@@ -177,9 +175,9 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         authenticationService.authenticate(registries);
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
-        verify(log, Mockito.times(1)).info(Mockito.eq("Authentication file not (yet) present. Authenticating..."));
-        verify(log, Mockito.times(0)).error(Mockito.eq("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true"));
+        verify(log, Mockito.times(1)).info("Checking authentication status...");
+        verify(log, Mockito.times(1)).info("Authentication file not (yet) present. Authenticating...");
+        verify(log, Mockito.times(0)).error("No registries have been configured but authentication is not skipped. If you want to skip authentication, run again with 'podman.skip.auth' set to true");
         verify(podmanExecutorService, times(1)).login(registryName, "username", "password");
     }
 
@@ -194,8 +192,8 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         authenticationService.authenticate(new String[]{"unknown-registry.example.com"});
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Found custom registry authentication file at: " + customAuthFile));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
+        verify(log, Mockito.times(1)).debug("Found custom registry authentication file at: " + customAuthFile);
+        verify(log, Mockito.times(1)).debug("Checking unauthenticated registries...");
     }
 
     @Test
@@ -215,7 +213,7 @@ public class AuthenticationServiceTest {
 
         List<Server> serverList = Collections.singletonList(server);
 
-        when(settings.getServer(eq(registryName))).thenReturn(server);
+        when(settings.getServer(registryName)).thenReturn(server);
         when(settings.getServers()).thenReturn(serverList);
         when(settings.getProxies()).thenReturn(new ArrayList<>());
         when(settingsDecrypter.decrypt(isA(SettingsDecryptionRequest.class))).thenReturn(createSettingsDecryptionResult(serverList, new ArrayList<>()));
@@ -223,9 +221,9 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         authenticationService.authenticate(new String[]{registryName});
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Found custom registry authentication file at: " + customAuthFile));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Authenticating not-present-registry.example.com"));
+        verify(log, Mockito.times(1)).debug("Found custom registry authentication file at: " + customAuthFile);
+        verify(log, Mockito.times(1)).debug("Checking unauthenticated registries...");
+        verify(log, Mockito.times(1)).debug("Authenticating not-present-registry.example.com");
     }
 
     @Test
@@ -239,8 +237,8 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         Assertions.assertThrows(MojoExecutionException.class, () -> authenticationService.authenticate(new String[]{"unknown-registry.example.com"}));
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Checking authentication status..."));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("No authenticated registries were found."));
+        verify(log, Mockito.times(1)).info("Checking authentication status...");
+        verify(log, Mockito.times(1)).debug("No authenticated registries were found.");
     }
 
     @Test
@@ -252,8 +250,8 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         authenticationService.authenticate(new String[]{"unknown-registry.example.com"});
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Found default registry authentication file at: " + customAuthFile));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
+        verify(log, Mockito.times(1)).debug("Found default registry authentication file at: " + customAuthFile);
+        verify(log, Mockito.times(1)).debug("Checking unauthenticated registries...");
     }
 
     @Test
@@ -269,8 +267,8 @@ public class AuthenticationServiceTest {
         AuthenticationService authenticationService = new AuthenticationService(log, podmanExecutorService, settings, settingsDecrypter);
         authenticationService.authenticate(new String[]{"unknown-registry.example.com"});
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Found Docker registry authentication file at: " + dockerConfigFile));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Checking unauthenticated registries..."));
+        verify(log, Mockito.times(1)).debug("Found Docker registry authentication file at: " + dockerConfigFile);
+        verify(log, Mockito.times(1)).debug("Checking unauthenticated registries...");
 
         // Clean up the temporary docker config file
         Files.deleteIfExists(dockerConfigFile);

@@ -71,7 +71,7 @@ public class ContainerfileDecoratorTest {
                 .build();
         Assertions.assertThrows(MojoExecutionException.class, () -> containerfileDecorator.decorateContainerfile(image));
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
+        verify(log, Mockito.times(1)).debug("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile());
         verify(log, Mockito.times(1)).error(Mockito.eq("Failed to filter Containerfile! Some exception message!"), isA(MavenFilteringException.class));
     }
 
@@ -86,8 +86,8 @@ public class ContainerfileDecoratorTest {
                 .build();
         Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("No labels to add to the Containerfile"));
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
+        verify(log, Mockito.times(1)).debug("No labels to add to the Containerfile");
+        verify(log, Mockito.times(1)).debug("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ContainerfileDecoratorTest {
                 .build();
         Assertions.assertDoesNotThrow(() -> containerfileDecorator.decorateContainerfile(image));
 
-        verify(log, Mockito.times(1)).debug(Mockito.eq("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile()));
+        verify(log, Mockito.times(1)).debug("Filtering Containerfile. Source: " + image.getBuild().getSourceContainerFileDir() + ", target: " + image.getBuild().getTargetContainerFile());
 
         List<String> collect = Files.lines(Paths.get("target/podman-test/Containerfile")).collect(Collectors.toList());
         String lastLine = collect.get(1);

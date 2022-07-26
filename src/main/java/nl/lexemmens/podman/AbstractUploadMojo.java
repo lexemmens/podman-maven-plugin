@@ -140,8 +140,8 @@ public abstract class AbstractUploadMojo extends AbstractPodmanMojo {
     }
 
     public static final class PodmanSession {
-        public DefaultRepositorySystemSession session;
-        public File repo;
+        public final DefaultRepositorySystemSession session;
+        public final File repo;
 
         public PodmanSession(DefaultRepositorySystemSession session, File repo) {
             this.session = session;

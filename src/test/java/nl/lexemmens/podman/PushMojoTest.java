@@ -24,9 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,7 +74,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
         pushMojo.execute();
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Podman actions are skipped."));
+        verify(log, Mockito.times(1)).info("Podman actions are skipped.");
     }
 
     @Test
@@ -93,7 +91,7 @@ public class PushMojoTest extends AbstractMojoTest {
 
         pushMojo.execute();
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Pushing container images is skipped."));
+        verify(log, Mockito.times(1)).info("Pushing container images is skipped.");
     }
 
     @Test
@@ -110,8 +108,8 @@ public class PushMojoTest extends AbstractMojoTest {
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, Mockito.times(1)).error(Mockito.eq("Failed to read container catalog. Make sure the build goal is executed."));
+        verify(log, Mockito.times(1)).info("Registry authentication is skipped.");
+        verify(log, Mockito.times(1)).error("Failed to read container catalog. Make sure the build goal is executed.");
     }
 
     @Test
@@ -130,10 +128,10 @@ public class PushMojoTest extends AbstractMojoTest {
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(log, times(1)).error(Mockito.eq("Failed to push container images. No registry specified. Configure the registry by adding the <pushRegistry><!-- registry --></pushRegistry> tag to your configuration."));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(log, times(1)).error("Failed to push container images. No registry specified. Configure the registry by adding the <pushRegistry><!-- registry --></pushRegistry> tag to your configuration.");
 
     }
 
@@ -152,14 +150,14 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(eq(targetRegistry));
+        doNothing().when(podmanExecutorService).push(targetRegistry);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(podmanExecutorService, times(1)).push(eq(targetRegistry));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(podmanExecutorService, times(1)).push(targetRegistry);
     }
 
     @Test
@@ -180,15 +178,15 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(eq(targetRegistry));
+        doNothing().when(podmanExecutorService).push(targetRegistry);
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
-        verify(log, times(0)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(podmanExecutorService, times(1)).push(eq(targetRegistry));
+        verify(log, times(0)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(podmanExecutorService, times(1)).push(targetRegistry);
     }
 
     @Test
@@ -210,15 +208,15 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(eq(targetRegistry));
+        doNothing().when(podmanExecutorService).push(targetRegistry);
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
-        verify(log, times(0)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(podmanExecutorService, times(1)).push(eq(targetRegistry));
+        verify(log, times(0)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(podmanExecutorService, times(1)).push(targetRegistry);
         verify(podmanExecutorService, times(1)).version();
     }
 
@@ -240,17 +238,17 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(eq(imageName));
-        doNothing().when(podmanExecutorService).removeLocalImage(eq(imageName));
+        doNothing().when(podmanExecutorService).push(imageName);
+        doNothing().when(podmanExecutorService).removeLocalImage(imageName);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(log, times(1)).info(Mockito.eq("Removing image " + imageName + " from the local repository"));
-        verify(podmanExecutorService, times(1)).push(eq(imageName));
-        verify(podmanExecutorService, times(1)).removeLocalImage(eq(imageName));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(log, times(1)).info("Removing image " + imageName + " from the local repository");
+        verify(podmanExecutorService, times(1)).push(imageName);
+        verify(podmanExecutorService, times(1)).removeLocalImage(imageName);
     }
 
     @Test
@@ -270,11 +268,11 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.execute();
 
         // Verify logging
-        verify(log, times(1)).info(Mockito.eq("Pushing container images to registry ..."));
-        verify(log, times(1)).info(Mockito.eq("Pushing image: registry.example.com/sample:1.0.0 to registry.example.com"));
-        verify(podmanExecutorService, times(1)).push(eq("registry.example.com/sample:1.0.0"));
-        verify(log, times(1)).info(Mockito.eq("Successfully pushed container image registry.example.com/sample:1.0.0 to registry.example.com"));
-        verify(log, times(1)).info(Mockito.eq("All images have been successfully pushed to the registry"));
+        verify(log, times(1)).info("Pushing container images to registry ...");
+        verify(log, times(1)).info("Pushing image: registry.example.com/sample:1.0.0 to registry.example.com");
+        verify(podmanExecutorService, times(1)).push("registry.example.com/sample:1.0.0");
+        verify(log, times(1)).info("Successfully pushed container image registry.example.com/sample:1.0.0 to registry.example.com");
+        verify(log, times(1)).info("All images have been successfully pushed to the registry");
     }
 
     @Test
@@ -297,17 +295,17 @@ public class PushMojoTest extends AbstractMojoTest {
         pushMojo.execute();
 
         /// Verify logging
-        verify(log, times(1)).info(Mockito.eq("Pushing container images to registry ..."));
+        verify(log, times(1)).info("Pushing container images to registry ...");
 
-        verify(log, times(1)).info(Mockito.eq("Pushing image: registry.example.com/image-name-number-1:0.2.1 to registry.example.com"));
-        verify(podmanExecutorService, times(1)).push(eq("registry.example.com/image-name-number-1:0.2.1"));
-        verify(log, times(1)).info(Mockito.eq("Successfully pushed container image registry.example.com/image-name-number-1:0.2.1 to registry.example.com"));
+        verify(log, times(1)).info("Pushing image: registry.example.com/image-name-number-1:0.2.1 to registry.example.com");
+        verify(podmanExecutorService, times(1)).push("registry.example.com/image-name-number-1:0.2.1");
+        verify(log, times(1)).info("Successfully pushed container image registry.example.com/image-name-number-1:0.2.1 to registry.example.com");
 
-        verify(log, times(1)).info(Mockito.eq("Pushing image: registry.example.com/image-name-number-2:0.2.1 to registry.example.com"));
-        verify(podmanExecutorService, times(1)).push(eq("registry.example.com/image-name-number-2:0.2.1"));
-        verify(log, times(1)).info(Mockito.eq("Successfully pushed container image registry.example.com/image-name-number-2:0.2.1 to registry.example.com"));
+        verify(log, times(1)).info("Pushing image: registry.example.com/image-name-number-2:0.2.1 to registry.example.com");
+        verify(podmanExecutorService, times(1)).push("registry.example.com/image-name-number-2:0.2.1");
+        verify(log, times(1)).info("Successfully pushed container image registry.example.com/image-name-number-2:0.2.1 to registry.example.com");
 
-        verify(log, times(1)).info(Mockito.eq("All images have been successfully pushed to the registry"));
+        verify(log, times(1)).info("All images have been successfully pushed to the registry");
     }
 
     @Test
@@ -329,14 +327,14 @@ public class PushMojoTest extends AbstractMojoTest {
         // Simulate failure
         doThrow(new MojoExecutionException("Execution failed"))
                 .doNothing()
-                .when(podmanExecutorService).push(eq(targetRegistry));
+                .when(podmanExecutorService).push(targetRegistry);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(podmanExecutorService, times(2)).push(eq(targetRegistry));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(podmanExecutorService, times(2)).push(targetRegistry);
     }
 
     @Test
@@ -356,14 +354,14 @@ public class PushMojoTest extends AbstractMojoTest {
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         // Simulate failure
-        doThrow(new MojoExecutionException("Execution failed")).when(podmanExecutorService).push(eq(targetRegistry));
+        doThrow(new MojoExecutionException("Execution failed")).when(podmanExecutorService).push(targetRegistry);
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Pushing container images is skipped."));
-        verify(log, times(0)).info(Mockito.eq("No tags specified. Will not push container images."));
-        verify(podmanExecutorService, times(2)).push(eq(targetRegistry));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Pushing container images is skipped.");
+        verify(log, times(0)).info("No tags specified. Will not push container images.");
+        verify(podmanExecutorService, times(2)).push(targetRegistry);
     }
 
     private void configureMojo(SingleImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, boolean deleteLocalImageAfterPush, boolean failOnMissingContainerFile, int retries) {
