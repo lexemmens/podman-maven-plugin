@@ -111,7 +111,7 @@ public class PushMojoTest extends AbstractMojoTest {
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
         verify(log, Mockito.times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, Mockito.times(1)).error(Mockito.eq("Failed to read container catalog."));
+        verify(log, Mockito.times(1)).error(Mockito.eq("Failed to read container catalog. Make sure the build goal is executed."));
     }
 
     @Test

@@ -43,7 +43,7 @@ public abstract class AbstractUploadMojo extends AbstractPodmanMojo {
     protected List<String> readLocalCatalog() throws MojoExecutionException {
         String catalogFileName = String.format("%s.txt", CATALOG_ARTIFACT_NAME);
         Path catalogPath = Paths.get(project.getBuild().getDirectory(), catalogFileName);
-        return readCatalogContent(catalogPath);
+        return readCatalogContent(catalogPath, true);
     }
 
     protected List<String> readRemoteCatalog(RepositorySystemSession repositorySystemSession) throws MojoExecutionException {
@@ -66,7 +66,7 @@ public abstract class AbstractUploadMojo extends AbstractPodmanMojo {
                         "queried, but no such artifact was returned.");
             }
             if (artifactResult.isResolved()) {
-                return readCatalogContent(Paths.get(artifactResult.getArtifact().getFile().toURI()));
+                return readCatalogContent(Paths.get(artifactResult.getArtifact().getFile().toURI()), false);
             } else {
                 throw new MojoExecutionException("Failed to resolve the container catalog file.");
             }
@@ -76,12 +76,15 @@ public abstract class AbstractUploadMojo extends AbstractPodmanMojo {
         }
     }
 
-    private List<String> readCatalogContent(Path catalogPath) throws MojoExecutionException {
+    private List<String> readCatalogContent(Path catalogPath, boolean local) throws MojoExecutionException {
         try (Stream<String> catalogStream = Files.lines(catalogPath)) {
             return catalogStream.skip(1)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             String msg = "Failed to read container catalog.";
+            if (local) {
+                msg += " Make sure the build goal is executed.";
+            }
             getLog().error(msg);
             throw new MojoExecutionException(msg, e);
         }
