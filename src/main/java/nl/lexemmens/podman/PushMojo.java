@@ -12,7 +12,7 @@ import java.util.List;
  * PushMojo for pushing container images to a registry/repository
  */
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY)
-public class PushMojo extends AbstractUploadMojo {
+public class PushMojo extends AbstractCatalogSupport {
 
     /**
      * Indicates if building container images should be skipped

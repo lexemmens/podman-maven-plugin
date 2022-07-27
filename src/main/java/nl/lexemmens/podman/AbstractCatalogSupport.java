@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractUploadMojo extends AbstractPodmanMojo {
+public abstract class AbstractCatalogSupport extends AbstractPodmanMojo {
 
     @Parameter(defaultValue = "${repositorySystemSession}", required = true)
     public RepositorySystemSession repositorySystemSession;

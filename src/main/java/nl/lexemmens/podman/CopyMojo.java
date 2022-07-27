@@ -18,7 +18,7 @@ import java.util.Map;
  * to another.
  */
 @Mojo(name = "copy", defaultPhase = LifecyclePhase.DEPLOY)
-public class CopyMojo extends AbstractUploadMojo {
+public class CopyMojo extends AbstractCatalogSupport {
 
     /**
      * Indicates if building container images should be skipped
