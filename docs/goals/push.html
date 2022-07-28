@@ -206,6 +206,18 @@
 <div class="paragraph">
 <p>This goal uploads images to the registry which have a <code>&lt;build&gt;</code> configuration section. The default registry where images are pushed to is docker.io, but can be specified as part of the images’s name the Docker way. E.g. <code>containers.host.com:12345/sample:1.2</code> will push the image data with tag 1.2 to the registry <code>containers.host.com</code> at port 12345. Security information (i.e. user and password) can be specified as described in section <a href="../authentication.html" class="xref page">Authentication</a>.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+It is required to have the <code>build</code> goal executed in order to execute the <code>push</code> goal without manual intervention.
+</td>
+</tr>
+</table>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. Push options</caption>
 <colgroup>
