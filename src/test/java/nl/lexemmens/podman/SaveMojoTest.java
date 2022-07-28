@@ -50,7 +50,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
         saveMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Podman actions are skipped."));
+        verify(log, times(1)).info("Podman actions are skipped.");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class SaveMojoTest extends AbstractMojoTest {
 
         saveMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Saving container images is skipped."));
+        verify(log, times(1)).info("Saving container images is skipped.");
     }
 
     @Test
@@ -82,8 +82,8 @@ public class SaveMojoTest extends AbstractMojoTest {
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Saving container images is skipped."));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Saving container images is skipped.");
     }
 
     @Test
@@ -104,8 +104,8 @@ public class SaveMojoTest extends AbstractMojoTest {
         when(build.getDirectory()).thenReturn("target");
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
-        verify(log, Mockito.times(1)).warn(Mockito.eq("No Containerfile was found at " + targetLocationAsString + File.separator + "Containerfile, however this will be ignored due to current plugin configuration."));
-        verify(log, Mockito.times(1)).warn(Mockito.eq("Skipping save of container image with name sample. Configuration is not valid for this module!"));
+        verify(log, Mockito.times(1)).warn("No Containerfile was found at " + targetLocationAsString + File.separator + "Containerfile, however this will be ignored due to current plugin configuration.");
+        verify(log, Mockito.times(1)).warn("Skipping save of container image with name sample. Configuration is not valid for this module!");
     }
 
     @Test
@@ -126,9 +126,9 @@ public class SaveMojoTest extends AbstractMojoTest {
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Saving container images is skipped."));
-        verify(podmanExecutorService, times(1)).save(eq(target.resolve("sample_1_0_0.tar.gz").normalize().toAbsolutePath().toString()), eq("registry.example.com/sample:1.0.0"));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Saving container images is skipped.");
+        verify(podmanExecutorService, times(1)).save(target.resolve("sample_1_0_0.tar.gz").normalize().toAbsolutePath().toString(), "registry.example.com/sample:1.0.0");
     }
 
     @Test
@@ -149,9 +149,9 @@ public class SaveMojoTest extends AbstractMojoTest {
 
         Assertions.assertDoesNotThrow(saveMojo::execute);
 
-        verify(log, times(1)).info(Mockito.eq("Registry authentication is skipped."));
-        verify(log, times(0)).info(Mockito.eq("Saving container images is skipped."));
-        verify(podmanExecutorService, times(1)).save(eq(target.resolve("sample_1_0_0.tar.gz").normalize().toAbsolutePath().toString()), eq("sample:1.0.0"));
+        verify(log, times(1)).info("Registry authentication is skipped.");
+        verify(log, times(0)).info("Saving container images is skipped.");
+        verify(podmanExecutorService, times(1)).save(target.resolve("sample_1_0_0.tar.gz").normalize().toAbsolutePath().toString(), "sample:1.0.0");
     }
 
     @Test
@@ -173,11 +173,11 @@ public class SaveMojoTest extends AbstractMojoTest {
         saveMojo.execute();
 
         // Verify logging
-        verify(log, times(1)).info(Mockito.eq("Exporting container images to local disk ..."));
-        verify(log, times(1)).warn(Mockito.eq("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image."));
-        verify(log, times(1)).info(Mockito.eq("Exporting image sample:1.0.0 to " + target.resolve("sample_1_0_0.tar.gz").normalize().toFile().getAbsolutePath()));
-        verify(podmanExecutorService, times(1)).save(eq(target.resolve("sample_1_0_0.tar.gz").normalize().toAbsolutePath().toString()), eq("registry.example.com/sample:1.0.0"));
-        verify(log, times(1)).info(Mockito.eq("Container images exported successfully."));
+        verify(log, times(1)).info("Exporting container images to local disk ...");
+        verify(log, times(1)).warn("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image.");
+        verify(log, times(1)).info("Exporting image sample:1.0.0 to " + target.resolve("sample_1_0_0.tar.gz").normalize().toFile().getAbsolutePath());
+        verify(podmanExecutorService, times(1)).save(target.resolve("sample_1_0_0.tar.gz").normalize().toAbsolutePath().toString(), "registry.example.com/sample:1.0.0");
+        verify(log, times(1)).info("Container images exported successfully.");
     }
 
     @Test
@@ -202,13 +202,13 @@ public class SaveMojoTest extends AbstractMojoTest {
         saveMojo.execute();
 
         // Verify logging
-        verify(log, times(1)).info(Mockito.eq("Exporting container images to local disk ..."));
-        verify(log, times(0)).warn(Mockito.eq("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image."));
-        verify(log, times(1)).info(Mockito.eq("Exporting image image-name-number-1:0.2.1 to " + target.resolve("image_name_number_1_0_2_1.tar.gz").normalize().toFile().getAbsolutePath()));
-        verify(podmanExecutorService, times(1)).save(eq(target.resolve("image_name_number_1_0_2_1.tar.gz").normalize().toFile().getAbsolutePath()), eq("registry.example.com/image-name-number-1:0.2.1"));
-        verify(log, times(1)).info(Mockito.eq("Exporting image image-name-number-2:0.2.1 to " + target.resolve("image_name_number_2_0_2_1.tar.gz").normalize().toFile().getAbsolutePath()));
-        verify(podmanExecutorService, times(1)).save(eq(target.resolve("image_name_number_2_0_2_1.tar.gz").normalize().toFile().getAbsolutePath()), eq("registry.example.com/image-name-number-2:0.2.1"));
-        verify(log, times(1)).info(Mockito.eq("Container images exported successfully."));
+        verify(log, times(1)).info("Exporting container images to local disk ...");
+        verify(log, times(0)).warn("Detected multistage Containerfile, but no custom image names have been specified. Falling back to exporting final image.");
+        verify(log, times(1)).info("Exporting image image-name-number-1:0.2.1 to " + target.resolve("image_name_number_1_0_2_1.tar.gz").normalize().toFile().getAbsolutePath());
+        verify(podmanExecutorService, times(1)).save(target.resolve("image_name_number_1_0_2_1.tar.gz").normalize().toFile().getAbsolutePath(), "registry.example.com/image-name-number-1:0.2.1");
+        verify(log, times(1)).info("Exporting image image-name-number-2:0.2.1 to " + target.resolve("image_name_number_2_0_2_1.tar.gz").normalize().toFile().getAbsolutePath());
+        verify(podmanExecutorService, times(1)).save(target.resolve("image_name_number_2_0_2_1.tar.gz").normalize().toFile().getAbsolutePath(), "registry.example.com/image-name-number-2:0.2.1");
+        verify(log, times(1)).info("Container images exported successfully.");
     }
 
     private void configureMojo(SingleImageConfiguration image, boolean skipAll, boolean skipSave, String pushRegistry, boolean failOnMissingContainerfile) {

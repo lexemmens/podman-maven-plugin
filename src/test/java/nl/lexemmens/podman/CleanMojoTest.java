@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -40,7 +39,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Podman actions are skipped."));
+        verify(log, times(1)).info("Podman actions are skipped.");
     }
 
     @Test
@@ -49,7 +48,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Cleaning local storage is skipped."));
+        verify(log, times(1)).info("Cleaning local storage is skipped.");
     }
 
     @Test
@@ -58,7 +57,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Not cleaning up local storage as default storage location is being used."));
+        verify(log, times(1)).info("Not cleaning up local storage as default storage location is being used.");
     }
 
     @Test
@@ -72,7 +71,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info(Mockito.eq("Cleaning up " + customRoot.getAbsolutePath() + "..."));
+        verify(log, times(1)).info("Cleaning up " + customRoot.getAbsolutePath() + "...");
         verify(serviceHub, times(1)).getBuildahExecutorService();
         verify(buildahExecutorService, times(1)).cleanupLocalContainerStorage();
     }

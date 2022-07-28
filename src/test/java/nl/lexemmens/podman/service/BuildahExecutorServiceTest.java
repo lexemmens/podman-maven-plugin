@@ -50,7 +50,7 @@ public class BuildahExecutorServiceTest {
         BuildahExecutorService buildahExecutorService = new BuildahExecutorService(log, podmanConfig, delegate);
         buildahExecutorService.cleanupLocalContainerStorage();
 
-        verify(log, Mockito.times(1)).info(Mockito.eq("Podman root storage location is set to its defaults. Not cleaning up this storage location."));
+        verify(log, Mockito.times(1)).info("Podman root storage location is set to its defaults. Not cleaning up this storage location.");
         assertNull(delegate.getCommandAsString());
     }
 
@@ -69,7 +69,7 @@ public class BuildahExecutorServiceTest {
         BuildahExecutorService buildahExecutorService = new BuildahExecutorService(log, podmanConfig, delegate);
         buildahExecutorService.cleanupLocalContainerStorage();
 
-        verify(log, Mockito.times(0)).info(Mockito.eq("Podman root storage location is set to its defaults. Not cleaning up this storage location."));
+        verify(log, Mockito.times(0)).info("Podman root storage location is set to its defaults. Not cleaning up this storage location.");
         assertEquals(expectedCommand, delegate.getCommandAsString());
     }
 

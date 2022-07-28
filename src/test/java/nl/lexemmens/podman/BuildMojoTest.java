@@ -593,7 +593,6 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
 
         buildMojo.execute();

@@ -1,0 +1,3 @@
+[containers]
+registry.example.com/image-name-number-1:0.2.1
+registry.example.com/image-name-number-2:0.2.1

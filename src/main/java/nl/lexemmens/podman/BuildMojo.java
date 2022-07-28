@@ -36,8 +36,7 @@ public class BuildMojo extends AbstractPodmanMojo {
     @Parameter(property = "podman.skip.tag", defaultValue = "false")
     boolean skipTag;
     /**
-     * Indicates if container images should be catalogued in a separate container-catalog.txt file
-     * that is attached to the build.
+     * Indicates if attaching the container-catalog.txt file to the build should be skipped.
      */
     @Parameter(property = "podman.skip.catalog", defaultValue = "false")
     boolean skipCatalog;
@@ -74,11 +73,7 @@ public class BuildMojo extends AbstractPodmanMojo {
             getLog().info("Built container image.");
         }
 
-        if (skipCatalog) {
-            getLog().info("Skipping cataloguing container images.");
-        } else {
-            catalogContainers(resolvedImages, hub);
-        }
+        catalogContainers(resolvedImages, hub);
     }
 
     private void decorateContainerfile(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
@@ -174,9 +169,13 @@ public class BuildMojo extends AbstractPodmanMojo {
             throw new MojoExecutionException(e.getMessage(), e);
         }
 
-        getLog().info("Attaching catalog artifact: " + catalogPath);
+        if (skipCatalog) {
+            getLog().info("Skipping attaching of catalog artifact.");
+        } else {
+            getLog().info("Attaching catalog artifact: " + catalogPath);
 
-        hub.getMavenProjectHelper().attachArtifact(project, "txt", CATALOG_ARTIFACT_NAME, catalogPath.toFile());
+            hub.getMavenProjectHelper().attachArtifact(project, "txt", CATALOG_ARTIFACT_NAME, catalogPath.toFile());
+        }
     }
 
     private List<String> getContainerCatalog(List<SingleImageConfiguration> images) {
