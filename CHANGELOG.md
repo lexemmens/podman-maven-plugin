@@ -1,5 +1,9 @@
 ## Changelog
-### 1.10.0 UNRELEASED
+### 1.11.0 (28-08-2022)
+#### Bugs
+* ([#65](https://github.com/lexemmens/podman-maven-plugin/pull/65)) - Update PushMojo to use container-catalog.txt. Also prevent accidental duplicate push of container iamges
+
+### 1.10.0 (19-07-2022)
 #### Improvements
 * Added copy mojo that allows copying images from one repo to another (uses Skopeo)
 
