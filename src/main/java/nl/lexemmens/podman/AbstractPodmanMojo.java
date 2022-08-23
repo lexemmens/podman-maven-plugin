@@ -117,7 +117,11 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
     @Override
     public final void execute() throws MojoExecutionException {
         if (skip) {
-            getLog().info("Podman actions are skipped.");
+            getLog().info("The execution of the podman-maven-plugin is skipped.");
+            return;
+        }
+        if (skipGoal()) {
+            getLog().info("The execution of this goal is skipped.");
             return;
         }
 
@@ -224,6 +228,13 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
      * @throws MojoExecutionException In case anything happens during execution which prevents execution from continuing
      */
     public abstract void executeInternal(ServiceHub hub) throws MojoExecutionException;
+
+    /**
+     * Check if the execution of the mojo should be skipped
+     *
+     * @return whether the mojo should be skipped
+     */
+    protected abstract boolean skipGoal();
 
     /**
      * Returns whether the image configuration should be initialized

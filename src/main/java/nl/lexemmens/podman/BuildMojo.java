@@ -52,11 +52,6 @@ public class BuildMojo extends AbstractPodmanMojo {
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if (skipBuild) {
-            getLog().info("Building container images is skipped.");
-            return;
-        }
-
         checkAuthentication(hub);
 
         for (SingleImageConfiguration image : resolvedImages) {
@@ -74,6 +69,11 @@ public class BuildMojo extends AbstractPodmanMojo {
         }
 
         catalogContainers(resolvedImages, hub);
+    }
+
+    @Override
+    protected boolean skipGoal() {
+        return skipBuild;
     }
 
     private void decorateContainerfile(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {

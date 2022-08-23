@@ -35,11 +35,6 @@ public class PushMojo extends AbstractCatalogSupport {
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if (skipPush) {
-            getLog().info("Pushing container images is skipped.");
-            return;
-        }
-
         checkAuthentication(hub);
 
         if (pushRegistry == null) {
@@ -59,6 +54,11 @@ public class PushMojo extends AbstractCatalogSupport {
         }
 
         getLog().info("All images have been successfully pushed to the registry");
+    }
+
+    @Override
+    protected boolean skipGoal() {
+        return skipPush;
     }
 
     private void pushContainerImages(ServiceHub hub, List<String> images) throws MojoExecutionException {

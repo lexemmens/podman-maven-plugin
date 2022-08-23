@@ -27,15 +27,10 @@ public class SaveMojo extends AbstractPodmanMojo {
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if (skipSave) {
-            getLog().info("Saving container images is skipped.");
-            return;
-        }
-
         checkAuthentication(hub);
 
         for (SingleImageConfiguration image : resolvedImages) {
-            if(!image.isValid()) {
+            if (!image.isValid()) {
                 getLog().warn("Skipping save of container image with name " + image.getImageName()
                         + ". Configuration is not valid for this module!");
                 continue;
@@ -44,6 +39,11 @@ public class SaveMojo extends AbstractPodmanMojo {
             // No need to check if the image names are empty here - this is checked by the image configuration.
             exportContainerImages(image, hub);
         }
+    }
+
+    @Override
+    protected boolean skipGoal() {
+        return skipSave;
     }
 
     private void exportContainerImages(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {

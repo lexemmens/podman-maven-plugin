@@ -76,29 +76,26 @@ public class BuildMojoTest extends AbstractMojoTest {
     public void testSkipAllActions() throws MojoExecutionException {
         PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
-                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .setContainerfileDir("src/test/resources/emptydir")
                 .build();
         configureMojo(podman, image, false, true, false, false, true);
 
         buildMojo.execute();
 
-        verify(log, Mockito.times(1)).info("Podman actions are skipped.");
+        verify(log, Mockito.times(1)).info("The execution of the podman-maven-plugin is skipped.");
     }
 
     @Test
     public void testSkipBuild() throws MojoExecutionException {
         PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
         SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
-                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .setContainerfileDir("src/test/resources/emptydir")
                 .build();
         configureMojo(podman, image, false, false, true, false, true);
 
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target");
-
         buildMojo.execute();
 
-        verify(log, Mockito.times(1)).info("Building container images is skipped.");
+        verify(log, Mockito.times(1)).info("The execution of this goal is skipped.");
     }
 
     @Test

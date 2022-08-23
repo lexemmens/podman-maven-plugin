@@ -1,7 +1,7 @@
 package nl.lexemmens.podman;
 
-import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
+import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
@@ -24,7 +24,10 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -39,7 +42,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info("Podman actions are skipped.");
+        verify(log, times(1)).info("The execution of the podman-maven-plugin is skipped.");
     }
 
     @Test
@@ -48,7 +51,7 @@ public class CleanMojoTest extends AbstractMojoTest {
 
         cleanMojo.execute();
 
-        verify(log, times(1)).info("Cleaning local storage is skipped.");
+        verify(log, times(1)).info("The execution of this goal is skipped.");
     }
 
     @Test

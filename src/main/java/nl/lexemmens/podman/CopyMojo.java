@@ -28,13 +28,13 @@ public class CopyMojo extends AbstractCatalogSupport {
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if (skipCopy) {
-            getLog().info("Skopeo copy is skipped.");
-            return;
-        }
-
         checkAuthentication(hub);
         performCopyUsingCatalogFile(hub);
+    }
+
+    @Override
+    protected boolean skipGoal() {
+        return skipCopy;
     }
 
     @Override
