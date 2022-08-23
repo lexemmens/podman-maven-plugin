@@ -21,17 +21,17 @@ public class CleanMojo extends AbstractPodmanMojo {
 
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
-        if (skipClean) {
-            getLog().info("Cleaning local storage is skipped.");
-            return;
-        }
-
         if (podman.getRoot() == null) {
             getLog().info("Not cleaning up local storage as default storage location is being used.");
         } else {
             getLog().info("Cleaning up " + podman.getRoot().getAbsolutePath() + "...");
             hub.getBuildahExecutorService().cleanupLocalContainerStorage();
         }
+    }
+
+    @Override
+    protected boolean skipGoal() {
+        return skipClean;
     }
 
     @Override

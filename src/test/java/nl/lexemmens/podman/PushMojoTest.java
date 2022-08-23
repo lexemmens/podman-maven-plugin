@@ -36,7 +36,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -68,13 +72,13 @@ public class PushMojoTest extends AbstractMojoTest {
         SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
-                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .setContainerfileDir("src/test/resources/emptydir")
                 .build();
         configureMojo(image, false, true, false, null, false, true, 0);
 
         pushMojo.execute();
 
-        verify(log, Mockito.times(1)).info("Podman actions are skipped.");
+        verify(log, Mockito.times(1)).info("The execution of the podman-maven-plugin is skipped.");
     }
 
     @Test
@@ -82,20 +86,17 @@ public class PushMojoTest extends AbstractMojoTest {
         SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test")
                 .setTags(new String[]{})
                 .setUseMavenProjectVersion(true)
-                .setContainerfileDir(DEFAULT_CONTAINERFILE_DIR)
+                .setContainerfileDir("src/test/resources/emptydir")
                 .build();
         configureMojo(image, true, false, true, "registry.example.com", true, true, 0);
 
-        when(mavenProject.getBuild()).thenReturn(build);
-        when(build.getDirectory()).thenReturn("target/podman-test");
-
         pushMojo.execute();
 
-        verify(log, Mockito.times(1)).info("Pushing container images is skipped.");
+        verify(log, Mockito.times(1)).info("The execution of this goal is skipped.");
     }
 
     @Test
-    public void testSkipPushWhenCatalogDoesNotExist() throws MojoExecutionException {
+    public void testSkipPushWhenCatalogDoesNotExist() {
         SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
                 .setTags(null)
                 .setUseMavenProjectVersion(false)
