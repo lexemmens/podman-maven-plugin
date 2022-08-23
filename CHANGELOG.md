@@ -1,5 +1,9 @@
 ## Changelog
-### 1.11.0 (28-08-2022)
+### 1.11.1 (23-08-2022)
+#### Bugs
+* ([#67](https://github.com/lexemmens/podman-maven-plugin/pull/67)) - Execution of Mojo's was not properly skipped if corresponding goal is skipped.
+
+### 1.11.0 (28-07-2022)
 #### Bugs
 * ([#65](https://github.com/lexemmens/podman-maven-plugin/pull/65)) - Update PushMojo to use container-catalog.txt. Also prevent accidental duplicate push of container iamges
 
