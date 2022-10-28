@@ -82,8 +82,10 @@ public class BuildMojo extends AbstractPodmanMojo {
     }
 
     private void buildContainerImage(SingleImageConfiguration image, ServiceHub hub) throws MojoExecutionException {
-        getLog().info("Building container image...");
+        getLog().info("Setting security context...");
+        hub.getSecurityContextService().setSecurityContext();
 
+        getLog().info("Building container image...");
         List<String> processOutput = hub.getPodmanExecutorService().build(image);
 
         // Read the final image hash

@@ -1,51 +1,25 @@
 package nl.lexemmens.podman.service;
 
+import nl.lexemmens.podman.command.podman.*;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
-import nl.lexemmens.podman.enumeration.PodmanCommand;
-import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static nl.lexemmens.podman.enumeration.TlsVerify.NOT_SPECIFIED;
 
 /**
  * Class that allows very specific execution of Podman related commands.
  */
 public class PodmanExecutorService {
 
-    private static final String SQUASH_CMD = "--squash";
-    private static final String SQUASH_ALL_CMD = "--squash-all";
-    private static final String BUILD_FORMAT_CMD = "--format=";
-    private static final String LAYERS_CMD = "--layers=";
-    private static final String SAVE_FORMAT_CMD = "--format=oci-archive";
-    private static final String OUTPUT_CMD = "--output";
-    private static final String CONTAINERFILE_CMD = "--file=";
-    private static final String NO_CACHE_CMD = "--no-cache=";
-    private static final String PULL_CMD = "--pull=";
-    private static final String PULL_ALWAYS_CMD = "--pull-always=";
-    private static final String ROOT_CMD = "--root=";
-    private static final String RUNROOT_CMD = "--runroot=";
-
-    private static final File BASE_DIR = new File(".");
-
     private final Log log;
-    private final TlsVerify tlsVerify;
+
     private final CommandExecutorDelegate delegate;
-    private final File podmanRoot;
-    private final File podmanRunRoot;
-    private final File podmanRunDirectory;
+
+    private PodmanConfiguration podmanConfig;
 
     /**
      * Constructs a new instance of this class.
@@ -57,10 +31,7 @@ public class PodmanExecutorService {
     public PodmanExecutorService(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
         this.log = log;
         this.delegate = delegate;
-        this.tlsVerify = podmanConfig.getTlsVerify();
-        this.podmanRoot = podmanConfig.getRoot();
-        this.podmanRunRoot = podmanConfig.getRunRoot();
-        this.podmanRunDirectory = podmanConfig.getRunDirectory();
+        this.podmanConfig = podmanConfig;
     }
 
     /**
@@ -77,34 +48,32 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the container image could not be built.
      */
     public List<String> build(SingleImageConfiguration image) throws MojoExecutionException {
-        List<String> subCommand = new ArrayList<>();
-        if(Boolean.TRUE == image.getBuild().getSquash()) {
-            subCommand.add(SQUASH_CMD);
+        PodmanBuildCommand.Builder builder = new PodmanBuildCommand.Builder(log, podmanConfig, delegate)
+                .setFormat(image.getBuild().getFormat().getValue())
+                .setContainerFile(image.getBuild().getTargetContainerFile())
+                .setNoCache(image.getBuild().isNoCache());
+
+        if (Boolean.TRUE == image.getBuild().getSquash()) {
+            builder = builder.setSquash();
         }
 
-        if(Boolean.TRUE == image.getBuild().getSquashAll()) {
-            subCommand.add(SQUASH_ALL_CMD);
+        if (Boolean.TRUE == image.getBuild().getSquashAll()) {
+            builder = builder.setSquashAll();
         }
 
-        if(image.getBuild().getLayers() != null) {
-            subCommand.add(LAYERS_CMD + image.getBuild().getLayers());
+        if (image.getBuild().getLayers() != null) {
+            builder = builder.setLayers(image.getBuild().getLayers());
         }
 
-        subCommand.add(BUILD_FORMAT_CMD + image.getBuild().getFormat().getValue());
-        subCommand.add(CONTAINERFILE_CMD + image.getBuild().getTargetContainerFile());
-        subCommand.add(NO_CACHE_CMD + image.getBuild().isNoCache());
-
-        if(image.getBuild().getPull().isPresent()) {
-            subCommand.add(PULL_CMD + image.getBuild().getPull().get());
+        if (image.getBuild().getPull().isPresent()) {
+            builder = builder.setPull(image.getBuild().getPull().get());
         }
 
-        if(image.getBuild().getPullAlways().isPresent()) {
-            subCommand.add(PULL_ALWAYS_CMD + image.getBuild().getPullAlways().get());
+        if (image.getBuild().getPullAlways().isPresent()) {
+            builder = builder.setPullAllways(image.getBuild().getPullAlways().get());
         }
 
-        subCommand.add(".");
-
-        return runCommand(podmanRunDirectory, false, PodmanCommand.BUILD, subCommand);
+        return builder.build().execute();
     }
 
     /**
@@ -117,8 +86,11 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the container image could not be tagged.
      */
     public void tag(String imageHash, String fullImageName) throws MojoExecutionException {
-        // Ignore output
-        runCommand(PodmanCommand.TAG, Arrays.asList(imageHash, fullImageName));
+        new PodmanTagCommand.Builder(log, podmanConfig, delegate)
+                .setImageHash(imageHash)
+                .setFullImageName(fullImageName)
+                .build()
+                .execute();
     }
 
     /**
@@ -135,13 +107,11 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the container image could not be saved.
      */
     public void save(String archiveName, String fullImageName) throws MojoExecutionException {
-        List<String> subCommand = new ArrayList<>();
-        subCommand.add(SAVE_FORMAT_CMD);
-        subCommand.add(OUTPUT_CMD);
-        subCommand.add(archiveName);
-        subCommand.add(fullImageName);
-
-        runCommand(PodmanCommand.SAVE, subCommand);
+        new PodmanSaveCommand.Builder(log, podmanConfig, delegate)
+                .setArchiveName(archiveName)
+                .setFullImageName(fullImageName)
+                .build()
+                .execute();
     }
 
     /**
@@ -153,9 +123,10 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the container image could not be pushed.
      */
     public void push(String fullImageName) throws MojoExecutionException {
-        // Apparently, actually pushing the blobs to a registry causes some output on stderr.
-        // Ignore output
-        runCommand(BASE_DIR, false, PodmanCommand.PUSH, Collections.singletonList(fullImageName));
+        new PodmanPushCommand.Builder(log, podmanConfig, delegate)
+                .setFullImageName(fullImageName)
+                .build()
+                .execute();
     }
 
     /**
@@ -172,19 +143,17 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the login fails. The Exception does not contain a recognisable password.
      */
     public void login(String registry, String username, String password) throws MojoExecutionException {
-        List<String> subCommand = new ArrayList<>();
-        subCommand.add(registry);
-        subCommand.add("-u");
-        subCommand.add(username);
-        subCommand.add("-p");
-        subCommand.add(password);
-
         try {
-            runCommand(PodmanCommand.LOGIN, subCommand);
+            new PodmanLoginCommand.Builder(log, podmanConfig, delegate)
+                    .setRegistry(registry)
+                    .setUsername(username)
+                    .setPassword(password)
+                    .build()
+                    .execute();
         } catch (MojoExecutionException e) {
             // When the command fails, the whole command is put in the error message, possibly exposing passwords.
             // Therefore we catch the exception, remove the password and throw a new exception with an updated message.
-            String message = e.getMessage().replaceAll(String.format("-p[, ]+%s", Pattern.quote(password)), "-p **********");
+            String message = e.getMessage().replaceAll(String.format("-p[,=]+%s", Pattern.quote(password)), "-p=**********");
             log.error(message);
             throw new MojoExecutionException(message);
         }
@@ -198,11 +167,9 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case printing the information fails
      */
     public void version() throws MojoExecutionException {
-        List<String> fullCommand = new ArrayList<>();
-        fullCommand.add(PodmanCommand.PODMAN.getCommand());
-        fullCommand.add(PodmanCommand.VERSION.getCommand());
-
-        runCommand(fullCommand, BASE_DIR, true);
+        new PodmanVersionCommand.Builder(log, podmanConfig, delegate)
+                .build()
+                .execute();
     }
 
     /**
@@ -218,63 +185,9 @@ public class PodmanExecutorService {
      * @throws MojoExecutionException In case the container image could not be removed.
      */
     public void removeLocalImage(String fullImageName) throws MojoExecutionException {
-        runCommand(PodmanCommand.RMI, Collections.singletonList(fullImageName));
-    }
-
-    private List<String> decorateCommands(PodmanCommand podmanCommand, List<String> subCommands) {
-        List<String> fullCommand = new ArrayList<>();
-        fullCommand.add(PodmanCommand.PODMAN.getCommand());
-
-        // Path to the root directory in which data, including images, is stored. Must be *before* build, push or any other operation
-        if (podmanRoot != null) {
-            fullCommand.add(ROOT_CMD + podmanRoot.getAbsolutePath());
-        }
-
-        if (podmanRunRoot != null) {
-            fullCommand.add(RUNROOT_CMD + podmanRunRoot.getAbsolutePath());
-        }
-
-        fullCommand.add(podmanCommand.getCommand());
-
-        if (isTlsSupported(podmanCommand) && tlsVerify != null && !NOT_SPECIFIED.equals(tlsVerify)) {
-            fullCommand.add(tlsVerify.getCommand());
-        }
-
-        fullCommand.addAll(subCommands);
-        return fullCommand;
-    }
-
-    private boolean isTlsSupported(PodmanCommand podmanCommand) {
-        return !PodmanCommand.TAG.equals(podmanCommand)
-                && !PodmanCommand.SAVE.equals(podmanCommand)
-                && !PodmanCommand.RMI.equals(podmanCommand);
-    }
-
-    private List<String> runCommand(File workDir, boolean redirectError, PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        List<String> fullCommand = decorateCommands(command, subCommands);
-        return runCommand(fullCommand, workDir, redirectError);
-    }
-
-    private void runCommand(PodmanCommand command, List<String> subCommands) throws MojoExecutionException {
-        // Ignore output
-        runCommand(BASE_DIR, true, command, subCommands);
-    }
-
-    private List<String> runCommand(List<String> fullCommand, File workDir, boolean redirectError) throws MojoExecutionException {
-        String msg = String.format("Executing command '%s' from basedir %s", StringUtils.join(fullCommand, " "), BASE_DIR.getAbsolutePath());
-        log.debug(msg);
-        ProcessExecutor processExecutor = new ProcessExecutor()
-                .directory(workDir)
-                .command(fullCommand)
-                .readOutput(true)
-                .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
-                .exitValueNormal();
-
-        // Some processes print regular text on stderror, so make redirecting the error stream configurable.
-        if (redirectError) {
-            processExecutor.redirectError(Slf4jStream.of(getClass().getSimpleName()).asError());
-        }
-
-        return delegate.executeCommand(processExecutor);
+        new PodmanRmiCommand.Builder(log, podmanConfig, delegate)
+                .setFullImageName(fullImageName)
+                .build()
+                .execute();
     }
 }
