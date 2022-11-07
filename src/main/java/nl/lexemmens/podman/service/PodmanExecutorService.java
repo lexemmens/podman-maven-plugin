@@ -8,6 +8,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -65,12 +66,14 @@ public class PodmanExecutorService {
             builder = builder.setLayers(image.getBuild().getLayers());
         }
 
-        if (image.getBuild().getPull().isPresent()) {
-            builder = builder.setPull(image.getBuild().getPull().get());
+        Optional<Boolean> pullOptional = image.getBuild().getPull();
+        if (pullOptional.isPresent()) {
+            builder = builder.setPull(pullOptional.get());
         }
 
-        if (image.getBuild().getPullAlways().isPresent()) {
-            builder = builder.setPullAllways(image.getBuild().getPullAlways().get());
+        Optional<Boolean> pullAlwaysOptional = image.getBuild().getPullAlways();
+        if (pullAlwaysOptional.isPresent()) {
+            builder = builder.setPullAllways(pullAlwaysOptional.get());
         }
 
         return builder.build().execute();

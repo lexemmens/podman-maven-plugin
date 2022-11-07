@@ -74,7 +74,7 @@ public class SkopeoCopyCommand extends AbstractCommand {
          * Sets the source image to copy
          */
         public Builder setSourceImage(String fullImageName) {
-            this.command.withOption(IMAGE_PREFIX + fullImageName, null);
+            setImage(fullImageName);
             return this;
         }
 
@@ -82,8 +82,12 @@ public class SkopeoCopyCommand extends AbstractCommand {
          * Sets the destination location of the image
          */
         public Builder setDestinationImage(String fullImageName) {
-            this.command.withOption(IMAGE_PREFIX + fullImageName, null);
+            setImage(fullImageName);
             return this;
+        }
+
+        private void setImage(String fullImageName) {
+            this.command.withOption(IMAGE_PREFIX + fullImageName, null);
         }
 
         /**
