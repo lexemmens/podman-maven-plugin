@@ -170,6 +170,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getSecurityContextService()).thenReturn(securityContextService);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 
         assertDoesNotThrow(() -> buildMojo.execute());
@@ -202,6 +203,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         when(mockBuild.getDirectory()).thenReturn("target");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
+        when(serviceHub.getSecurityContextService()).thenReturn(securityContextService);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
         when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
@@ -246,6 +248,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getSecurityContextService()).thenReturn(securityContextService);
         when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
         when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(Collections.singletonList("ca1f5f48ef431c0818d5e8797dfe707557bdc728fe7c3027c75de18f934a3b76"));
 

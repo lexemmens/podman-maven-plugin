@@ -65,7 +65,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
         podmanExecutorService.login("registry.example.com", "username", "password");
 
-        Assertions.assertEquals("podman login --tls-verify=false registry.example.com -u username -p password", delegate.getCommandAsString());
+        Assertions.assertEquals("podman login --tls-verify=false registry.example.com -u=username -p=password", delegate.getCommandAsString());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
         podmanExecutorService.login("registry.example.com", "username", "password");
 
-        Assertions.assertEquals("podman login registry.example.com -u username -p password", delegate.getCommandAsString());
+        Assertions.assertEquals("podman login registry.example.com -u=username -p=password", delegate.getCommandAsString());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
         podmanExecutorService.login("registry.example.com", "username", "password");
 
-        Assertions.assertEquals("podman login registry.example.com -u username -p password", delegate.getCommandAsString());
+        Assertions.assertEquals("podman login registry.example.com -u=username -p=password", delegate.getCommandAsString());
     }
 
     @Test
@@ -107,13 +107,13 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
 
-        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u username -p password"));
+        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u=username -p=password"));
 
         try {
             podmanExecutorService.login("registry.example.com", "username", "password");
             Assertions.fail("This should not happen");
         } catch (MojoExecutionException e) {
-            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u username -p **********", e.getMessage());
+            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u=username -p=**********", e.getMessage());
         }
     }
 
@@ -123,13 +123,13 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, commandExecutorDelegate);
 
-        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u username -p hgX^@k0&)12s@"));
+        when(commandExecutorDelegate.executeCommand(isA(ProcessExecutor.class))).thenThrow(new MojoExecutionException("Command failed: podman login --tls-verify=false registry.example.com -u=username -p=gX^@k0&)12s@"));
 
         try {
-            podmanExecutorService.login("registry.example.com", "username", "hgX^@k0&)12s@");
+            podmanExecutorService.login("registry.example.com", "username", "gX^@k0&)12s@");
             Assertions.fail("This should not happen");
         } catch (MojoExecutionException e) {
-            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u username -p **********", e.getMessage());
+            Assertions.assertEquals("Command failed: podman login --tls-verify=false registry.example.com -u=username -p=**********", e.getMessage());
         }
     }
 
@@ -185,7 +185,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
         podmanExecutorService.save("image_arhive.tar.gz", "registry.example.com/sample/1.0.0");
 
-        Assertions.assertEquals("podman save --format=oci-archive --output image_arhive.tar.gz registry.example.com/sample/1.0.0", delegate.getCommandAsString());
+        Assertions.assertEquals("podman save --format=oci-archive --output=image_arhive.tar.gz registry.example.com/sample/1.0.0", delegate.getCommandAsString());
     }
 
     @Test
@@ -251,8 +251,8 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --layers=false --format=oci --file="
-                + image.getBuild().getTargetContainerFile() + " --no-cache=false .", delegate.getCommandAsString());
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false --layers=false .", delegate.getCommandAsString());
     }
 
     @Test
@@ -320,8 +320,8 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --squash --format=oci --file="
-                + image.getBuild().getTargetContainerFile() + " --no-cache=false .", delegate.getCommandAsString());
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false --squash .", delegate.getCommandAsString());
     }
 
     @Test
@@ -343,8 +343,8 @@ public class PodmanExecutorServiceTest {
 
         podmanExecutorService.build(image);
 
-        Assertions.assertEquals("podman build --tls-verify=true --squash-all --format=oci --file="
-                + image.getBuild().getTargetContainerFile() + " --no-cache=false .", delegate.getCommandAsString());
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false --squash-all .", delegate.getCommandAsString());
     }
 
     @Test

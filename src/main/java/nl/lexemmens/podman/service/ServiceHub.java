@@ -1,8 +1,8 @@
 package nl.lexemmens.podman.service;
 
+import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.executor.CommandExecutorDelegateImpl;
-import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
@@ -24,19 +24,21 @@ public class ServiceHub {
     private final AuthenticationService authenticationService;
     private final MavenProjectHelper mavenProjectHelper;
 
+    private final SecurityContextService securityContextService;
+
     /**
      * <p>
      * Constructs a new instance of this class
      * </p>
      *
-     * @param log               Access to Maven's log system
-     * @param mavenProject      The MavenProject that is being built
-     * @param mavenFileFilter   The {@link MavenFileFilter} service
-     * @param podmanConfig      Holds global configuration for Podman
+     * @param log                 Access to Maven's log system
+     * @param mavenProject        The MavenProject that is being built
+     * @param mavenFileFilter     The {@link MavenFileFilter} service
+     * @param podmanConfig        Holds global configuration for Podman
      * @param skopeoConfiguration Holds global configuration for Skopeo
-     * @param mavenSettings     Access to Maven's settings file
-     * @param settingsDecrypter Access to Maven's settings decryption service
-     * @param mavenProjectHelper The MavenProjectHelper service
+     * @param mavenSettings       Access to Maven's settings file
+     * @param settingsDecrypter   Access to Maven's settings decryption service
+     * @param mavenProjectHelper  The MavenProjectHelper service
      */
     ServiceHub(Log log, MavenProject mavenProject, MavenFileFilter mavenFileFilter, PodmanConfiguration podmanConfig, SkopeoConfiguration skopeoConfiguration, Settings mavenSettings, SettingsDecrypter settingsDecrypter, MavenProjectHelper mavenProjectHelper) {
         this.podmanExecutorService = new PodmanExecutorService(log, podmanConfig, new CommandExecutorDelegateImpl());
@@ -44,6 +46,7 @@ public class ServiceHub {
         this.skopeoExecutorService = new SkopeoExecutorService(log, skopeoConfiguration, new CommandExecutorDelegateImpl());
         this.containerfileDecorator = new ContainerfileDecorator(log, mavenFileFilter, mavenProject);
         this.authenticationService = new AuthenticationService(log, podmanExecutorService, mavenSettings, settingsDecrypter);
+        this.securityContextService = new SecurityContextService(log, podmanConfig, new CommandExecutorDelegateImpl());
         this.mavenProjectHelper = mavenProjectHelper;
     }
 
@@ -94,5 +97,9 @@ public class ServiceHub {
 
     public SkopeoExecutorService getSkopeoExecutorService() {
         return skopeoExecutorService;
+    }
+
+    public SecurityContextService getSecurityContextService() {
+        return securityContextService;
     }
 }
