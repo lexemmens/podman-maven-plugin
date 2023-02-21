@@ -2,6 +2,7 @@ package nl.lexemmens.podman.command.podman;
 
 import nl.lexemmens.podman.command.AbstractCommand;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.enumeration.CGroupManager;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.maven.plugin.logging.Log;
@@ -20,11 +21,13 @@ public abstract class AbstractPodmanCommand extends AbstractCommand {
     private static final String BASE_COMMAND = "podman";
     private static final String ROOT_CMD = "--root=";
     private static final String RUNROOT_CMD = "--runroot=";
+    private static final String CGROUP_MANAGER = "--cgroup-manager";
 
     private final boolean redirectError;
     private final List<String> command;
 
     private final TlsVerify tlsVerify;
+    private final CGroupManager cGroupManager;
     private final File podmanRoot;
     private final File podmanRunRoot;
 
@@ -41,6 +44,7 @@ public abstract class AbstractPodmanCommand extends AbstractCommand {
         super(log, delegate, podmanConfig.getRunDirectory());
 
         this.tlsVerify = podmanConfig.getTlsVerify();
+        this.cGroupManager = podmanConfig.getCgroupManager();
         this.podmanRoot = podmanConfig.getRoot();
         this.podmanRunRoot = podmanConfig.getRunRoot();
 
@@ -86,6 +90,10 @@ public abstract class AbstractPodmanCommand extends AbstractCommand {
 
         if (podmanRunRoot != null) {
             baseCommand.add(RUNROOT_CMD + podmanRunRoot.getAbsolutePath());
+        }
+
+        if(cGroupManager != null) {
+            baseCommand.add(cGroupManager.getCommand());
         }
 
         baseCommand.add(subCommand);

@@ -4,6 +4,7 @@ import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.image.single.TestSingleImageConfigurationBuilder;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
+import nl.lexemmens.podman.enumeration.CGroupManager;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Build;
@@ -206,6 +207,56 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService.build(image);
 
         Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+                delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildOciFormatWithCgroupFs() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .initAndValidate(mavenProject, log)
+                .setCgroupManager(CGroupManager.CGROUPFS)
+                .build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman --cgroup-manager=cgroupfs build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
+                delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildOciFormatWithSystemd() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .initAndValidate(mavenProject, log)
+                .setCgroupManager(CGroupManager.SYSTEMD)
+                .build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman --cgroup-manager=systemd build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
                 delegate.getCommandAsString());
     }
 

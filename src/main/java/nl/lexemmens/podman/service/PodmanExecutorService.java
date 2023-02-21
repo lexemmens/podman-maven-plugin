@@ -20,7 +20,7 @@ public class PodmanExecutorService {
 
     private final CommandExecutorDelegate delegate;
 
-    private PodmanConfiguration podmanConfig;
+    private final PodmanConfiguration podmanConfig;
 
     /**
      * Constructs a new instance of this class.

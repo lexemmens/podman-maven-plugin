@@ -20,7 +20,6 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String PULL_CMD = "--pull";
     private static final String PULL_ALWAYS_CMD = "--pull-always";
     private static final String NO_CACHE_CMD = "--no-cache";
-
     private static final String SUBCOMMAND = "build";
 
     private PodmanBuildCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
