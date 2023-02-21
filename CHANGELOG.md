@@ -1,4 +1,9 @@
 ## Changelog
+### 1.12.0 (21-02-2023)
+#### Improvements
+* ([#69](https://github.com/lexemmens/podman-maven-plugin/issues/69)) - Add SELinux support when building container images (RHEL8/CentOS8)
+* ([#71](https://github.com/lexemmens/podman-maven-plugin/pull/71)) - Add possibility to set cgroup manager (`--cgroup-manager` equivalent)
+
 ### 1.11.1 (23-08-2022)
 #### Bugs
 * ([#67](https://github.com/lexemmens/podman-maven-plugin/pull/67)) - Execution of Mojo's was not properly skipped if corresponding goal is skipped.
