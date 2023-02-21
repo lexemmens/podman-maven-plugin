@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Authentication :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="general-configuration.html">
+    <meta name="generator" content="Antora 3.0.0">
+<link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>
+        <span class="separator">//</span>
+        <a href="https://lexemmens.github.io/podman-maven-plugin/docs/index.html">Documentation</a>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://www.github.com/lexemmens/podman-maven-plugin">
+            Back to GitHub
+        </a>
+        <a class="navbar-item" href="https://twitter.com/lexemmens">
+          <span class="icon">
+            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="docs" data-version="1.12.0">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Podman Maven Plugin</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Maven Plugin</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="authentication.html">Authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="general-configuration.html">General Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="image-configuration.html">Image Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Goals</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/build.html">build</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/push.html">push</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/copy.html">copy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/save.html">save</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/clean.html">clean</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="registry-handling.html">Registry Handling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="usage.html">Usage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="further-reading.html">Further Reading</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Project Documentation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="project/contributing.html">Contributing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="project/copyright.html">Copyright and License</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Podman Maven Plugin</span>
+    <span class="version">1.12.0</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Podman Maven Plugin</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../index.html">latest</a>
+        </li>
+        <li class="version is-current">
+          <a href="index.html">1.12.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.12.0-alpha1/index.html">1.12.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.11.1/index.html">1.11.1</a>
+        </li>
+        <li class="version">
+          <a href="../1.11.0/index.html">1.11.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.10.0/index.html">1.10.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.10.0-alpha1/index.html">1.10.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.9.0/index.html">1.9.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.7.1/index.html">1.7.1</a>
+        </li>
+        <li class="version">
+          <a href="../1.7.0/index.html">1.7.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0/index.html">1.6.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0-alpha3/index.html">1.6.0-alpha3</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.5.0/index.html">1.5.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Podman Maven Plugin</a></li>
+    <li>Maven Plugin</li>
+    <li><a href="authentication.html">Authentication</a></li>
+  </ul>
+</nav>
+<div class="page-versions">
+  <button class="version-menu-toggle" title="Show other versions of page">1.12.0</button>
+  <div class="version-menu">
+    <a class="version" href="../authentication.html">latest</a>
+    <a class="version is-current" href="authentication.html">1.12.0</a>
+    <a class="version" href="../1.12.0-alpha1/authentication.html">1.12.0-alpha1</a>
+    <a class="version" href="../1.11.1/authentication.html">1.11.1</a>
+    <a class="version" href="../1.11.0/authentication.html">1.11.0</a>
+    <a class="version" href="../1.10.0/authentication.html">1.10.0</a>
+    <a class="version" href="../1.10.0-alpha1/authentication.html">1.10.0-alpha1</a>
+    <a class="version" href="../1.9.0/authentication.html">1.9.0</a>
+    <a class="version" href="../1.7.1/authentication.html">1.7.1</a>
+    <a class="version" href="../1.7.0/authentication.html">1.7.0</a>
+    <a class="version" href="../1.6.0/authentication.html">1.6.0</a>
+    <a class="version" href="../1.6.0-alpha3/authentication.html">1.6.0-alpha3</a>
+    <a class="version" href="../1.6.0-alpha2/authentication.html">1.6.0-alpha2</a>
+    <a class="version" href="../1.6.0-alpha1/authentication.html">1.6.0-alpha1</a>
+    <a class="version" href="../1.5.0/authentication.html">1.5.0</a>
+  </div>
+</div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.12.0/docs/modules/ROOT/pages/authentication.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Authentication</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The first step of <code>podman-maven-plugin</code>, before any of the goals is executed, is to authenticate you with all the registries that are configured in your <code>pom.xml</code>. The <code>podman-maven-plugin</code> currently supports three methods of authentication:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Authentication via Podman&#8217;s default authentication file;</p>
+</li>
+<li>
+<p>Authentication via Docker authentication file.</p>
+</li>
+<li>
+<p>Authentication via Maven settings;</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This plugin will use these mechanisms in the order listed.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Registries listed in the Maven Settings are used for authentication. Registries listed in either the Podman&#8217;s default auth file, or the Docker config file are assumed to be already authenticated.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="podmans-authentication-file"><a class="anchor" href="#podmans-authentication-file"></a>Podman&#8217;s authentication file</h2>
+<div class="sectionbody">
+<div id="podmanauth" class="paragraph">
+<p>The first method of authentication that is supported by this plugin is the default authentication mechanism of Podman.
+The default authentication mechanism is the <code>auth.json</code> file located at <code>$XDG_RUNTIME_DIR/containers/</code>.</p>
+</div>
+<div class="paragraph">
+<p>An <code>auth.json</code> file is automatically created by Podman when performing a <code>podman login &lt;registry&gt;</code> on the command line. Podman will then use this file when performing future commands.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 1. Sample Podman auth config.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+	"auths": {
+		"registry.example.com": {
+			"auth": "bGV4OnRlc3Q="
+		}
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="docker-configuration-file"><a class="anchor" href="#docker-configuration-file"></a>Docker configuration file</h2>
+<div class="sectionbody">
+<div id="dockerauth" class="paragraph">
+<p>The second method of authentication is by using Docker&#8217;s configuration file. This file is located at <code>~/.docker/config.json</code>. This file is structured in an identical way compared to Podman&#8217;s authentication file.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 2. Sample Docker configuration file.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+	"auths": {
+		"registry.example.com": {
+			"auth": "bGV4OnRlc3Q="
+		}
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="maven-settings"><a class="anchor" href="#maven-settings"></a>Maven Settings</h2>
+<div class="sectionbody">
+<div id="mavensettings" class="paragraph">
+<p>When a registry that is being used, is neither fount in the Podman authentication file, nor the Docker configuration file, than this plugin will attempt to authenticate those registries using information available in the Mave Settings file. Therefore, you must configure the registries in your Maven settings file.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The id of the server <strong>must</strong> match the registries configured in the plugin (see below). The plugin will fail if credentials are missing for any of the provided registries.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+This plugin will also fail if there are no registries configured, but authentication is not skipped. Please refer to the table below for all configuration options.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Listing 3. Excerpt of a Maven Settings file.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-XML hljs" data-lang="XML">&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
+
+    &lt;servers&gt;
+        &lt;server&gt;
+            &lt;id&gt;container-registry.host.com&lt;/id&gt;
+            &lt;username&gt;username&lt;/username&gt;
+            &lt;password&gt;password&lt;/password&gt;
+        &lt;/server&gt;
+        &lt;server&gt;
+            &lt;id&gt;container-registry.anotherhost.com:12345&lt;/id&gt;
+            &lt;username&gt;username&lt;/username&gt;
+            &lt;password&gt;{gsuybjVYiL4HK1S++3xiE9sHnHtzRGBlajGkQE5IH78=}&lt;/password&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        &lt;/server&gt;
+    &lt;/servers&gt;
+
+    &lt;!-- Other settings omitted --&gt;
+
+&lt;/settings&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Both encrypted and unencrypted passwords are supported.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Introduction</a></span>
+  <span class="next"><a href="general-configuration.html">General Configuration</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>Copyright (C) 2019-2023 <a href="https://www.lexemmens.nl">Lex Emmens</a> and individual contributors to the <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>.</p>
+  <p>This project is available under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. This website was generated using Antora.
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
