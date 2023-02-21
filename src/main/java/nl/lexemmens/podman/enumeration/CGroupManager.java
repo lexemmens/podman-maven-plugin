@@ -4,18 +4,18 @@ package nl.lexemmens.podman.enumeration;
  * Enumeration that contains the possible values for the cgroup maanger that can be used
  */
 public enum CGroupManager {
-    SYSTEMD("systemd"),
-    CGROUPFS("cgroupfs");
+    SYSTEMD("--cgroup-manager=systemd"),
+    CGROUPFS("--cgroup-manager=cgroupfs");
 
-    private final String cgroupManager;
+    private final String command;
 
     /**
      * Constructs a new instance of this enumeration
      *
-     * @param cgroupManager The cgroupManager to set
+     * @param command The cgroupManager command to use
      */
-    CGroupManager(String cgroupManager) {
-        this.cgroupManager = cgroupManager;
+    CGroupManager(String command) {
+        this.command = command;
     }
 
     /**
@@ -23,7 +23,7 @@ public enum CGroupManager {
      *
      * @return The corresponding cgroupManager.
      */
-    public String getCgroupManager() {
-        return cgroupManager;
+    public String getCommand() {
+        return command;
     }
 }

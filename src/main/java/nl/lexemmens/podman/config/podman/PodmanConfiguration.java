@@ -25,8 +25,8 @@ public class PodmanConfiguration {
     /**
      * Sets the cgroupManager to use (defaults to SYSTEMD)
      */
-    @Parameter(property = "podman.cgroup.manager", defaultValue = "SYSTEMD")
-    protected CGroupManager cGroupManager;
+    @Parameter(property = "podman.cgroup.manager")
+    protected CGroupManager cgroupManager;
 
     /**
      * Podman's root directory.
@@ -101,8 +101,8 @@ public class PodmanConfiguration {
      * Returns the cgroupManager that should be used when executing Podman
      * @return The cgroupManager to use
      */
-    public CGroupManager getcGroupManager() {
-        return cGroupManager;
+    public CGroupManager getCgroupManager() {
+        return cgroupManager;
     }
 
     /**

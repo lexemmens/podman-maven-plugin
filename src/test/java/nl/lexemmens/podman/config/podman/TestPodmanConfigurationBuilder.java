@@ -42,7 +42,7 @@ public class TestPodmanConfigurationBuilder {
     }
 
     public TestPodmanConfigurationBuilder setCgroupManager(CGroupManager cgroupManager) {
-        podman.cGroupManager = cgroupManager;
+        podman.cgroupManager = cgroupManager;
         return this;
     }
 

@@ -54,10 +54,6 @@ public class PodmanExecutorService {
                 .setContainerFile(image.getBuild().getTargetContainerFile())
                 .setNoCache(image.getBuild().isNoCache());
 
-        if(podmanConfig.getcGroupManager() != null) {
-            builder = builder.setCgroupManager(podmanConfig.getcGroupManager());
-        }
-
         if (Boolean.TRUE == image.getBuild().getSquash()) {
             builder = builder.setSquash();
         }

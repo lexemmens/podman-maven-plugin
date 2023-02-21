@@ -2,7 +2,6 @@ package nl.lexemmens.podman.command.podman;
 
 import nl.lexemmens.podman.command.Command;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
-import nl.lexemmens.podman.enumeration.CGroupManager;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.maven.plugin.logging.Log;
 
@@ -21,8 +20,6 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String PULL_CMD = "--pull";
     private static final String PULL_ALWAYS_CMD = "--pull-always";
     private static final String NO_CACHE_CMD = "--no-cache";
-
-    private static final String CGROUP_MANAGER = "--cgroup-manager";
     private static final String SUBCOMMAND = "build";
 
     private PodmanBuildCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
@@ -86,18 +83,6 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
          */
         public Builder setFormat(String format) {
             command.withOption(BUILD_FORMAT_CMD, format);
-            return this;
-        }
-
-        /**
-         * Sets the cgroup-manager that should be used. If not set the default cgroup
-         * manager will be used (systemd)
-         *
-         * @param cgroupManager The cgroup manager to use
-         * @return This builder instance.
-         */
-        public Builder setCgroupManager(CGroupManager cgroupManager) {
-            command.withOption(CGROUP_MANAGER, cgroupManager.getCgroupManager());
             return this;
         }
 

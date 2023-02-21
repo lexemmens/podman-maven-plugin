@@ -85,6 +85,19 @@ If not specified, default registries will be searched through (in /etc/container
 **Supported values are:** FALSE, TRUE, NOT_SPECIFIED
 |`podman.tls.verify`
 
+|cgroupManager
+|The CGroup manager to use for container cgroups. Default is systemd unless overridden in the containers.conf file.
+
+Note: Setting this flag can cause certain commands to break when called on containers previously created by the other CGroup manager type. Note: CGroup manager is not supported in rootless mode when using CGroups Version V1.
+
+**Default value is:** -
+
+**Supported values are:** SYSTEMD, CGROUPFS
+
+**See:** https://docs.podman.io/en/latest/markdown/podman.1.html#cgroup-manager-manager
+|podman.cgroup.manager
+
+
 |root
 |Storage root dir in which data, including images, is stored (default: “/var/lib/containers/storage” for UID 0, “$HOME/.local/share/containers/storage” for other users).
 Default root dir configured in /etc/containers/storage.conf.
