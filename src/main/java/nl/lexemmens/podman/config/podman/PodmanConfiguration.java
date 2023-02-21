@@ -1,5 +1,6 @@
 package nl.lexemmens.podman.config.podman;
 
+import nl.lexemmens.podman.enumeration.CGroupManager;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -20,6 +21,12 @@ public class PodmanConfiguration {
      */
     @Parameter(property = "podman.tls.verify", defaultValue = "NOT_SPECIFIED", required = true)
     protected TlsVerify tlsVerify;
+
+    /**
+     * Sets the cgroupManager to use (defaults to SYSTEMD)
+     */
+    @Parameter(property = "podman.cgroup.manager", defaultValue = "SYSTEMD")
+    protected CGroupManager cGroupManager;
 
     /**
      * Podman's root directory.
@@ -88,6 +95,14 @@ public class PodmanConfiguration {
      */
     public File getRunDirectory() {
         return runDirectory;
+    }
+
+    /**
+     * Returns the cgroupManager that should be used when executing Podman
+     * @return The cgroupManager to use
+     */
+    public CGroupManager getcGroupManager() {
+        return cGroupManager;
     }
 
     /**

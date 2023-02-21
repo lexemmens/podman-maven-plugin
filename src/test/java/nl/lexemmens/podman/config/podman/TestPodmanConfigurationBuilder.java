@@ -1,5 +1,6 @@
 package nl.lexemmens.podman.config.podman;
 
+import nl.lexemmens.podman.enumeration.CGroupManager;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -40,8 +41,12 @@ public class TestPodmanConfigurationBuilder {
         return this;
     }
 
+    public TestPodmanConfigurationBuilder setCgroupManager(CGroupManager cgroupManager) {
+        podman.cGroupManager = cgroupManager;
+        return this;
+    }
+
     public PodmanConfiguration build() {
         return podman;
     }
-
 }

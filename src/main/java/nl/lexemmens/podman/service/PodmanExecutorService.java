@@ -20,7 +20,7 @@ public class PodmanExecutorService {
 
     private final CommandExecutorDelegate delegate;
 
-    private PodmanConfiguration podmanConfig;
+    private final PodmanConfiguration podmanConfig;
 
     /**
      * Constructs a new instance of this class.
@@ -53,6 +53,10 @@ public class PodmanExecutorService {
                 .setFormat(image.getBuild().getFormat().getValue())
                 .setContainerFile(image.getBuild().getTargetContainerFile())
                 .setNoCache(image.getBuild().isNoCache());
+
+        if(podmanConfig.getcGroupManager() != null) {
+            builder = builder.setCgroupManager(podmanConfig.getcGroupManager());
+        }
 
         if (Boolean.TRUE == image.getBuild().getSquash()) {
             builder = builder.setSquash();
