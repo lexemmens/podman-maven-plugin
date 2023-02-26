@@ -21,8 +21,6 @@ public abstract class AbstractPodmanCommand extends AbstractCommand {
     private static final String BASE_COMMAND = "podman";
     private static final String ROOT_CMD = "--root=";
     private static final String RUNROOT_CMD = "--runroot=";
-    private static final String CGROUP_MANAGER = "--cgroup-manager";
-
     private final boolean redirectError;
     private final List<String> command;
 

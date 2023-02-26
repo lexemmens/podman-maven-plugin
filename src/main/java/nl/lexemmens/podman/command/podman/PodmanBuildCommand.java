@@ -6,12 +6,18 @@ import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.maven.plugin.logging.Log;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Implementation of the <code>podman build</code> command
  */
 public class PodmanBuildCommand extends AbstractPodmanCommand {
 
+    private static final String PODMAN_ARG_PREFIX = "podman.buildArg.";
     private static final String SQUASH_CMD = "--squash";
     private static final String SQUASH_ALL_CMD = "--squash-all";
     private static final String LAYERS_CMD = "--layers";
@@ -20,6 +26,7 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String PULL_CMD = "--pull";
     private static final String PULL_ALWAYS_CMD = "--pull-always";
     private static final String NO_CACHE_CMD = "--no-cache";
+    private static final String BUILD_ARG_CMD = "--build-arg";
     private static final String SUBCOMMAND = "build";
 
     private PodmanBuildCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
@@ -130,6 +137,35 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             return this;
         }
 
+        public Builder addBuildArgs(Map<String, String> args) {
+            Map<String, String> allBuildArgs = new HashMap<>(args);
+            allBuildArgs.putAll(getBuildArgsFromSystem());
+
+
+            for (Map.Entry<String, String> arg : allBuildArgs.entrySet()) {
+                command.withOption(BUILD_ARG_CMD, String.format("%s=%s", arg.getKey(), arg.getValue()));
+            }
+            return this;
+        }
+
+        private Map<String, String> getBuildArgsFromSystem() {
+            Map<String, String> buildArgsFromSystem = new HashMap<>();
+            Properties properties = System.getProperties();
+            for (Object keyObj : properties.keySet()) {
+                String key = (String) keyObj;
+                if (key.startsWith(PODMAN_ARG_PREFIX)) {
+                    String argKey = key.replaceFirst(PODMAN_ARG_PREFIX, "");
+                    String value = properties.getProperty(key);
+
+                    if (!isEmpty(value)) {
+                        buildArgsFromSystem.put(argKey, value);
+                    }
+                }
+            }
+
+            return buildArgsFromSystem;
+        }
+
         /**
          * Returns the constructed command
          *
@@ -140,6 +176,7 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             command.withOption(".", null);
             return command;
         }
+
 
     }
 

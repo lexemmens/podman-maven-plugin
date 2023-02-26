@@ -23,9 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;
 import static nl.lexemmens.podman.enumeration.ContainerFormat.OCI;
@@ -233,6 +231,129 @@ public class PodmanExecutorServiceTest {
 
         Assertions.assertEquals("podman --cgroup-manager=cgroupfs build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false .",
                 delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildOciFormatWithBuildArgs() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        Map<String, String> buildArgs = new HashMap<>();
+        buildArgs.put("arg1", "value1");
+        buildArgs.put("arg2", "value2");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .initAndValidate(mavenProject, log)
+                .build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setBuildArgs(buildArgs)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --build-arg=arg2=value2 --build-arg=arg1=value1 .",
+                delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testBuildOciFormatWithBuildArgsViaSystemPropertiesAndConfiguration() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        System.setProperty("podman.buildArg.sysArg1", "sysArgValue1");
+
+        Map<String, String> buildArgs = new HashMap<>();
+        buildArgs.put("arg1", "value1");
+        buildArgs.put("arg2", "value2");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .initAndValidate(mavenProject, log)
+                .build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setBuildArgs(buildArgs)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --build-arg=arg2=value2 --build-arg=arg1=value1 --build-arg=sysArg1=sysArgValue1 .",
+                delegate.getCommandAsString());
+
+        System.clearProperty("podman.buildArg.sysArg1");
+    }
+
+    @Test
+    public void testBuildOciFormatWithBuildArgsViaSystemPropertiesOnly() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        System.setProperty("podman.buildArg.sysArg1", "sysArgValue1");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .initAndValidate(mavenProject, log)
+                .build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --build-arg=sysArg1=sysArgValue1 .",
+                delegate.getCommandAsString());
+
+        System.clearProperty("podman.buildArg.sysArg1");
+    }
+
+    @Test
+    public void testBuildOciFormatWithBuildArgsOverrideViaSystemProperties() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        System.setProperty("podman.buildArg.arg1", "value3");
+
+        Map<String, String> buildArgs = new HashMap<>();
+        buildArgs.put("arg1", "value1");
+        buildArgs.put("arg2", "value2");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder()
+                .setTlsVerify(TRUE)
+                .initAndValidate(mavenProject, log)
+                .build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setBuildArgs(buildArgs)
+                .setContainerfileDir("src/test/resources")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file=" + image.getBuild().getTargetContainerFile() + " --no-cache=false --build-arg=arg2=value2 --build-arg=arg1=value3 .",
+                delegate.getCommandAsString());
+
+        System.clearProperty("podman.buildArg.arg1");
     }
 
     @Test

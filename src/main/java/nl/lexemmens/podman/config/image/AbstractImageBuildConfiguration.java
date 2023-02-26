@@ -30,7 +30,7 @@ public abstract class AbstractImageBuildConfiguration {
      * named stages.
      */
     protected static final Pattern MULTISTAGE_CONTAINERFILE_REGEX = Pattern.compile(
-        "(FROM\\s[a-zA-Z0-9./:_\\-${}]{0,255}\\s)([ASas]{2}\\s)([a-zA-Z0-9./:_\\-]{1,128})"
+            "(FROM\\s[a-zA-Z0-9./:_\\-${}]{0,255}\\s)([ASas]{2}\\s)([a-zA-Z0-9./:_\\-]{1,128})"
     );
 
     /**
@@ -82,6 +82,11 @@ public abstract class AbstractImageBuildConfiguration {
     @Parameter
     protected String containerFile;
 
+    /**
+     * Collection of build arguments to use during Podman build
+     */
+    @Parameter
+    private Map<String, String> args;
 
     /**
      * Specify any labels to be applied to the image
@@ -202,6 +207,10 @@ public abstract class AbstractImageBuildConfiguration {
 
         if (containerFileDir == null) {
             containerFileDir = project.getBasedir();
+        }
+
+        if(args == null) {
+            args = new HashMap<>();
         }
     }
 
@@ -480,4 +489,21 @@ public abstract class AbstractImageBuildConfiguration {
         this.containerFileDir = containerFileDir;
     }
 
+    /**
+     * Retrieves a collection of build arguments to provide to podman build using --build-arg
+     *
+     * @return A collection of build arguments to provide to podman build
+     */
+    public Map<String, String> getArgs() {
+        return args;
+    }
+
+    /**
+     * The build arguments to set for use during Podman build
+     *
+     * @param args The arguments to set
+     */
+    public void setArgs(Map<String, String> args) {
+        this.args = args;
+    }
 }
