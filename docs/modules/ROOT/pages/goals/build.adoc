@@ -93,6 +93,15 @@ When this option is specified _and_ `pullAlways` is also specified, builds will 
 |<<labels,labels>>
 |A collection of labels to add to this image. They are specified in the typical maven property format.
 
+|<<args,args>>
+|Specifies one or more build arguments and their value, which will be interpolated in instructions read from the
+Containerfiles in the same way that environment variables are, but which will not be added to environment variable
+list in the resulting image’s configuration.
+
+**Syntax**: `<arg>value</arg>`
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html#build-arg-arg-value
+
 |tagWithMavenProjectVersion
 |When set to `true`, the resulting container image will be tagged with the current version of the Maven project.
 
@@ -133,6 +142,10 @@ Supported values are:
                 </tags>
                 <createLatestTag>true</createLatestTag>
                 <format>OCI</format>
+                <args>
+                    <buildArg1>buildArgValue1</buildArg1>
+                    <buildArg2>buildArgValue2</buildArg2>
+                </args>
             </build>
         </image>
     </images>
@@ -163,6 +176,17 @@ WARNING: Please be advised that you can only configure one run directory for pod
 Labels are a mechanism for applying metadata to container images. Labels can be used to order images. A label is a key-value pair, stored as a string. You can specify multiple labels for an object, but each key-value pair must be unique within an object. If the same key is given multiple values, the most-recently-written value overwrites all previous values.
 
 NOTE: As of version 1.7.1 label values are always stored between double quotes to allow values with spaces.
+
+=== Build arguments
+:navtitle: Build Arguments
+[#args]
+
+Specifies one or more build arguments and their value, which will be interpolated in instructions read from the
+Containerfiles in the same way that environment variables are, but which will not be added to environment variable
+list in the resulting image’s configuration.
+
+Build arguments can also be specified via System Properties, using the syntax: `podman.buildArg.exampleBuildArgument=buildArgumentValue`. Do note that System Properties are global and take precedence over the arguments that are configured
+in the build configuration for each image.
 
 === Key format recommendations
 [#keyformatrecommendations]

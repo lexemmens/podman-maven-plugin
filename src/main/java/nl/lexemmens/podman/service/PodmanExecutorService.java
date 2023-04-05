@@ -76,6 +76,8 @@ public class PodmanExecutorService {
             builder = builder.setPullAllways(pullAlwaysOptional.get());
         }
 
+        builder.addBuildArgs(image.getBuild().getArgs());
+
         return builder.build().execute();
     }
 

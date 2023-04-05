@@ -1,5 +1,6 @@
 package nl.lexemmens.podman;
 
+import nl.lexemmens.podman.config.image.AbstractImageConfiguration;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.helper.MultiStageBuildOutputHelper;
 import nl.lexemmens.podman.service.ServiceHub;
@@ -154,34 +155,34 @@ public class BuildMojo extends AbstractPodmanMojo {
     }
 
     private void catalogContainers(List<SingleImageConfiguration> images, ServiceHub hub) throws MojoExecutionException {
-        List<String> containerCatalog = getContainerCatalog(images);
-        if (containerCatalog.isEmpty()) {
-            getLog().info("No containers were catalogued.");
-            return;
-        }
-
-        containerCatalog.add(0, CATALOG_HEADER);
-
-        String catalogFileName = String.format("%s.txt", CATALOG_ARTIFACT_NAME);
-        Path catalogPath = Paths.get(project.getBuild().getDirectory(), catalogFileName);
-        try {
-            Files.write(catalogPath, containerCatalog);
-        } catch (IOException e) {
-            getLog().error("Failed to write catalog file! Caught: " + e.getMessage());
-            throw new MojoExecutionException(e.getMessage(), e);
-        }
-
         if (skipCatalog) {
             getLog().info("Skipping attaching of catalog artifact.");
         } else {
-            getLog().info("Attaching catalog artifact: " + catalogPath);
+            List<String> containerCatalog = getContainerCatalog(images);
+            if (containerCatalog.isEmpty()) {
+                getLog().info("No containers were catalogued.");
+                return;
+            }
 
+            containerCatalog.add(0, CATALOG_HEADER);
+
+            String catalogFileName = String.format("%s.txt", CATALOG_ARTIFACT_NAME);
+            Path catalogPath = Paths.get(project.getBuild().getDirectory(), catalogFileName);
+            try {
+                Files.write(catalogPath, containerCatalog);
+            } catch (IOException e) {
+                getLog().error("Failed to write catalog file! Caught: " + e.getMessage());
+                throw new MojoExecutionException(e.getMessage(), e);
+            }
+
+            getLog().info("Attaching catalog artifact: " + catalogPath);
             hub.getMavenProjectHelper().attachArtifact(project, "txt", CATALOG_ARTIFACT_NAME, catalogPath.toFile());
         }
     }
 
     private List<String> getContainerCatalog(List<SingleImageConfiguration> images) {
         return images.stream()
+                .filter(AbstractImageConfiguration::isValid)
                 .map(this::singleImageConfigurationToFullImageList)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());

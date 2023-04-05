@@ -69,6 +69,11 @@ public class TestSingleImageConfigurationBuilder {
         return this;
     }
 
+    public TestSingleImageConfigurationBuilder setBuildArgs(Map<String, String> args) {
+        image.getBuild().setArgs(args);
+        return this;
+    }
+
     public TestSingleImageConfigurationBuilder setUseMavenProjectVersion(boolean useMavenProjectVersion) {
         image.getBuild().setTagWithMavenProjectVersion(useMavenProjectVersion);
         return this;
