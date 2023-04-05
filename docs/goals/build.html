@@ -329,6 +329,14 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 <td class="tableblock halign-left valign-top"><p class="tableblock">A collection of labels to add to this image. They are specified in the typical maven property format.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#args">args</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies one or more build arguments and their value, which will be interpolated in instructions read from the
+Containerfiles in the same way that environment variables are, but which will not be added to environment variable
+list in the resulting image’s configuration.</p>
+<p class="tableblock"><strong>Syntax</strong>: <code>&lt;arg&gt;value&lt;/arg&gt;</code></p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html#build-arg-arg-value" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html#build-arg-arg-value</a></p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">tagWithMavenProjectVersion</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">When set to <code>true</code>, the resulting container image will be tagged with the current version of the Maven project.</p>
 <p class="tableblock"><strong>Default value is</strong>: <code>true</code></p></td>
@@ -381,6 +389,10 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
                 &lt;/tags&gt;
                 &lt;createLatestTag&gt;true&lt;/createLatestTag&gt;
                 &lt;format&gt;OCI&lt;/format&gt;
+                &lt;args&gt;
+                    &lt;buildArg1&gt;buildArgValue1&lt;/buildArg1&gt;
+                    &lt;buildArg2&gt;buildArgValue2&lt;/buildArg2&gt;
+                &lt;/args&gt;
             &lt;/build&gt;
         &lt;/image&gt;
     &lt;/images&gt;
@@ -440,6 +452,18 @@ As of version 1.7.1 label values are always stored between double quotes to allo
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="build-arguments"><a class="anchor" href="#build-arguments"></a>Build arguments</h3>
+<div id="args" class="paragraph">
+<p>Specifies one or more build arguments and their value, which will be interpolated in instructions read from the
+Containerfiles in the same way that environment variables are, but which will not be added to environment variable
+list in the resulting image’s configuration.</p>
+</div>
+<div class="paragraph">
+<p>Build arguments can also be specified via System Properties, using the syntax: <code>podman.buildArg.exampleBuildArgument=buildArgumentValue</code>. Do note that System Properties are global and take precedence over the arguments that are configured
+in the build configuration for each image.</p>
 </div>
 </div>
 <div class="sect2">
