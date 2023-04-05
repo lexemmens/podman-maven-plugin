@@ -382,7 +382,6 @@ public class BuildMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
-        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
 
         Assertions.assertDoesNotThrow(buildMojo::execute);
         verify(log, Mockito.times(1)).warn("No Containerfile was found at " + targetLocationAsString + File.separator + "Containerfile, however this will be ignored due to current plugin configuration.");
