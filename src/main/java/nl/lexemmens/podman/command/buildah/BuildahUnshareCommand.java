@@ -16,7 +16,8 @@ public class BuildahUnshareCommand extends AbstractCommand {
     /**
      * The base command
      */
-    private static final String BASE_COMMAND = "buildah unshare";
+    private static final String BASE_COMMAND = "buildah";
+    private static final String UNSHARE_COMMAND = "unshare";
 
     private final List<String> command;
 
@@ -30,6 +31,7 @@ public class BuildahUnshareCommand extends AbstractCommand {
         super(log, delegate);
         this.command = new ArrayList<>();
         this.command.add(BASE_COMMAND);
+        this.command.add(UNSHARE_COMMAND);
     }
 
     @Override
@@ -77,7 +79,9 @@ public class BuildahUnshareCommand extends AbstractCommand {
          * @return This builder
          */
         public Builder removeDirectory(String directory) {
-            this.command.withOption("rm -rf", directory);
+            this.command.withOption("rm", null);
+            this.command.withOption("-rf", null);
+            this.command.withOption(directory, null);
             return this;
         }
 

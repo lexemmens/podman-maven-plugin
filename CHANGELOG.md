@@ -1,10 +1,16 @@
 ## Changelog
-### 1.13.0 (05-04-2022)
+### 1.14.0 (11-04-2023)
+#### Bugs
+* ([#75](https://github.com/lexemmens/podman-maven-plugin/issues/75)) - Podman Clean was not working after version 1.11.0
+* ([#76](https://github.com/lexemmens/podman-maven-plugin/issues/76)) - Podman Push goal failed when no container-catalog.txt is found
+* ([#77](https://github.com/lexemmens/podman-maven-plugin/issues/77)) - SELinux context was not set correctly when using custom root
+
+### 1.13.0 (05-04-2023)
 #### Improvements
-* ([#59](https://github.com/lexemmens/podman-maven-plugin/issues/59) - Support for build arguments)
+* ([#59](https://github.com/lexemmens/podman-maven-plugin/issues/59)) - Support for build arguments
 
 #### Bugs
-* ([#74](https://github.com/lexemmens/podman-maven-plugin/issues/74) - Fixed cataloguing of artifacts when catloguing is skipped of no valid images are present)
+* ([#74](https://github.com/lexemmens/podman-maven-plugin/issues/74)) - Fixed cataloguing of artifacts when catloguing is skipped of no valid images are present
 
 ### 1.12.0 (21-02-2023)
 #### Improvements

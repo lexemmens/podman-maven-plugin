@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -77,16 +78,20 @@ public abstract class AbstractCatalogSupport extends AbstractPodmanMojo {
     }
 
     private List<String> readCatalogContent(Path catalogPath, boolean local) throws MojoExecutionException {
-        try (Stream<String> catalogStream = Files.lines(catalogPath)) {
-            return catalogStream.skip(1)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            String msg = "Failed to read container catalog.";
-            if (local) {
-                msg += " Make sure the build goal is executed.";
+        if (Files.exists(catalogPath)) {
+            try (Stream<String> catalogStream = Files.lines(catalogPath)) {
+                return catalogStream.skip(1)
+                        .collect(Collectors.toList());
+            } catch (IOException e) {
+                String msg = "Failed to read container catalog.";
+                if (local) {
+                    msg += " Make sure the build goal is executed.";
+                }
+                getLog().error(msg);
+                throw new MojoExecutionException(msg, e);
             }
-            getLog().error(msg);
-            throw new MojoExecutionException(msg, e);
+        } else {
+            return Collections.emptyList();
         }
     }
 
