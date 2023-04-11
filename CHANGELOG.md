@@ -1,5 +1,5 @@
 ## Changelog
-### 1.14.0 (XX-04-2023)
+### 1.14.0 (11-04-2023)
 #### Bugs
 * ([#75](https://github.com/lexemmens/podman-maven-plugin/issues/75)) - Podman Clean was not working after version 1.11.0
 * ([#76](https://github.com/lexemmens/podman-maven-plugin/issues/76)) - Podman Push goal failed when no container-catalog.txt is found
