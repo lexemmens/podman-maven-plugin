@@ -41,7 +41,7 @@ public class ChConCommand extends AbstractCommand {
 
     protected void withOption(String option, String optionValue) {
         command.add(option);
-        if(optionValue != null) {
+        if (optionValue != null) {
             command.add(optionValue);
         }
     }
@@ -64,24 +64,25 @@ public class ChConCommand extends AbstractCommand {
         }
 
         /**
-         * Allows to specify the security context type
+         * Sets the recursive flag on the chcon command
          *
-         * @param type The security context type
          * @return this builder instance
          */
-        public Builder withType(String type) {
-            this.command.withOption("-t", type);
+        public Builder withRecursiveOption() {
+            this.command.withOption("-R", null);
             return this;
         }
 
         /**
-         * Specifies the directory for which the security context type should be changed
+         * Allows to specify the security context type
          *
-         * @param directory The directory for which the security context should be changed
-         * @return This builder instance
+         * @param sourceDirectory The source directory to base the context on
+         * @param targetDirectory The target directory to apply the SELinux context of the source directory to
+         * @return this builder instance
          */
-        public Builder withDirectory(String directory) {
-            this.command.withOption(directory, null);
+        public Builder withReferenceDirectory(String sourceDirectory, String targetDirectory) {
+            this.command.withOption("--reference", sourceDirectory);
+            this.command.withOption(targetDirectory, null);
             return this;
         }
 

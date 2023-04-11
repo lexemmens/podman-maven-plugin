@@ -107,10 +107,11 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getBuild()).thenReturn(build);
         when(build.getDirectory()).thenReturn("target/podman-test-no-catalog");
 
-        Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
+        Assertions.assertDoesNotThrow(pushMojo::execute);
 
         verify(log, Mockito.times(1)).info("Registry authentication is skipped.");
-        verify(log, Mockito.times(1)).error("Failed to read container catalog. Make sure the build goal is executed.");
+        verify(log, Mockito.times(1)).info("Using container-catalog.txt to perform podman push");
+        verify(log, Mockito.times(1)).info("Not pushing container images, because no container-catalog.txt file was found.");
     }
 
     @Test

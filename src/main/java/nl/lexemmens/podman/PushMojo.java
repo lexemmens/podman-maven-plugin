@@ -46,14 +46,14 @@ public class PushMojo extends AbstractCatalogSupport {
         }
 
         getLog().info("Using container-catalog.txt to perform podman push");
-
         List<String> cataloguedImages = readLocalCatalog();
 
-        if (!cataloguedImages.isEmpty()) {
+        if (cataloguedImages.isEmpty()) {
+            getLog().info("Not pushing container images, because no container-catalog.txt file was found.");
+        } else {
             pushContainerImages(hub, cataloguedImages);
+            getLog().info("All images have been successfully pushed to the registry");
         }
-
-        getLog().info("All images have been successfully pushed to the registry");
     }
 
     @Override

@@ -89,7 +89,7 @@ public class SecurityContextService {
             log.debug("Using custom root with SELinux enabled. Setting security context to " + TARGET_SECURITY_CONTEXT_TYPE + " for " + podmanCfg.getRoot());
             // In order to set the context, we need to ensure that the destination folder exists.
             try {
-                Path path = podmanCfg.getRoot().toPath();
+                Path path = podmanCfg.getRoot().toPath().normalize();
                 Files.createDirectories(path);
             } catch (IOException e) {
                 throw new MojoExecutionException(
@@ -100,8 +100,8 @@ public class SecurityContextService {
 
             // If the directory is created, set the security context
             Command chconCommand = new ChConCommand.Builder(log, delegate)
-                    .withType(TARGET_SECURITY_CONTEXT_TYPE)
-                    .withDirectory(podmanCfg.getRoot().getAbsolutePath())
+                    .withRecursiveOption()
+                    .withReferenceDirectory("/var/lib/containers/storage", podmanCfg.getRoot().getAbsolutePath())
                     .build();
 
             chconCommand.execute();
