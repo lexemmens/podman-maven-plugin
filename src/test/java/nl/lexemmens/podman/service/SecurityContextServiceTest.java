@@ -83,6 +83,7 @@ public class SecurityContextServiceTest {
         assertEquals(1, commandExecutions.size());
         verify(log, times(1)).debug("Checking SELinux status...");
         verify(log, times(1)).debug("SELinux is enabled");
+        verify(log, times(1)).info("Determined graphRoot location to be: /var/lib/containers/storage. Executing chcon using this directory as reference...");
         verify(log, times(0)).debug("Using Podman default storage location. Assuming security context is set correctly " +
                 "for this location. Refer to the documentation of this plugin if you run into any issues.");
     }
@@ -104,6 +105,12 @@ public class SecurityContextServiceTest {
             if(processExecutor.getCommand().contains("sestatus")) {
                 List<String> sestatusOutput = new ArrayList<>();
                 sestatusOutput.add(String.format("SELinux status: %s", seLinuxStatus));
+                return sestatusOutput;
+            }
+
+            if(processExecutor.getCommand().contains("podman")) {
+                List<String> sestatusOutput = new ArrayList<>();
+                sestatusOutput.add("graphRoot: /var/lib/containers/storage");
                 return sestatusOutput;
             }
             return processOutput;
