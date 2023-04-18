@@ -1,4 +1,8 @@
 ## Changelog
+### 1.14.1 (18-04-2023)
+#### Bugs
+* ([#80](https://github.com/lexemmens/podman-maven-plugin/issues/80)) - SecurityContextService now derives graphRoot via `podman system info` 
+
 ### 1.14.0 (11-04-2023)
 #### Bugs
 * ([#75](https://github.com/lexemmens/podman-maven-plugin/issues/75)) - Podman Clean was not working after version 1.11.0
