@@ -17,6 +17,7 @@ import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.transfer.ArtifactNotFoundException;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,8 +64,7 @@ public abstract class AbstractCatalogSupport extends AbstractPodmanMojo {
 
             ArtifactResult artifactResult = repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
             if (artifactResult.isMissing()) {
-                throw new MojoExecutionException("Cannot find container catalog. All repositories were successfully " +
-                        "queried, but no such artifact was returned.");
+                return Collections.emptyList();
             }
             if (artifactResult.isResolved()) {
                 return readCatalogContent(Paths.get(artifactResult.getArtifact().getFile().toURI()), false);
@@ -73,6 +73,9 @@ public abstract class AbstractCatalogSupport extends AbstractPodmanMojo {
             }
 
         } catch (ArtifactResolutionException e) {
+            if (e.getCause() instanceof ArtifactNotFoundException) {
+                return Collections.emptyList();
+            }
             throw new MojoExecutionException("Failed retrieving container catalog file", e);
         }
     }
