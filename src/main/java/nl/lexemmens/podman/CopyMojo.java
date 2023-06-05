@@ -55,17 +55,22 @@ public class CopyMojo extends AbstractCatalogSupport {
         File tempRepo = tempSession.repo;
 
         List<String> cataloguedImages = readRemoteCatalog(tempSession.session);
-        Map<String, String> transformedImages = performTransformation(cataloguedImages);
+        if (cataloguedImages.isEmpty()) {
+            getLog().info("Not copying container images, because no container-catalog.txt artifact was " +
+                "found.");
+        } else {
+            Map<String, String> transformedImages = performTransformation(cataloguedImages);
 
-        for (Map.Entry<String, String> imageEntry : transformedImages.entrySet()) {
-            copyImage(hub, imageEntry.getKey(), imageEntry.getValue());
-        }
+            for (Map.Entry<String, String> imageEntry : transformedImages.entrySet()) {
+                copyImage(hub, imageEntry.getKey(), imageEntry.getValue());
+            }
 
-        if (skopeo.getCopy().getDisableLocal() && tempRepo != null) {
-            try {
-                FileUtils.deleteDirectory(tempRepo);
-            } catch (IOException e) {
-                getLog().warn("Failed to cleanup temporary repository directory: " + tempRepo);
+            if (skopeo.getCopy().getDisableLocal() && tempRepo != null) {
+                try {
+                    FileUtils.deleteDirectory(tempRepo);
+                } catch (IOException e) {
+                    getLog().warn("Failed to cleanup temporary repository directory: " + tempRepo);
+                }
             }
         }
     }

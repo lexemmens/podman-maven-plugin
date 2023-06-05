@@ -28,6 +28,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.transfer.ArtifactNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -182,6 +183,15 @@ public class CopyMojoTest extends AbstractMojoTest {
         assertDoesNotThrow(copyMojo::execute);
         verify(skopeoExecutorService, times(1)).copy("dep1.stage.registry.example.com/foo/bar:0.1.0", "dep1.release.registry.example.com/foo/bar:0.1.0");
         verify(skopeoExecutorService, times(1)).copy("dep2.stage.registry.example.com/project/product:2.1.3", "dep2.release.registry.example.com/project/product:2.1.3");
+    }
+
+    @Test
+    public void testSkipCopyNoCatalogFile() throws ArtifactResolutionException, MojoExecutionException {
+        configureMojo(false, false, true, null, new String[]{}, "stage", "release", null, false, false, false);
+        when(copyMojo.repositorySystem.resolveArtifact(any(RepositorySystemSession.class), any(ArtifactRequest.class)))
+            .thenThrow(new ArtifactResolutionException(null, null, new ArtifactNotFoundException(null, null)));
+        assertDoesNotThrow(copyMojo::execute);
+        verify(skopeoExecutorService, times(0)).copy(anyString(), anyString());
     }
 
     private static void cleanDir(Path dir) throws IOException {
