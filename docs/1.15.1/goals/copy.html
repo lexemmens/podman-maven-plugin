@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Copy :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="push.html">
+    <link rel="next" href="save.html">
+    <meta name="generator" content="Antora 3.0.0">
+<link rel="stylesheet" href="../../../_/css/podman.css">    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>
+        <span class="separator">//</span>
+        <a href="https://lexemmens.github.io/podman-maven-plugin/docs/index.html">Documentation</a>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://www.github.com/lexemmens/podman-maven-plugin">
+            Back to GitHub
+        </a>
+        <a class="navbar-item" href="https://twitter.com/lexemmens">
+          <span class="icon">
+            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="docs" data-version="1.15.1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Podman Maven Plugin</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Maven Plugin</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../authentication.html">Authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../general-configuration.html">General Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../image-configuration.html">Image Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Goals</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="build.html">build</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="push.html">push</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="copy.html">copy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="save.html">save</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="clean.html">clean</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../registry-handling.html">Registry Handling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../usage.html">Usage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../further-reading.html">Further Reading</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Project Documentation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../project/contributing.html">Contributing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../project/copyright.html">Copyright and License</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Podman Maven Plugin</span>
+    <span class="version">1.15.1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../../index.html">Podman Maven Plugin</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../index.html">latest</a>
+        </li>
+        <li class="version is-current">
+          <a href="../index.html">1.15.1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.14.0/index.html">1.14.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.13.0/index.html">1.13.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.12.0/index.html">1.12.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.12.0-alpha1/index.html">1.12.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.11.1/index.html">1.11.1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.11.0/index.html">1.11.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.10.0/index.html">1.10.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.10.0-alpha1/index.html">1.10.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.9.0/index.html">1.9.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.7.1/index.html">1.7.1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.7.0/index.html">1.7.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0/index.html">1.6.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0-alpha3/index.html">1.6.0-alpha3</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.5.0/index.html">1.5.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Podman Maven Plugin</a></li>
+    <li>Maven Plugin</li>
+    <li>Goals</li>
+    <li><a href="copy.html">copy</a></li>
+  </ul>
+</nav>
+<div class="page-versions">
+  <button class="version-menu-toggle" title="Show other versions of page">1.15.1</button>
+  <div class="version-menu">
+    <a class="version" href="../../goals/copy.html">latest</a>
+    <a class="version is-current" href="copy.html">1.15.1</a>
+    <a class="version" href="../../1.14.0/goals/copy.html">1.14.0</a>
+    <a class="version" href="../../1.13.0/goals/copy.html">1.13.0</a>
+    <a class="version" href="../../1.12.0/goals/copy.html">1.12.0</a>
+    <a class="version" href="../../1.12.0-alpha1/goals/copy.html">1.12.0-alpha1</a>
+    <a class="version" href="../../1.11.1/goals/copy.html">1.11.1</a>
+    <a class="version" href="../../1.11.0/goals/copy.html">1.11.0</a>
+    <a class="version" href="../../1.10.0/goals/copy.html">1.10.0</a>
+    <a class="version" href="../../1.10.0-alpha1/goals/copy.html">1.10.0-alpha1</a>
+    <a class="version is-missing" href="../../1.9.0/index.html">1.9.0</a>
+    <a class="version is-missing" href="../../1.7.1/index.html">1.7.1</a>
+    <a class="version is-missing" href="../../1.7.0/index.html">1.7.0</a>
+    <a class="version is-missing" href="../../1.6.0/index.html">1.6.0</a>
+    <a class="version is-missing" href="../../1.6.0-alpha3/index.html">1.6.0-alpha3</a>
+    <a class="version is-missing" href="../../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
+    <a class="version is-missing" href="../../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
+    <a class="version is-missing" href="../../1.5.0/index.html">1.5.0</a>
+  </div>
+</div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.14.1/docs/modules/ROOT/pages/goals/copy.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Copy</h1>
+<div class="paragraph">
+<p>This goal copies images listed on the <code>container-catalog.txt</code> from the listed registry to a specified registry. The <code>container-catalog.txt</code> file can be generated and deployed as part of the <code>build</code> goal (refer to section xref:goals/build.adoc). The target image repository is determined by replacing substring <code>searchString</code> by <code>replaceString</code> in the source image repository. <code>skopeo</code> is used to execute the copy. Hence, the binary must be present on the path.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. General copy options</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipCopy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t copy any images.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.skip.copy</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<div class="title">Skopeo copy configuration</div>
+<p>The options below have to be specified in a specific skopeo copy block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
+    &lt;skopeo&gt;
+        &lt;copy&gt;
+            &lt;searchString&gt;docker.io&lt;/searchString&gt;
+            &lt;replaceString&gt;quay.io&lt;/replaceString&gt;
+        &lt;/copy&gt;
+    &lt;/skopeo&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>searchString</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This part of the image repository will be replaced for generating the target repository.</p>
+<p class="tableblock"><strong>This property is required.</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.copy.image.searchString</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>replaceString</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The <code>searchString</code> part of the image repository will be replaced by this string.</p>
+<p class="tableblock"><strong>This property is required.</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.copy.image.replaceString</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>srcTlsVerify</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Require HTTPS and verify certificates when talking to container source registry or daemon.</p>
+<p class="tableblock"><strong>Default value is:</strong> <code>true</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.copy.srcTlsVerify</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>destTlsVerify</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Require HTTPS and verify certificates when talking to container destination  registry or daemon.</p>
+<p class="tableblock"><strong>Default value is:</strong> <code>true</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.copy.destTlsVerify</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sourceCatalogRepository</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limit searching for the <code>container-catalog.txt</code> file to this repository.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.copy.source.catalog.repo</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>disableLocal</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disable searching for the <code>container-catalog.txt</code> file in the local Maven repository.</p>
+<p class="tableblock"><strong>Default value is:</strong> <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skopeo.copy.catalog.repo.local.disable</code></p></td>
+</tr>
+</tbody>
+</table>
+<nav class="pagination">
+  <span class="prev"><a href="push.html">push</a></span>
+  <span class="next"><a href="save.html">save</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>Copyright (C) 2019-2023 <a href="https://www.lexemmens.nl">Lex Emmens</a> and individual contributors to the <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>.</p>
+  <p>This project is available under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. This website was generated using Antora.
+</footer>
+<script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

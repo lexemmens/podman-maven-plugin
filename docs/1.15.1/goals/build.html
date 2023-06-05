@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Build :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="../image-configuration.html">
+    <link rel="next" href="push.html">
+    <meta name="generator" content="Antora 3.0.0">
+<link rel="stylesheet" href="../../../_/css/podman.css">    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>
+        <span class="separator">//</span>
+        <a href="https://lexemmens.github.io/podman-maven-plugin/docs/index.html">Documentation</a>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://www.github.com/lexemmens/podman-maven-plugin">
+            Back to GitHub
+        </a>
+        <a class="navbar-item" href="https://twitter.com/lexemmens">
+          <span class="icon">
+            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="docs" data-version="1.15.1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Podman Maven Plugin</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Maven Plugin</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../authentication.html">Authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../general-configuration.html">General Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../image-configuration.html">Image Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Goals</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="build.html">build</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="push.html">push</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="copy.html">copy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="save.html">save</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="clean.html">clean</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../registry-handling.html">Registry Handling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../usage.html">Usage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../further-reading.html">Further Reading</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Project Documentation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../project/contributing.html">Contributing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../project/copyright.html">Copyright and License</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Podman Maven Plugin</span>
+    <span class="version">1.15.1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../../index.html">Podman Maven Plugin</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../index.html">latest</a>
+        </li>
+        <li class="version is-current">
+          <a href="../index.html">1.15.1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.14.0/index.html">1.14.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.13.0/index.html">1.13.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.12.0/index.html">1.12.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.12.0-alpha1/index.html">1.12.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.11.1/index.html">1.11.1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.11.0/index.html">1.11.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.10.0/index.html">1.10.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.10.0-alpha1/index.html">1.10.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.9.0/index.html">1.9.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.7.1/index.html">1.7.1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.7.0/index.html">1.7.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0/index.html">1.6.0</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0-alpha3/index.html">1.6.0-alpha3</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
+        </li>
+        <li class="version">
+          <a href="../../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../../1.5.0/index.html">1.5.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Podman Maven Plugin</a></li>
+    <li>Maven Plugin</li>
+    <li>Goals</li>
+    <li><a href="build.html">build</a></li>
+  </ul>
+</nav>
+<div class="page-versions">
+  <button class="version-menu-toggle" title="Show other versions of page">1.15.1</button>
+  <div class="version-menu">
+    <a class="version" href="../../goals/build.html">latest</a>
+    <a class="version is-current" href="build.html">1.15.1</a>
+    <a class="version" href="../../1.14.0/goals/build.html">1.14.0</a>
+    <a class="version" href="../../1.13.0/goals/build.html">1.13.0</a>
+    <a class="version" href="../../1.12.0/goals/build.html">1.12.0</a>
+    <a class="version" href="../../1.12.0-alpha1/goals/build.html">1.12.0-alpha1</a>
+    <a class="version" href="../../1.11.1/goals/build.html">1.11.1</a>
+    <a class="version" href="../../1.11.0/goals/build.html">1.11.0</a>
+    <a class="version" href="../../1.10.0/goals/build.html">1.10.0</a>
+    <a class="version" href="../../1.10.0-alpha1/goals/build.html">1.10.0-alpha1</a>
+    <a class="version" href="../../1.9.0/goals/build.html">1.9.0</a>
+    <a class="version" href="../../1.7.1/goals/build.html">1.7.1</a>
+    <a class="version" href="../../1.7.0/goals/build.html">1.7.0</a>
+    <a class="version" href="../../1.6.0/goals/build.html">1.6.0</a>
+    <a class="version" href="../../1.6.0-alpha3/goals/build.html">1.6.0-alpha3</a>
+    <a class="version" href="../../1.6.0-alpha2/goals/build.html">1.6.0-alpha2</a>
+    <a class="version" href="../../1.6.0-alpha1/goals/build.html">1.6.0-alpha1</a>
+    <a class="version" href="../../1.5.0/goals/build.html">1.5.0</a>
+  </div>
+</div>
+  <div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.14.1/docs/modules/ROOT/pages/goals/build.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Build</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This goal will build all images which have a <code>&lt;build&gt;</code> configuration section. There must be a <code>Containerfile</code> present in order to build a container image.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Building a container image without a <code>Containerfile</code>, thus purely on configuration is currently not supported.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="build-configuration"><a class="anchor" href="#build-configuration"></a>Build Configuration</h2>
+<div class="sectionbody">
+<div id="buildconfig" class="paragraph">
+<p>This section covers all the possible options for the <code>&lt;build&gt;</code> tag.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Build configuration options</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipBuild</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t build any images.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipCatalog</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t create the <code>container-catalog.txt</code> file.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipTag</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the plugin won’t tag any images.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">layers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cache intermediate images during the build process (Default is <code>true</code>).</p>
+<p class="tableblock">Note: You can also override the default value of layers by setting the BUILDAH_LAYERS environment variable.
+<code>export BUILDAH_LAYERS=true</code></p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">noCache</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do not use existing cached images for the container build. Build from the start with a new set of cached layers.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pull</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When the option is specified or set to “true”, pull the image. Raise an error if the image could not be pulled, even if the image is present locally.</p>
+<p class="tableblock">If the option is disabled (with <code>&lt;pull&gt;false&lt;/pull&gt;</code>) or not specified, pull the image from the registry only if the image is not present locally. Raise an error if the image is not found in the registries and is not present locally.</p>
+<p class="tableblock">When this option is specified <em>and</em> <code>pullAlways</code> is also specified, builds will fail as Podman does not support both options to be enabled at the same time.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pullAlways</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pull the image from the first registry it is found in as listed in registries.conf. Raise an error if not found in the registries, even if the image is present locally.</p>
+<p class="tableblock">When this option is specified <em>and</em> <code>pullAlways</code> is also specified, builds will fail as Podman does not support both options to be enabled at the same time.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">squash</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">squashAll</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Squash all of the new image’s layers (including those inherited from a base image) into a single new layer.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tags</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An array consisting of one or more tags to attach to the built container image. Tags will be appended at the end of the image name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">containerFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the <code>Containerfile</code> to build. If you are using a <code>Dockerfile</code> you should change this parameter.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>Containerfile</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">containerFileDir</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Path of the directory where the <code>Containerfile</code> is located.</p>
+<p class="tableblock"><strong>Default value is</strong>: Project base directory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#labels">labels</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A collection of labels to add to this image. They are specified in the typical maven property format.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#args">args</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies one or more build arguments and their value, which will be interpolated in instructions read from the
+Containerfiles in the same way that environment variables are, but which will not be added to environment variable
+list in the resulting image’s configuration.</p>
+<p class="tableblock"><strong>Syntax</strong>: <code>&lt;arg&gt;value&lt;/arg&gt;</code></p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html#build-arg-arg-value" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html#build-arg-arg-value</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tagWithMavenProjectVersion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When set to <code>true</code>, the resulting container image will be tagged with the current version of the Maven project.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">createLatestTag</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether the resultig container image should be tagged with <code>latest</code>.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">format</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Control the format for the built image’s manifest and configuration data.</p>
+</div>
+<div class="paragraph">
+<p>Supported values are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>DOCKER (version 2, using schema format 2 for the manifest)</p>
+</li>
+<li>
+<p>OCI (OCI image-spec v1.0, the default)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Default value is</strong>: <code>OCI</code></p>
+</div>
+<div class="paragraph">
+<p><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Listing 1. Example configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
+    ...
+    &lt;images&gt;
+        &lt;image&gt;
+            &lt;name&gt;your-image-name&lt;/name&gt;
+            &lt;build&gt;
+                &lt;pull&gt;true&lt;/pull&gt;
+                &lt;pullAlways&gt;false&lt;/pullAlways&gt;
+                &lt;tags&gt;
+                    &lt;sampleTag&gt;sampleTagValue&lt;/sampleTag&gt;
+                &lt;/tags&gt;
+                &lt;createLatestTag&gt;true&lt;/createLatestTag&gt;
+                &lt;format&gt;OCI&lt;/format&gt;
+                &lt;args&gt;
+                    &lt;buildArg1&gt;buildArgValue1&lt;/buildArg1&gt;
+                    &lt;buildArg2&gt;buildArgValue2&lt;/buildArg2&gt;
+                &lt;/args&gt;
+            &lt;/build&gt;
+        &lt;/image&gt;
+    &lt;/images&gt;
+    ...
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="batch-configuration"><a class="anchor" href="#batch-configuration"></a>Batch Configuration</h3>
+<div id="batchconfig" class="paragraph">
+<p>When using the <code>&lt;batch/&gt;</code> configuration option, some configuration options are interpreted slightly different, compared to the explanation in the table above. The table below lists all these configuration options that are interpreted differently.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Please be advised that you can only configure one run directory for podman (see <a href="../general-configuration.html#podmanconfig" class="xref page">General Configuration</a>). This needs to be taken into account when designing your <code>Containerfile</code> s
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>containerFileDir</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The directory in which all <code>Containerfile</code> s should be found. <code>Containerfile</code> s are searched for recursively and do not need to be at this exact level.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="labels"><a class="anchor" href="#labels"></a>Labels</h3>
+<div id="labels" class="paragraph">
+<p>Labels are a mechanism for applying metadata to container images. Labels can be used to order images. A label is a key-value pair, stored as a string. You can specify multiple labels for an object, but each key-value pair must be unique within an object. If the same key is given multiple values, the most-recently-written value overwrites all previous values.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+As of version 1.7.1 label values are always stored between double quotes to allow values with spaces.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="build-arguments"><a class="anchor" href="#build-arguments"></a>Build arguments</h3>
+<div id="args" class="paragraph">
+<p>Specifies one or more build arguments and their value, which will be interpolated in instructions read from the
+Containerfiles in the same way that environment variables are, but which will not be added to environment variable
+list in the resulting image’s configuration.</p>
+</div>
+<div class="paragraph">
+<p>Build arguments can also be specified via System Properties, using the syntax: <code>podman.buildArg.exampleBuildArgument=buildArgumentValue</code>. Do note that System Properties are global and take precedence over the arguments that are configured
+in the build configuration for each image.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="key-format-recommendations"><a class="anchor" href="#key-format-recommendations"></a>Key format recommendations</h3>
+<div id="keyformatrecommendations" class="paragraph">
+<p>A label key is the left-hand side of the key-value pair. Keys are alphanumeric strings which may contain periods (<code>.</code>) and hyphens (<code>-</code>). Most Podman users use images created by other organizations, and the following guidelines help to prevent inadvertent duplication of labels across objects, especially if you plan to use labels as a mechanism for automation.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="value-guidelines"><a class="anchor" href="#value-guidelines"></a>Value guidelines</h3>
+<div id="valuefuidelines" class="paragraph">
+<p>Label values can contain any data type that can be represented as a string, including (but not limited to) JSON, XML, CSV, or YAML. The only requirement is that the value be serialized to a string first, using a mechanism specific to the type of structure. For instance, to serialize JSON into a string, you might use the <code>JSON.stringify()</code> JavaScript method.</p>
+</div>
+<div class="paragraph">
+<p>Since Podman does not deserialize the value, you cannot treat a JSON or XML document as a nested structure when querying or filtering by label value unless you build this functionality into third-party tooling.</p>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../image-configuration.html">Image Configuration</a></span>
+  <span class="next"><a href="push.html">push</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>Copyright (C) 2019-2023 <a href="https://www.lexemmens.nl">Lex Emmens</a> and individual contributors to the <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>.</p>
+  <p>This project is available under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. This website was generated using Antora.
+</footer>
+<script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
