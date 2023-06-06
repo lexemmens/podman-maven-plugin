@@ -51,7 +51,8 @@ public abstract class AbstractCommand implements Command {
                 .directory(workDir)
                 .command(getCommand())
                 .readOutput(true)
-                .redirectOutput(null)
+                .redirectOutput(Slf4jStream.of(getClass().getSimpleName()).asInfo())
+                .redirectError(Slf4jStream.of(getClass().getSimpleName()).asError())
                 .exitValueNormal();
 
 
