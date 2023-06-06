@@ -1,4 +1,9 @@
 ## Changelog
+### 1.15.0 (06-06-2023)
+#### Bugs
+* ([#83](https://github.com/lexemmens/podman-maven-plugin/pull/83)) -  Skip copy goal if no container catalog artifact is found
+* ([#81](https://github.com/lexemmens/podman-maven-plugin/pull/81)) -  Re-added missing logging of podman build steps
+
 ### 1.14.1 (18-04-2023)
 #### Bugs
 * ([#80](https://github.com/lexemmens/podman-maven-plugin/issues/80)) - SecurityContextService now derives graphRoot via `podman system info` 
