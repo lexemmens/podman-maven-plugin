@@ -76,6 +76,11 @@ public class PodmanExecutorService {
             builder = builder.setPullAllways(pullAlwaysOptional.get());
         }
 
+        Optional<String> platform = image.getBuild().getPlatform();
+        if (platform.isPresent()) {
+            builder = builder.setPlatform(platform.get());
+        }
+        
         builder.addBuildArgs(image.getBuild().getArgs());
 
         return builder.build().execute();

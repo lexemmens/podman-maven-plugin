@@ -148,6 +148,15 @@ public abstract class AbstractImageBuildConfiguration {
     protected Boolean layers;
 
     /**
+     * Specify the resulting image platform by being passed to the "--platform" option of podman.
+     * <p>
+     *
+     * @see "https://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected String platform;
+
+    /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
     protected File outputDirectory;
@@ -323,6 +332,15 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     /**
+     * Returns the platform that Podman should be told to build for.
+     *
+     * @return When set, a string in the format of GO OS/GO ARCH (because GO is the language of Podman) for example: linux/arm64
+     */
+    public Optional<String> getPlatform(){
+        return Optional.ofNullable(platform);
+    }
+
+    /**
      * Returns a boolean indicating whether this configuration is valid
      *
      * @return true if this configuration is valid. False otherwise.
@@ -377,6 +395,15 @@ public abstract class AbstractImageBuildConfiguration {
      */
     public void setLayers(Boolean layers) {
         this.layers = layers;
+    }
+
+    /**
+     * Used to set the platform to be passed to Podman when building the image.
+     *
+     * @param platform String in the format of GO OS/GO ARCH (because GO is the language of Podman) for example: linux/arm64
+     */
+    public void setPlatform(String platform){
+        this.platform = platform;
     }
 
     /**

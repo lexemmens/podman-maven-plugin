@@ -39,6 +39,16 @@ Note: You can also override the default value of layers by setting the BUILDAH_L
 
 **See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
 
+|platform
+|Specifies the platform to be passed to Podman to control the operating system, architecture and variants of the resulting image.
+
+**Default value is**: `null` (not specified and Podman will build a container that targets the system doing the container build)
+
+**Example value for linux x86_64 is**: linux/amd64
+
+**Example value for linux aarch64 is**: linux/arm64
+
+**See (--platform)**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
 |noCache
 |Do not use existing cached images for the container build. Build from the start with a new set of cached layers.
 
