@@ -76,7 +76,7 @@ public class SecurityContextService {
 
             return seLinuxStatus.map(seLinuxStatusString -> seLinuxStatusString.equals("enabled")).orElse(false);
         } catch (MojoExecutionException mee) {
-            log.debug("SELinux is not installed or not available", mee.getMessage());
+            log.debug("SELinux is not installed or not available", mee);
         }
         return false;
     }
