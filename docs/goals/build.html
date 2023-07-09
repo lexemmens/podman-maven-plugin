@@ -295,6 +295,14 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 <p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">platform</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the platform to be passed to Podman to control the operating system, architecture and variants of the resulting image.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified and Podman will build a container that targets the system doing the container build)</p>
+<p class="tableblock"><strong>Example value for linux x86_64 is</strong>: linux/amd64</p>
+<p class="tableblock"><strong>Example value for linux aarch64 is</strong>: linux/arm64</p>
+<p class="tableblock"><strong>See (--platform)</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">noCache</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Do not use existing cached images for the container build. Build from the start with a new set of cached layers.</p>
 <p class="tableblock"><strong>Default value is</strong>: <code>false</code></p></td>
