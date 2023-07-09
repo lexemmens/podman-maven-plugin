@@ -67,13 +67,18 @@ public class SecurityContextService {
          * Memory protection checking:     actual (secure)
          * Max kernel policy version:      33
          */
-        Optional<String> seLinuxStatus = seStatusCommand.execute()
-                .stream()
-                .filter(line -> line.contains("SELinux status"))
-                .map(this::extractSeLinuxStatus)
-                .findFirst();
+        try {
+            Optional<String> seLinuxStatus = seStatusCommand.execute()
+                    .stream()
+                    .filter(line -> line.contains("SELinux status"))
+                    .map(this::extractSeLinuxStatus)
+                    .findFirst();
 
-        return seLinuxStatus.map(seLinuxStatusString -> seLinuxStatusString.equals("enabled")).orElse(false);
+            return seLinuxStatus.map(seLinuxStatusString -> seLinuxStatusString.equals("enabled")).orElse(false);
+        } catch (MojoExecutionException mee) {
+            log.debug("SELinux is not installed or not available", mee);
+        }
+        return false;
     }
 
     private String extractSeLinuxStatus(String line) {
