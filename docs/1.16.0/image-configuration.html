@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Image Configuration :: Podman Maven Plugin - Documentation</title>
+    <link rel="prev" href="general-configuration.html">
+    <link rel="next" href="goals/build.html">
+    <meta name="generator" content="Antora 3.0.0">
+<link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>
+        <span class="separator">//</span>
+        <a href="https://lexemmens.github.io/podman-maven-plugin/docs/index.html">Documentation</a>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://www.github.com/lexemmens/podman-maven-plugin">
+            Back to GitHub
+        </a>
+        <a class="navbar-item" href="https://twitter.com/lexemmens">
+          <span class="icon">
+            <svg aria-hidden="true" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path fill="#57aaee" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="docs" data-version="1.16.0">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Podman Maven Plugin</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Maven Plugin</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="authentication.html">Authentication</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="general-configuration.html">General Configuration</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="image-configuration.html">Image Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Goals</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/build.html">build</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/push.html">push</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/copy.html">copy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/save.html">save</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="goals/clean.html">clean</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="registry-handling.html">Registry Handling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="usage.html">Usage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="further-reading.html">Further Reading</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Project Documentation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="project/contributing.html">Contributing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="project/copyright.html">Copyright and License</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Podman Maven Plugin</span>
+    <span class="version">1.16.0</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Podman Maven Plugin</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../index.html">latest</a>
+        </li>
+        <li class="version is-current">
+          <a href="index.html">1.16.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.15.1/index.html">1.15.1</a>
+        </li>
+        <li class="version">
+          <a href="../1.14.0/index.html">1.14.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.13.0/index.html">1.13.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.12.0/index.html">1.12.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.12.0-alpha1/index.html">1.12.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.11.1/index.html">1.11.1</a>
+        </li>
+        <li class="version">
+          <a href="../1.11.0/index.html">1.11.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.10.0/index.html">1.10.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.10.0-alpha1/index.html">1.10.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.9.0/index.html">1.9.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.7.1/index.html">1.7.1</a>
+        </li>
+        <li class="version">
+          <a href="../1.7.0/index.html">1.7.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0/index.html">1.6.0</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0-alpha3/index.html">1.6.0-alpha3</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0-alpha2/index.html">1.6.0-alpha2</a>
+        </li>
+        <li class="version">
+          <a href="../1.6.0-alpha1/index.html">1.6.0-alpha1</a>
+        </li>
+        <li class="version">
+          <a href="../1.5.0/index.html">1.5.0</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Podman Maven Plugin</a></li>
+    <li>Maven Plugin</li>
+    <li><a href="image-configuration.html">Image Configuration</a></li>
+  </ul>
+</nav>
+<div class="page-versions">
+  <button class="version-menu-toggle" title="Show other versions of page">1.16.0</button>
+  <div class="version-menu">
+    <a class="version" href="../image-configuration.html">latest</a>
+    <a class="version is-current" href="image-configuration.html">1.16.0</a>
+    <a class="version" href="../1.15.1/image-configuration.html">1.15.1</a>
+    <a class="version" href="../1.14.0/image-configuration.html">1.14.0</a>
+    <a class="version" href="../1.13.0/image-configuration.html">1.13.0</a>
+    <a class="version" href="../1.12.0/image-configuration.html">1.12.0</a>
+    <a class="version" href="../1.12.0-alpha1/image-configuration.html">1.12.0-alpha1</a>
+    <a class="version" href="../1.11.1/image-configuration.html">1.11.1</a>
+    <a class="version" href="../1.11.0/image-configuration.html">1.11.0</a>
+    <a class="version" href="../1.10.0/image-configuration.html">1.10.0</a>
+    <a class="version" href="../1.10.0-alpha1/image-configuration.html">1.10.0-alpha1</a>
+    <a class="version" href="../1.9.0/image-configuration.html">1.9.0</a>
+    <a class="version" href="../1.7.1/image-configuration.html">1.7.1</a>
+    <a class="version" href="../1.7.0/image-configuration.html">1.7.0</a>
+    <a class="version" href="../1.6.0/image-configuration.html">1.6.0</a>
+    <a class="version" href="../1.6.0-alpha3/image-configuration.html">1.6.0-alpha3</a>
+    <a class="version" href="../1.6.0-alpha2/image-configuration.html">1.6.0-alpha2</a>
+    <a class="version" href="../1.6.0-alpha1/image-configuration.html">1.6.0-alpha1</a>
+    <a class="version" href="../1.5.0/image-configuration.html">1.5.0</a>
+  </div>
+</div>
+<div class="edit-this-page"><a href="https://github.com/lexemmens/podman-maven-plugin/edit/1.16.0/docs/modules/ROOT/pages/image-configuration.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Image Configuration</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The plugin’s configuration is centered around images.Images can be either configured individually, as part of a batch or a combination of both.
+When configured individually, each image is specified in the <code>&lt;images&gt;</code> element of the configuration with one <code>&lt;image&gt;</code> element per image to use.</p>
+</div>
+<div class="paragraph">
+<p>The <code>&lt;image&gt;</code> element can contain the following sub elements:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Image configuration options</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Each <code>&lt;image&gt;</code> configuration has a mandatory, unique container repository name.
+This name does not support placeholer characters, see <a href="#imagenames">Image Names</a>.</p>
+<p class="tableblock"><strong>NOTE:</strong> Currently image names cannot include registry and tag parts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">customImageNameForMultiStageContainerfile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <code>Containerfile</code> can define multiple stages.
+When set to <code>true</code>, the result of each stage can have a different image name.</p>
+<p class="tableblock">When set to false, but the <code>Containerfile</code> does define one or more stages, a warning will be logged and the value from the <code>name</code> property will be used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#stageconfig">stages</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines a list of custom image names per stage listed in a <code>Containerfile</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="goals/build.html#buildconfig" class="xref page">build</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Element that contains all the configuration aspects when doing a podman:build.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A <code>&lt;build&gt;</code> section must be present for each image configuration.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 1. Example configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
+    ...
+    &lt;images&gt;
+        &lt;image&gt;
+            &lt;name&gt;your-image-name&lt;/name&gt;
+            &lt;customImageNameForMultiStageContainerfile&gt;true&lt;/customImageNameForMultiStageContainerfile&gt;
+            &lt;stages&gt;...&lt;/stages&gt;
+            &lt;build&gt;...&lt;/build&gt;
+        &lt;/image&gt;
+    &lt;/images&gt;
+    ...
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="batch-configuration"><a class="anchor" href="#batch-configuration"></a>Batch Configuration</h2>
+<div class="sectionbody">
+<div id="batchconfig" class="paragraph">
+<p>In some special cases it may be convenient to configure a series of images at once, e.g. if there are multiple <code>Containerfiles</code> in your project which all share the same configuration but only differ by name.</p>
+</div>
+<div class="paragraph">
+<p>A batch configuraion can be configured within the <code>&lt;batch/&gt;</code> element of the configuration. It is possible to specify one batch configuration.</p>
+</div>
+<div class="paragraph">
+<p>The <code>&lt;batch/&gt;</code> element supports the same elements as the <code>&lt;image/&gt;</code> element. An example configuration is provided below.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Resulting image names must be unique, otherwise one image may overwrite another.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Listing 2. Example batch configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
+    ...
+    &lt;batch&gt;
+        &lt;name&gt;your-image-name&lt;/name&gt;
+        &lt;customImageNameForMultiStageContainerfile&gt;true&lt;/customImageNameForMultiStageContainerfile&gt;
+        &lt;stages&gt;...&lt;/stages&gt;
+        &lt;build&gt;...&lt;/build&gt;
+    &lt;/batch&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="stage-configuration"><a class="anchor" href="#stage-configuration"></a>Stage Configuration</h2>
+<div class="sectionbody">
+<div id="stageconfig" class="paragraph">
+<p>The <code>stages</code> configuration section is useful when working with multi-stage <code>Containerfiles</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Stage configuration options</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the stage in a <code>Containerfile</code>. A stage in a <code>Containerfile</code> is usually defined as: <code>FROM &lt;image&gt; AS &lt;stageName&gt;</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">imageName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The target name that the image, which was built in stage with <code>&lt;name&gt;</code>, should get.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Listing 3. Example configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
+    ...
+    &lt;images&gt;
+        &lt;image&gt;
+            &lt;stages&gt;
+                &lt;stage&gt;
+                    &lt;name&gt;some_stage&lt;/name&gt;
+                    &lt;imageName&gt;my-fancy-image&lt;/imageName&gt;
+                &lt;/stage&gt;
+            &lt;/stages&gt;
+        &lt;/image&gt;
+    &lt;/images&gt;
+    ...
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="image-names"><a class="anchor" href="#image-names"></a>Image Names</h2>
+<div class="sectionbody">
+<div id="imagenames" class="paragraph">
+<p>When providing an image name in either the <code>&lt;image/&gt;</code> or <code>&lt;batch/</code>&gt; configuration with the <code>&lt;name&gt;</code> field, there are several placeholders available for use.These placeholders are replaced by this plugin at runtime, before each goal executes.In addition you can use regular Maven properties which are resolved by Maven itself.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+These placeholders also work when using a custom image name per stage.
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Image name placeholders</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Placeholder</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%a</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sanitized version of the artifactId that can be used as part of a container image name.The artifactId is converted to lowercase as per container naming conventions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%d</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A sanitized version of the directory name where the <code>Containerfile</code> is located. E.g. <code>/tmp/subFolder/Containerfile</code> will be result in <code>subFolder</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%g</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The last part of the Maven groupId. Everything after the last <code>.</code> is used, i.e. <code>com.example.sample</code> will result in <code>sample</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%n</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns a sequence number, which could be useful in e.g. a batch image configuration. An image named <code>someImage-%n</code> will be updated to <code>someImage-0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%l</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the project version ends with <code>-SNAPSHOT</code> then this placeholder results in <code>latest</code>, otherwise the full Maven version is used (same as <code>%v</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%t</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves to <code>snapshot-&lt;timestamp&gt;</code> where the timestamp is formatted as <code>yyMMdd-HHmmss-SSSS</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">%v</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project version. See also: <code>${project.version}</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="general-configuration.html">General Configuration</a></span>
+  <span class="next"><a href="goals/build.html">build</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>Copyright (C) 2019-2023 <a href="https://www.lexemmens.nl">Lex Emmens</a> and individual contributors to the <a href="https://github.com/lexemmens/podman-maven-plugin">Podman Maven Plugin</a>.</p>
+  <p>This project is available under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>. This website was generated using Antora.
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
