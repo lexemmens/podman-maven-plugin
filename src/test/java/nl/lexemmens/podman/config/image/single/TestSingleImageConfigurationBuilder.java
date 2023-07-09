@@ -27,6 +27,11 @@ public class TestSingleImageConfigurationBuilder {
         return this;
     }
 
+    public TestSingleImageConfigurationBuilder setPlatform(String platform){
+        image.getBuild().setPlatform(platform);
+        return this;
+    }
+
     public TestSingleImageConfigurationBuilder setNoCache(boolean noCache) {
         image.getBuild().setNoCache(noCache);
         return this;
