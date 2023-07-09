@@ -1,4 +1,11 @@
 ## Changelog
+### 1.17.0 (09-07-2023)
+#### Bugs
+* ([#84](https://github.com/lexemmens/podman-maven-plugin/pull/84)) - Fix plugin functionality on Windows. Thanks to [Laurent Granié](https://github.com/lgranie).
+
+#### Improvements
+* ([#86](https://github.com/lexemmens/podman-maven-plugin/pull/86)) - Introduced support for Podman's `--platform` argument. Thanks to [rajha-korithrien](https://github.com/rajha-korithrien).
+
 ### 1.16.0 (06-06-2023)
 Due to an administrative error, something went wrong in the versioning of the previous releases. As of 1.16.0 this is now corrected
 
