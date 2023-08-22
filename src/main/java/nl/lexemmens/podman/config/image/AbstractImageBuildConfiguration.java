@@ -157,6 +157,15 @@ public abstract class AbstractImageBuildConfiguration {
     protected String platform;
 
     /**
+     * Specify the final target stage to build. It is passed to the "--target" option of podman.
+     * <p>
+     *
+     * @see "https://docs.podman.io/en/latest/markdown/podman-build.1.html"
+     */
+    @Parameter
+    protected String targetStage;
+
+    /**
      * Will be set when this class is validated using the #initAndValidate() method
      */
     protected File outputDirectory;
@@ -341,6 +350,15 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     /**
+     * Returns the final target stage to build.
+     *
+     * @return if set, the final target stage to build defined in Containerfile.
+     */
+    public Optional<String> getTargetStage(){
+        return Optional.ofNullable(targetStage);
+    }
+
+    /**
      * Returns a boolean indicating whether this configuration is valid
      *
      * @return true if this configuration is valid. False otherwise.
@@ -369,6 +387,7 @@ public abstract class AbstractImageBuildConfiguration {
     }
 
     protected void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
+        boolean foundTargetStage = false;
         try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
             List<String> content = containerFileStream.collect(Collectors.toList());
             for (String line : content) {
@@ -377,7 +396,9 @@ public abstract class AbstractImageBuildConfiguration {
                     isMultistageContainerFile = true;
 
                     String stage = matcher.group(3);
-
+                    if (Objects.equals(stage, targetStage)) {
+                        foundTargetStage = true;
+                    }
                     log.debug("Found a stage named: " + stage);
                 }
             }
@@ -385,6 +406,12 @@ public abstract class AbstractImageBuildConfiguration {
             String msg = "Unable to determine if Containerfile is a multistage Containerfile.";
             log.error(msg, e);
             throw new MojoExecutionException(msg, e);
+        }
+
+        if (targetStage != null  && isMultistageContainerFile && !foundTargetStage) {
+            String msg = String.format("Target stage '%s' was not found in the given Containerfile.", targetStage);
+            log.error(msg);
+            throw new MojoExecutionException(msg);
         }
     }
 
@@ -514,6 +541,15 @@ public abstract class AbstractImageBuildConfiguration {
      */
     public void setContainerFileDir(File containerFileDir) {
         this.containerFileDir = containerFileDir;
+    }
+
+    /**
+     * Sets the final target stage to build.
+     *
+     * @param targetStage The final target stage to build.
+     */
+    public void setTargetStage(String targetStage) {
+        this.targetStage = targetStage;
     }
 
     /**

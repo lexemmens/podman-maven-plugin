@@ -627,6 +627,30 @@ public class PodmanExecutorServiceTest {
                 delegate.getCommandAsString());
     }
 
+    @Test
+    public void testTargetStage() throws MojoExecutionException {
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("test_image")
+                .setFormat(OCI)
+                .setLayers(false)
+                .setContainerfileDir("src/test/resources")
+                .setTargetStage("phase2")
+                .initAndValidate(mavenProject, log, true)
+                .build();
+
+        String sampleImageHash = "this_would_normally_be_an_image_hash";
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate(Collections.singletonList(sampleImageHash));
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+
+        podmanExecutorService.build(image);
+
+        Assertions.assertEquals("podman build --tls-verify=true --format=oci --file="
+                + image.getBuild().getTargetContainerFile() + " --no-cache=false --layers=false --target=phase2 .", delegate.getCommandAsString());
+
+    }
 
     private static class InterceptorCommandExecutorDelegate implements CommandExecutorDelegate {
 

@@ -90,6 +90,13 @@ When this option is specified _and_ `pullAlways` is also specified, builds will 
 |tags
 |An array consisting of one or more tags to attach to the built container image. Tags will be appended at the end of the image name.
 
+|targetStage
+|Set the target build stage to build. When building a Containerfile with multiple build stages, it can be used to specify an intermediate build stage by name as the final stage for the resulting image. Commands after the target stage is skipped.
+
+**Default value is**: `null` (not specified).
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+
 |containerFile
 |The name of the `Containerfile` to build. If you are using a `Dockerfile` you should change this parameter.
 

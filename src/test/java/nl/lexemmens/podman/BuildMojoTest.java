@@ -826,6 +826,93 @@ public class BuildMojoTest extends AbstractMojoTest {
         );
     }
 
+    @Test
+    public void testMultiStageBuildWithUnknownTargetStageThrowsException() {
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        String unknownStage = "healthcheck-builder";
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
+                .setContainerfileDir("src/test/resources/multistagecontainerfile")
+                .setTags(new String[]{"0.2.1"})
+                .setCreateLatestTag(false)
+                .setTargetStage(unknownStage)
+                .build();
+
+        configureMojo(podman, image, true, false, false, true, true);
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+
+        try {
+            buildMojo.execute();
+            fail("Expected an exception, however none was thrown.");
+        } catch (MojoExecutionException e) {
+            assertEquals(String.format("Target stage '%s' was not found in the given Containerfile.", unknownStage), e.getMessage());
+        }
+    }
+
+    @Test
+    public void testMultiStageBuildWithGivenTargetStage() throws MojoExecutionException, IOException, URISyntaxException {
+        URI sampleBuildOutputUri = PushMojoTest.class.getResource("/multistagecontainerfile/samplebuildoutput-phase2.txt").toURI();
+        Path sampleBuildOutputPath = Paths.get(sampleBuildOutputUri);
+
+        List<String> buildOutputUnderTest;
+        try (Stream<String> buildSampleOutput = Files.lines(sampleBuildOutputPath)) {
+            buildOutputUnderTest = buildSampleOutput.collect(Collectors.toList());
+        }
+
+        Assertions.assertNotNull(buildOutputUnderTest);
+
+        String targetStage = "phase";
+        PodmanConfiguration podman = new TestPodmanConfigurationBuilder().setTlsVerify(TlsVerify.FALSE).build();
+        SingleImageConfiguration image = new TestSingleImageConfigurationBuilder("sample")
+                .setContainerfileDir("src/test/resources/multistagecontainerfile")
+                .setTags(new String[]{"0.2.1"})
+                .setCreateLatestTag(false)
+                .setTargetStage(targetStage)
+                .build();
+        configureMojo(podman, image, true, false, false, false, true);
+
+        when(mavenProject.getBuild()).thenReturn(build);
+        when(build.getDirectory()).thenReturn("target");
+        when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
+        when(serviceHub.getContainerfileDecorator()).thenReturn(containerfileDecorator);
+        when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
+        when(serviceHub.getSecurityContextService()).thenReturn(securityContextService);
+        when(serviceHub.getMavenProjectHelper()).thenReturn(mavenProjectHelper);
+        when(podmanExecutorService.build(isA(SingleImageConfiguration.class))).thenReturn(buildOutputUnderTest);
+
+        buildMojo.execute();
+
+        // Verify logging
+        verify(log, times(1)).info("Detected multistage Containerfile...");
+
+        // At random verify some lines
+        verify(log, times(1)).debug("Processing line: 'STEP 1: FROM nexus.example:15000/adoptopenjdk/openjdk11:11.0.3 AS base'");
+        verify(log, times(1)).debug("Processing candidate: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null'");
+
+        // Verify stage detection
+        verify(log, times(1)).debug("Processing stage in Containerfile: base");
+        verify(log, times(1)).debug("Processing stage in Containerfile: phase");
+        verify(log, times(0)).debug("Processing stage in Containerfile: phase2");
+
+        // Verify hashes for stages
+        verify(log, times(1)).info("Final image for stage base is: 7e72c870614");
+        verify(log, times(1)).info("Final image for stage phase is: 7f55eab001a");
+        verify(log, times(0)).info("Final image for stage phase2 is: d2efc6645cb");
+
+        // Verify tagging image
+        verify(log, times(0)).info("Tagging container image 7f55eab001a from stage phase as registry.example.com/sample:0.2.1");
+        verify(log, times(0)).info("Tagging container image d2efc6645cb from stage phase2 as registry.example.com/sample:0.2.1");
+        verify(log, times(1)).info("Tagging container image 7f55eab001adf2dfeas8adc03ef847dd3d2b4fa42b4fa418ca4cdeb6eaef8f3b as registry.example.com/sample:0.2.1");
+
+        verify(podmanExecutorService, times(1)).tag("7f55eab001adf2dfeas8adc03ef847dd3d2b4fa42b4fa418ca4cdeb6eaef8f3b", "registry.example.com/sample:0.2.1");
+
+        verify(log, times(1)).info("Built container image.");
+
+        verifyContainerCatalog(
+                "registry.example.com/sample:0.2.1"
+        );
+    }
+
     private void configureMojo(PodmanConfiguration podman, SingleImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipBuild, boolean skipTag, boolean failOnMissingContainerFile) {
         buildMojo.podman = podman;
         buildMojo.skip = skipAll;
