@@ -41,7 +41,7 @@ Saves an image as a `tar.gz` file to the local disk. This goal is not bound to a
 [#requirements]
 :navtitle: Requirements
 
-- Maven 3.6.2 or later
+- Maven 3.8.5 or later
 - Java 8 or later
 - Podman to be installed on the OS where this plugin will run
 - Registry configuration to be present in Maven settings.

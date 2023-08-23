@@ -32,7 +32,7 @@ When set to `false`, the plugin will not fail when no `Containerfile` is found.
 |The target registry where the images will be pushed to.
 
 **This property is required.**
-|`podman.image.push.registry`
+|`podman.push.registry`
 
 |skipAuth
 |When set to `true`, Podman will not authenticate the current user with any of the configured registries.
