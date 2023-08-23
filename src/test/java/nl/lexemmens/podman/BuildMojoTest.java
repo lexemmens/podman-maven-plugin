@@ -544,6 +544,8 @@ public class BuildMojoTest extends AbstractMojoTest {
         // At random verify some lines
         verify(log, times(1)).debug("Processing line: 'STEP 1: FROM nexus.example:15000/adoptopenjdk/openjdk11:11.0.3 AS base'");
         verify(log, times(1)).debug("Processing candidate: 'STEP 7: LABEL Build-User=sample-user2 Git-Repository-Url=null'");
+        verify(log, times(1)).debug("Found a stage named: phase");
+        verify(log, times(1)).debug("Found a stage named: phase2");
 
         // Verify stage detection
         verify(log, times(1)).debug("Processing stage in Containerfile: base");
