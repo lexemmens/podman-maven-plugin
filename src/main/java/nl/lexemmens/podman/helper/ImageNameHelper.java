@@ -63,8 +63,13 @@ public class ImageNameHelper {
         String imageName = parameterReplacer.replace(imageConfiguration.getImageName());
         imageConfiguration.setImageName(imageName);
 
-        if (imageConfiguration.getStages() != null && imageConfiguration.getStages().length > 0) {
+        if (imageConfiguration.useCustomImageNameForMultiStageContainerfile() &&
+                imageConfiguration.getStages() != null && imageConfiguration.getStages().length > 0) {
             for (StageConfiguration stage : imageConfiguration.getStages()) {
+                if (stage.getImageName() == null) {
+                    stage.setImageName(imageName);
+                    continue;
+                }
                 String stageImageName = parameterReplacer.replace(stage.getImageName());
                 stage.setImageName(stageImageName);
             }

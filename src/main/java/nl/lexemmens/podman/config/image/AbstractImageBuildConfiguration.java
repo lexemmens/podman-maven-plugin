@@ -389,7 +389,8 @@ public abstract class AbstractImageBuildConfiguration {
     protected void determineBuildStages(Log log, Path fullContainerFilePath) throws MojoExecutionException {
         boolean foundTargetStage = false;
         try (Stream<String> containerFileStream = Files.lines(fullContainerFilePath)) {
-            List<String> content = containerFileStream.collect(Collectors.toList());
+            List<String> content = containerFileStream.filter(c -> !c.matches("^\\s*#.*"))
+                                                      .collect(Collectors.toList());
             for (String line : content) {
                 Matcher matcher = MULTISTAGE_CONTAINERFILE_REGEX.matcher(line);
                 if (matcher.find()) {

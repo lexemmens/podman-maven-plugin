@@ -5,10 +5,15 @@ ENV RUN_CMD="exec java -jar executable.jar"
 WORKDIR /application
 ENTRYPOINT /application
 
+# NOTE: DO NOT uncomment or remove below 'FROM' statement
+# FROM unknown AS phase
 
 FROM base as phase
 COPY target/executable.jar ./
 ENTRYPOINT ${RUN_CMD}
+
+# NOTE: DO NOT uncomment or remove below 'FROM' statement
+# FROM unknown as phase2
 
 FROM base as phase2
 COPY target/other-executable.jar ./
