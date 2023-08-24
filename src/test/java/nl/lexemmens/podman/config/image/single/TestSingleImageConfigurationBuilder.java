@@ -123,6 +123,11 @@ public class TestSingleImageConfigurationBuilder {
         return this;
     }
 
+    public TestSingleImageConfigurationBuilder setTargetStage(String targetStage){
+        image.getBuild().setTargetStage(targetStage);
+        return this;
+    }
+
     public SingleImageConfiguration build() {
         return image;
     }

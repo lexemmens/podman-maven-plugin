@@ -80,7 +80,12 @@ public class PodmanExecutorService {
         if (platform.isPresent()) {
             builder = builder.setPlatform(platform.get());
         }
-        
+
+        Optional<String> targetStage = image.getBuild().getTargetStage();
+        if (targetStage.isPresent()) {
+            builder.setTargetStage(targetStage.get());
+        }
+
         builder.addBuildArgs(image.getBuild().getArgs());
 
         return builder.build().execute();

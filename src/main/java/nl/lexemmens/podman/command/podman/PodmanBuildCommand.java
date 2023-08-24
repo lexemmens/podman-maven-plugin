@@ -28,6 +28,7 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String NO_CACHE_CMD = "--no-cache";
     private static final String BUILD_ARG_CMD = "--build-arg";
     private static final String PLATFORM_CMD = "--platform";
+    private static final String TARGET_STAGE_CMD = "--target";
     private static final String SUBCOMMAND = "build";
 
     private PodmanBuildCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
@@ -149,6 +150,17 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             return this;
         }
         
+        /**
+         * Sets the platform for the resulting image rather using the default of the build system
+         *
+         * @param targetStage Sets the target build stage to build in a multi-stage build.
+         * @return This builder instance
+         */
+        public Builder setTargetStage(String targetStage){
+            command.withOption(TARGET_STAGE_CMD, targetStage);
+            return this;
+        }
+
         public Builder addBuildArgs(Map<String, String> args) {
             Map<String, String> allBuildArgs = new HashMap<>(args);
             allBuildArgs.putAll(getBuildArgsFromSystem());
