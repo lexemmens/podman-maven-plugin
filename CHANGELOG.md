@@ -1,4 +1,14 @@
 ## Changelog
+### 1.18.0 (24-08-2023)
+#### Bugs
+* ([#89](https://github.com/lexemmens/podman-maven-plugin/issues/89)) - plugin fails with NullPointerException. Thanks to [kumadee](https://github.com/kumadee).
+
+#### Improvements
+* ([#88](https://github.com/lexemmens/podman-maven-plugin/issues/88)) - Unable to build a target stage in Multi-stage container buil. Thanks to [kumadee](https://github.com/kumadee).
+
+#### Miscelaneous
+* ([#87](https://github.com/lexemmens/podman-maven-plugin/issues/87)) - Documentation is not in line with implementation. Thanks to [kumadee](https://github.com/kumadee).
+
 ### 1.17.0 (09-07-2023)
 #### Bugs
 * ([#84](https://github.com/lexemmens/podman-maven-plugin/pull/84)) - Fix plugin functionality on Windows. Thanks to [Laurent Granié](https://github.com/lgranie).
