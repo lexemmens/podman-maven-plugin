@@ -7,8 +7,7 @@
     <link rel="prev" href="../image-configuration.html">
     <link rel="next" href="push.html">
     <meta name="generator" content="Antora 3.0.0">
-<link rel="stylesheet" href="../../_/css/podman.css">    <script>var uiRootPath = '../../_'</script>
-  </head>
+<link rel="stylesheet" href="../../_/css/podman.css">  </head>
   <body class="article">
 <header class="header" role="banner">
   <nav class="navbar">
@@ -341,6 +340,12 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">tags</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">An array consisting of one or more tags to attach to the built container image. Tags will be appended at the end of the image name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">targetStage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set the target build stage to build. When building a Containerfile with multiple build stages, it can be used to specify an intermediate build stage by name as the final stage for the resulting image. Commands after the target stage is skipped.</p>
+<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">containerFile</p></td>
