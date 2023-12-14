@@ -54,24 +54,15 @@ Note: You can also override the default value of layers by setting the BUILDAH_L
 
 **Default value is**: `false`
 |pull
-|When the option is specified or set to “true”, pull the image. Raise an error if the image could not be pulled, even if the image is present locally.
+|When the option is specified or set, pull the image. Raise an error if the image could not be pulled, even if the image is present locally.
 
-If the option is disabled (with `<pull>false</pull>`) or not specified, pull the image from the registry only if the image is not present locally. Raise an error if the image is not found in the registries and is not present locally.
-
-When this option is specified _and_ `pullAlways` is also specified, builds will fail as Podman does not support both options to be enabled at the same time.
+If the option is disabled (with `<pull>never</pull>`) or not specified, pull the image from the registry only if the image is not present locally. Raise an error if the image is not found in the registries and is not present locally.
 
 **Default value is**: `null` (not specified).
 
-**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+**Supported values are:** ALWAYS, TRUE, MISSING, NEVER, FALSE, NEWER
 
-|pullAlways
-|Pull the image from the first registry it is found in as listed in registries.conf. Raise an error if not found in the registries, even if the image is present locally.
-
-When this option is specified _and_ `pullAlways` is also specified, builds will fail as Podman does not support both options to be enabled at the same time.
-
-**Default value is**: `null` (not specified).
-
-**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html#pull-policy
 
 |squash
 |Squash all of the image’s new layers into a single new layer; any preexisting layers are not squashed.
@@ -152,8 +143,7 @@ Supported values are:
         <image>
             <name>your-image-name</name>
             <build>
-                <pull>true</pull>
-                <pullAlways>false</pullAlways>
+                <pull>always</pull>
                 <tags>
                     <sampleTag>sampleTagValue</sampleTag>
                 </tags>

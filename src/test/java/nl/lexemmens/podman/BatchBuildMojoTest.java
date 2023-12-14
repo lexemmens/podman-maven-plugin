@@ -8,6 +8,7 @@ import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
 import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
 import nl.lexemmens.podman.enumeration.ContainerFormat;
+import nl.lexemmens.podman.enumeration.PullPolicy;
 import nl.lexemmens.podman.enumeration.TlsVerify;
 import nl.lexemmens.podman.service.ContainerfileDecorator;
 import org.apache.maven.model.Build;
@@ -186,8 +187,7 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
 
         BatchImageConfiguration image = new TestBatchImageConfigurationBuilder("sample-image-%d")
                 .setContainerfile("Containerfile")
-                .setPull(true)
-                .setPullAlways(true)
+                .setPullPolicy(PullPolicy.ALWAYS)
                 .setStages(new StageConfiguration[]{stageCfg})
                 .setLabels(Collections.singletonMap("KEY", "VALUE"))
                 .setTags(new String[]{"latest"})
@@ -218,10 +218,8 @@ public class BatchBuildMojoTest extends AbstractMojoTest {
         assertNotNull(image1.getBuild());
         assertEquals(1, image1.getBuild().getAllTags().size());
         assertEquals("latest", image1.getBuild().getAllTags().get(0));
-        assertTrue(image1.getBuild().getPull().isPresent());
-        assertTrue(image1.getBuild().getPull().get());
-        assertTrue(image1.getBuild().getPullAlways().isPresent());
-        assertTrue(image1.getBuild().getPullAlways().get());
+        assertTrue(image1.getBuild().getPullPolicy().isPresent());
+        assertEquals(PullPolicy.ALWAYS, image1.getBuild().getPullPolicy().get());
         assertEquals(ContainerFormat.DOCKER, image1.getBuild().getFormat());
     }
 

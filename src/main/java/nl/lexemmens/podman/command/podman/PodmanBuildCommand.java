@@ -23,8 +23,7 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String LAYERS_CMD = "--layers";
     private static final String BUILD_FORMAT_CMD = "--format";
     private static final String CONTAINERFILE_CMD = "--file";
-    private static final String PULL_CMD = "--pull";
-    private static final String PULL_ALWAYS_CMD = "--pull-always";
+    private static final String PULL_POLICY_CMD = "--pull";
     private static final String NO_CACHE_CMD = "--no-cache";
     private static final String BUILD_ARG_CMD = "--build-arg";
     private static final String PLATFORM_CMD = "--platform";
@@ -109,11 +108,11 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
         /**
          * Sets whether the base image should be pulled
          *
-         * @param pull Sets whether to pull the image
+         * @param pullPolicy Sets whether to pull the image
          * @return This builder instance
          */
-        public Builder setPull(Boolean pull) {
-            command.withOption(PULL_CMD, pull.toString());
+        public Builder setPullPolicy(String pullPolicy) {
+            command.withOption(PULL_POLICY_CMD, pullPolicy);
             return this;
         }
 
@@ -125,17 +124,6 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
          */
         public Builder setNoCache(boolean noCache) {
             command.withOption(NO_CACHE_CMD, "" + noCache);
-            return this;
-        }
-
-        /**
-         * Sets whether base images should always be pushed
-         *
-         * @param pullAlways Sets the value of the pullAlways property
-         * @return This builder instance
-         */
-        public Builder setPullAllways(Boolean pullAlways) {
-            command.withOption(PULL_ALWAYS_CMD, pullAlways.toString());
             return this;
         }
 
