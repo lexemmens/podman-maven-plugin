@@ -2,6 +2,8 @@ package nl.lexemmens.podman.config.image.batch;
 
 import nl.lexemmens.podman.config.image.StageConfiguration;
 import nl.lexemmens.podman.enumeration.ContainerFormat;
+import nl.lexemmens.podman.enumeration.PullPolicy;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -38,8 +40,8 @@ public class TestBatchImageConfigurationBuilder {
         return this;
     }
 
-    public TestBatchImageConfigurationBuilder setPull(boolean pull) {
-        image.getBuild().setPull(pull);
+    public TestBatchImageConfigurationBuilder setPullPolicy(PullPolicy pullPolicy) {
+        image.getBuild().setPullPolicy(pullPolicy);
         return this;
     }
 
@@ -101,11 +103,6 @@ public class TestBatchImageConfigurationBuilder {
 
         image.setStages(stageConfigurationList.toArray(new StageConfiguration[]{}));
 
-        return this;
-    }
-
-    public TestBatchImageConfigurationBuilder setPullAlways(boolean pullAlways) {
-        image.getBuild().setPullAlways(pullAlways);
         return this;
     }
 
