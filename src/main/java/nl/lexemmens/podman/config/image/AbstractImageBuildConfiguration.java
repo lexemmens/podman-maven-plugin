@@ -56,7 +56,7 @@ public abstract class AbstractImageBuildConfiguration {
      * Configures whether from-images should be pulled so that the image will
      * always be build on the latest base.
      */
-    @Parameter(defaultValue = "missing")
+    @Parameter
     protected PullPolicy pullPolicy;
 
     /**
