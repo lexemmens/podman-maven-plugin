@@ -7,6 +7,7 @@ import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -87,6 +88,11 @@ public class PodmanExecutorService {
         }
 
         builder.addBuildArgs(image.getBuild().getArgs());
+        
+        Optional<String> contextDir = image.getBuild().getContextDir();
+        if (contextDir.isPresent()) {
+            builder = builder.setContextDir(contextDir.get());
+        }
 
         return builder.build().execute();
     }
