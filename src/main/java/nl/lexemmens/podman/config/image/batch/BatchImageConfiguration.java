@@ -89,6 +89,10 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
 
             buildConfiguration.setTagWithMavenProjectVersion(getBuild().isTagWithMavenProjectVersion());
 
+            if(getBuild().getContextDir().isPresent()) {
+                buildConfiguration.setContextDir(getBuild().getContextDir().get());
+            }
+            
             imageConfiguration.setBuild(buildConfiguration);
             imageConfigurations.add(imageConfiguration);
         }
