@@ -24,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
-import java.security.PublicKey;
 import java.util.*;
 
 import static nl.lexemmens.podman.enumeration.ContainerFormat.DOCKER;

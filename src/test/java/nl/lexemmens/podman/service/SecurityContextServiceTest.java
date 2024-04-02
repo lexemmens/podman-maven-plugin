@@ -2,8 +2,6 @@ package nl.lexemmens.podman.service;
 
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
 import nl.lexemmens.podman.config.podman.TestPodmanConfigurationBuilder;
-import nl.lexemmens.podman.config.skopeo.SkopeoConfiguration;
-import nl.lexemmens.podman.config.skopeo.TestSkopeoConfigurationBuilder;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
