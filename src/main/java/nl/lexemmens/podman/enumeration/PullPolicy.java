@@ -28,14 +28,14 @@ public enum PullPolicy {
      */
     NEWER("newer");
 
-    private final String pullPolicy;
+    private final String value;
 
     /**
      * Constructor
      * @param pullPolicy The pullpolicy to set
      */
-    PullPolicy(String pullPolicy) {
-        this.pullPolicy = pullPolicy;
+    PullPolicy(String value) {
+        this.value = value;
     }
 
     /**
@@ -43,6 +43,6 @@ public enum PullPolicy {
      * @return the selected pullpolicy
      */
     public String getValue() {
-        return pullPolicy;
+        return value;
     }
 }
