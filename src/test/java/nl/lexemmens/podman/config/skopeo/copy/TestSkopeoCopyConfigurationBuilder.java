@@ -2,8 +2,6 @@ package nl.lexemmens.podman.config.skopeo.copy;
 
 import nl.lexemmens.podman.config.skopeo.TestSkopeoConfigurationBuilder;
 
-import java.io.File;
-
 public class TestSkopeoCopyConfigurationBuilder {
     private final TestSkopeoConfigurationBuilder parent;
     private final SkopeoCopyConfiguration copy;
