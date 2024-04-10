@@ -38,7 +38,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.version>3.9.6</maven.version>
+        <maven.version>3.8.5</maven.version>
         <jupiter.version>5.10.2</jupiter.version>
         <mockito.version>5.11.0</mockito.version>
         <sonar.projectKey>lexemmens_podman-maven-plugin</sonar.projectKey>
