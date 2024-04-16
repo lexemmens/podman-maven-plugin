@@ -79,6 +79,12 @@ public abstract class AbstractImageBuildConfiguration {
     private Map<String, String> args;
 
     /**
+     * Collection of user limits to use during Podman build
+     */
+    @Parameter
+    private Map<String, String> ulimits;
+
+    /**
      * Specify any labels to be applied to the image
      */
     @Parameter
@@ -210,6 +216,9 @@ public abstract class AbstractImageBuildConfiguration {
 
         if(args == null) {
             args = new HashMap<>();
+        }
+        if(ulimits == null) {
+            ulimits = new HashMap<>();
         }
     }
 
@@ -542,4 +551,23 @@ public abstract class AbstractImageBuildConfiguration {
     public void setArgs(Map<String, String> args) {
         this.args = args;
     }
+
+    /**
+     * Retrieves a collection of user limtis  to provide to podman build using --ulimits
+     *
+     * @return A collection of user limits to provide to podman build
+     */
+    public Map<String, String> getUlimits() {
+        return ulimits;
+    }
+
+    /**
+     * The user limits to set for use during Podman build
+     *
+     * @param ulimits The arguments to set
+     */
+    public void setUlimits(Map<String, String> ulimits) {
+        this.ulimits = ulimits;
+    }
+
 }

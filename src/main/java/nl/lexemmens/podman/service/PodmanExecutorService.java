@@ -83,6 +83,7 @@ public class PodmanExecutorService {
         }
 
         builder.addBuildArgs(image.getBuild().getArgs());
+        builder.addUlimitsArgs(image.getBuild().getUlimits());
 
         return builder.build().execute();
     }

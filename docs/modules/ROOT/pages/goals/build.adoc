@@ -132,6 +132,16 @@ Supported values are:
 
 **See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html
 
+|ulimits
+|Specifies one or more user limits, such as `nofile` (number of open files), permitted in the build container.
+Necessary, because `podman build` does not pass the current user session's user limits into the build container, breaking, e.g., large Java builds.
+
+**Syntax**: `<type>soft-limit[:hard-limit]</type>`
+
+Type is one of (core cpu data fsize locks memlock msgqueue nice nofile nproc rss rtprio rttime sigpending stack).
+
+**See**: https://docs.podman.io/en/latest/markdown/podman-build.1.html#ulimit-type-soft-limit-hard-limit
+
 |===
 
 .Example configuration

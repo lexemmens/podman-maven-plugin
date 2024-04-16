@@ -29,6 +29,8 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String PLATFORM_CMD = "--platform";
     private static final String TARGET_STAGE_CMD = "--target";
     private static final String SUBCOMMAND = "build";
+    private static final String PODMAN_ULIMITS_PREFIX = "podman.buildUlimits.";
+    private static final String ULIMITS_ARG_CMD = "--ulimit";
 
     private PodmanBuildCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
         super(log, podmanConfig, delegate, SUBCOMMAND, false);
@@ -137,7 +139,7 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             command.withOption(PLATFORM_CMD, platform);
             return this;
         }
-        
+
         /**
          * Sets the platform for the resulting image rather using the default of the build system
          *
@@ -176,6 +178,35 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             }
 
             return buildArgsFromSystem;
+        }
+
+        public Builder addUlimitsArgs(Map<String, String> ulimits) {
+            Map<String, String> allUlimitsArgs = new HashMap<>(ulimits);
+            allUlimitsArgs.putAll(getUlimitsFromSystem());
+
+            for (Map.Entry<String, String> ulimit : allUlimitsArgs.entrySet()) {
+                command.withOption(ULIMITS_ARG_CMD, String.format("%s=%s", ulimit.getKey(), ulimit.getValue()));
+            }
+            return this;
+        }
+
+        private Map<String, String> getUlimitsFromSystem() {
+            Map<String, String> buildUlimitsFromSystem = new HashMap<>();
+            Properties properties = System.getProperties();
+
+            for (Object keyObj : properties.keySet()) {
+                String key = (String) keyObj;
+                if (key.startsWith(PODMAN_ULIMITS_PREFIX)) {
+                    String ulimitKey = key.replaceFirst(PODMAN_ULIMITS_PREFIX, "");
+                    String ulimitValue = properties.getProperty(key);
+
+                    if (!isEmpty(ulimitValue)) {
+                        buildUlimitsFromSystem.put(ulimitKey, ulimitValue);
+                    }
+                }
+            }
+
+            return buildUlimitsFromSystem;
         }
 
         /**
