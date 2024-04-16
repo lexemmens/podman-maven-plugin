@@ -41,6 +41,17 @@ public abstract class AbstractImageBuildConfiguration {
     protected static final String DEFAULT_CONTAINERFILE = "Containerfile";
 
     /**
+     * The default context directory
+     */
+    protected static final String DEFAULT_CONTEXT_DIR = ".";
+
+     /**
+     * The context directory to use
+     */
+    @Parameter
+    protected String contextDir;
+    
+    /**
      * Directory containing the Containerfile
      */
     @Parameter
@@ -213,6 +224,10 @@ public abstract class AbstractImageBuildConfiguration {
         if (containerFileDir == null) {
             containerFileDir = project.getBasedir();
         }
+        
+        if (contextDir == null) {
+               contextDir = DEFAULT_CONTEXT_DIR;
+        }
 
         if(args == null) {
             args = new HashMap<>();
@@ -241,6 +256,15 @@ public abstract class AbstractImageBuildConfiguration {
             allTags.add(mavenProjectVersion);
         }
         return allTags;
+    }
+    
+    /**
+    * Returns the context directory path
+     *
+     * @return Returns the context directory path
+     */
+    public Optional<String> getContextDir(){
+        return Optional.ofNullable(contextDir);
     }
 
     /**
@@ -514,6 +538,15 @@ public abstract class AbstractImageBuildConfiguration {
      */
     public void setFormat(ContainerFormat format) {
         this.format = format;
+    }
+    
+    /**
+     * Sets the context directory to use
+     *
+     * @param contextDir The directory to set
+     */
+    public void setContextDir(String contextDir) {
+		this.contextDir = contextDir;
     }
 
     /**

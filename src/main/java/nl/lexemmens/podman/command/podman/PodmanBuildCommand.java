@@ -97,6 +97,17 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
         }
 
         /**
+         * Sets the context directory to use
+         * 
+         * @param contextDir the context directory to set
+         * @return This builder instance
+         */
+        public Builder setContextDir(String contextDir) {
+	        command.withOption(contextDir, null);
+	        return this;
+        }
+        
+        /**
          * Sets the Containerfile that should be build
          *
          * @param containerFile The pointer towards the containerfile to use
@@ -215,8 +226,6 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
          * @return The constructed command
          */
         public Command build() {
-            // Add current directory
-            command.withOption(".", null);
             return command;
         }
 
