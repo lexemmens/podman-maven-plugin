@@ -1,6 +1,8 @@
 package nl.lexemmens.podman.config.image;
 
 import nl.lexemmens.podman.enumeration.ContainerFormat;
+import nl.lexemmens.podman.enumeration.PullPolicy;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -55,19 +57,7 @@ public abstract class AbstractImageBuildConfiguration {
      * always be build on the latest base.
      */
     @Parameter
-    protected Boolean pull;
-
-    /**
-     * Configures whether from-images should always be pulled from the first registry it is found in.
-     * <p>
-     * From Podman docs:
-     * Pull the image from the first registry it is found in as listed in registries.conf.
-     * Raise an error if not found in the registries, even if the image is present locally.
-     *
-     * @see <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html#pull-always">--pull-always on docs.podman.io</a>
-     */
-    @Parameter
-    protected Boolean pullAlways;
+    protected PullPolicy pullPolicy;
 
     /**
      * Array consisting of one or more tags to attach to a container image.
@@ -194,17 +184,8 @@ public abstract class AbstractImageBuildConfiguration {
      *
      * @return When set to true, podman will build with --pull
      */
-    public Optional<Boolean> getPull() {
-        return Optional.ofNullable(pull);
-    }
-
-    /**
-     * Returns if the --pull-always property should be used
-     *
-     * @return When set to true, podman will build with --pull-always
-     */
-    public Optional<Boolean> getPullAlways() {
-        return Optional.ofNullable(pullAlways);
+    public Optional<PullPolicy> getPullPolicy() {
+        return Optional.ofNullable(pullPolicy);
     }
 
     public void validate(MavenProject project) {
@@ -448,19 +429,10 @@ public abstract class AbstractImageBuildConfiguration {
      * Configures whether from-images should be pulled so that the image will
      * always be build on the latest base.
      *
-     * @param pull The value to set
+     * @param pullPolicy The value to set
      */
-    public void setPull(Boolean pull) {
-        this.pull = pull;
-    }
-
-    /**
-     * Configures whether from-images should always be pulled from the first registry it is found in.
-     *
-     * @param pullAlways The value to set
-     */
-    public void setPullAlways(Boolean pullAlways) {
-        this.pullAlways = pullAlways;
+    public void setPullPolicy(PullPolicy pullPolicy) {
+        this.pullPolicy = pullPolicy;
     }
 
     /**
