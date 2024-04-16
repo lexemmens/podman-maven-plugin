@@ -23,13 +23,14 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
     private static final String LAYERS_CMD = "--layers";
     private static final String BUILD_FORMAT_CMD = "--format";
     private static final String CONTAINERFILE_CMD = "--file";
-    private static final String PULL_CMD = "--pull";
-    private static final String PULL_ALWAYS_CMD = "--pull-always";
+    private static final String PULL_POLICY_CMD = "--pull";
     private static final String NO_CACHE_CMD = "--no-cache";
     private static final String BUILD_ARG_CMD = "--build-arg";
     private static final String PLATFORM_CMD = "--platform";
     private static final String TARGET_STAGE_CMD = "--target";
     private static final String SUBCOMMAND = "build";
+    private static final String PODMAN_ULIMITS_PREFIX = "podman.buildUlimits.";
+    private static final String ULIMITS_ARG_CMD = "--ulimit";
 
     private PodmanBuildCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
         super(log, podmanConfig, delegate, SUBCOMMAND, false);
@@ -120,11 +121,11 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
         /**
          * Sets whether the base image should be pulled
          *
-         * @param pull Sets whether to pull the image
+         * @param pullPolicy Sets whether to pull the image
          * @return This builder instance
          */
-        public Builder setPull(Boolean pull) {
-            command.withOption(PULL_CMD, pull.toString());
+        public Builder setPullPolicy(String pullPolicy) {
+            command.withOption(PULL_POLICY_CMD, pullPolicy);
             return this;
         }
 
@@ -140,17 +141,6 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
         }
 
         /**
-         * Sets whether base images should always be pushed
-         *
-         * @param pullAlways Sets the value of the pullAlways property
-         * @return This builder instance
-         */
-        public Builder setPullAllways(Boolean pullAlways) {
-            command.withOption(PULL_ALWAYS_CMD, pullAlways.toString());
-            return this;
-        }
-
-        /**
          * Sets the platform for the resulting image rather using the default of the build system
          *
          * @param platform A valid combination of GO OS and GO ARCH for example linux/arm64 (https://golang.org/doc/install/source#environment)
@@ -160,7 +150,7 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             command.withOption(PLATFORM_CMD, platform);
             return this;
         }
-        
+
         /**
          * Sets the platform for the resulting image rather using the default of the build system
          *
@@ -199,6 +189,35 @@ public class PodmanBuildCommand extends AbstractPodmanCommand {
             }
 
             return buildArgsFromSystem;
+        }
+
+        public Builder addUlimitsArgs(Map<String, String> ulimits) {
+            Map<String, String> allUlimitsArgs = new HashMap<>(ulimits);
+            allUlimitsArgs.putAll(getUlimitsFromSystem());
+
+            for (Map.Entry<String, String> ulimit : allUlimitsArgs.entrySet()) {
+                command.withOption(ULIMITS_ARG_CMD, String.format("%s=%s", ulimit.getKey(), ulimit.getValue()));
+            }
+            return this;
+        }
+
+        private Map<String, String> getUlimitsFromSystem() {
+            Map<String, String> buildUlimitsFromSystem = new HashMap<>();
+            Properties properties = System.getProperties();
+
+            for (Object keyObj : properties.keySet()) {
+                String key = (String) keyObj;
+                if (key.startsWith(PODMAN_ULIMITS_PREFIX)) {
+                    String ulimitKey = key.replaceFirst(PODMAN_ULIMITS_PREFIX, "");
+                    String ulimitValue = properties.getProperty(key);
+
+                    if (!isEmpty(ulimitValue)) {
+                        buildUlimitsFromSystem.put(ulimitKey, ulimitValue);
+                    }
+                }
+            }
+
+            return buildUlimitsFromSystem;
         }
 
         /**

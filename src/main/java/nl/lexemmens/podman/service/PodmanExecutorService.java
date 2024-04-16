@@ -3,6 +3,7 @@ package nl.lexemmens.podman.service;
 import nl.lexemmens.podman.command.podman.*;
 import nl.lexemmens.podman.config.image.single.SingleImageConfiguration;
 import nl.lexemmens.podman.config.podman.PodmanConfiguration;
+import nl.lexemmens.podman.enumeration.PullPolicy;
 import nl.lexemmens.podman.executor.CommandExecutorDelegate;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -67,14 +68,9 @@ public class PodmanExecutorService {
             builder = builder.setLayers(image.getBuild().getLayers());
         }
 
-        Optional<Boolean> pullOptional = image.getBuild().getPull();
-        if (pullOptional.isPresent()) {
-            builder = builder.setPull(pullOptional.get());
-        }
-
-        Optional<Boolean> pullAlwaysOptional = image.getBuild().getPullAlways();
-        if (pullAlwaysOptional.isPresent()) {
-            builder = builder.setPullAllways(pullAlwaysOptional.get());
+        Optional<PullPolicy> pullPolicyOptional = image.getBuild().getPullPolicy();
+        if (pullPolicyOptional.isPresent()) {
+            builder = builder.setPullPolicy(pullPolicyOptional.get().getValue());
         }
 
         Optional<String> platform = image.getBuild().getPlatform();
@@ -88,11 +84,13 @@ public class PodmanExecutorService {
         }
 
         builder.addBuildArgs(image.getBuild().getArgs());
-        
+
         Optional<String> contextDir = image.getBuild().getContextDir();
         if (contextDir.isPresent()) {
             builder = builder.setContextDir(contextDir.get());
         }
+
+        builder.addUlimitsArgs(image.getBuild().getUlimits());
 
         return builder.build().execute();
     }

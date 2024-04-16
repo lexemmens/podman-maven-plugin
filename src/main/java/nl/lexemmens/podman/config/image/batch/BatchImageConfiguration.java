@@ -76,16 +76,12 @@ public class BatchImageConfiguration extends AbstractImageConfiguration<BatchIma
             buildConfiguration.setCreateLatestTag(getBuild().isCreateLatestTag());
             buildConfiguration.setLabels(getBuild().getLabels());
 
-            if(getBuild().getPull().isPresent()) {
-                buildConfiguration.setPull(getBuild().getPull().get());
+            if(getBuild().getPullPolicy().isPresent()) {
+                buildConfiguration.setPullPolicy(getBuild().getPullPolicy().get());
             }
 
             buildConfiguration.setNoCache(getBuild().isNoCache());
             buildConfiguration.setTags(getBuild().getTags());
-
-            if(getBuild().getPullAlways().isPresent()) {
-                buildConfiguration.setPullAlways(getBuild().getPullAlways().get());
-            }
 
             buildConfiguration.setTagWithMavenProjectVersion(getBuild().isTagWithMavenProjectVersion());
 
