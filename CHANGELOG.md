@@ -1,4 +1,13 @@
 ## Changelog
+### 1.19.0 (16-04-2024)
+#### Improvements
+* ([#98](https://github.com/lexemmens/podman-maven-plugin/pull/98)) - Pass user limits `--ulimit=<type>=<hard>:<soft>` into build [cruwe](https://github.com/cruwe).
+* ([#97](https://github.com/lexemmens/podman-maven-plugin/pull/97)) - Added ability to use custom context directory instead of `.` [JimPanse81](https://github.com/JimPanse81).
+* ([#95](https://github.com/lexemmens/podman-maven-plugin/issues/95)) - Removed `--pull-always` and use `--pull` to define PullPolicy in line with recent documentation [lgranie](https://github.com/lgranie).
+
+#### Miscelaneous
+* ([#100](https://github.com/lexemmens/podman-maven-plugin/pull/100)) - Upgrade Sonar analysis to use Java 17 [lgranie](https://github.com/lgranie).
+
 ### 1.18.0 (24-08-2023)
 #### Bugs
 * ([#89](https://github.com/lexemmens/podman-maven-plugin/issues/89)) - plugin fails with NullPointerException. Thanks to [kumadee](https://github.com/kumadee).
