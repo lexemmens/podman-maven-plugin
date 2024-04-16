@@ -317,18 +317,11 @@ Building a container image without a <code>Containerfile</code>, thus purely on 
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pull</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">When the option is specified or set to “true”, pull the image. Raise an error if the image could not be pulled, even if the image is present locally.</p>
-<p class="tableblock">If the option is disabled (with <code>&lt;pull&gt;false&lt;/pull&gt;</code>) or not specified, pull the image from the registry only if the image is not present locally. Raise an error if the image is not found in the registries and is not present locally.</p>
-<p class="tableblock">When this option is specified <em>and</em> <code>pullAlways</code> is also specified, builds will fail as Podman does not support both options to be enabled at the same time.</p>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When the option is specified or set, pull the image. Raise an error if the image could not be pulled, even if the image is present locally.</p>
+<p class="tableblock">If the option is disabled (with <code>&lt;pull&gt;never&lt;/pull&gt;</code>) or not specified, pull the image from the registry only if the image is not present locally. Raise an error if the image is not found in the registries and is not present locally.</p>
 <p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
-<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">pullAlways</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Pull the image from the first registry it is found in as listed in registries.conf. Raise an error if not found in the registries, even if the image is present locally.</p>
-<p class="tableblock">When this option is specified <em>and</em> <code>pullAlways</code> is also specified, builds will fail as Podman does not support both options to be enabled at the same time.</p>
-<p class="tableblock"><strong>Default value is</strong>: <code>null</code> (not specified).</p>
-<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html</a></p></td>
+<p class="tableblock"><strong>Supported values are:</strong> ALWAYS, TRUE, MISSING, NEVER, FALSE, NEWER</p>
+<p class="tableblock"><strong>See</strong>: <a href="https://docs.podman.io/en/latest/markdown/podman-build.1.html#pull-policy" class="bare">https://docs.podman.io/en/latest/markdown/podman-build.1.html#pull-policy</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">squash</p></td>
@@ -420,8 +413,7 @@ list in the resulting image’s configuration.</p>
         &lt;image&gt;
             &lt;name&gt;your-image-name&lt;/name&gt;
             &lt;build&gt;
-                &lt;pull&gt;true&lt;/pull&gt;
-                &lt;pullAlways&gt;false&lt;/pullAlways&gt;
+                &lt;pull&gt;always&lt;/pull&gt;
                 &lt;tags&gt;
                     &lt;sampleTag&gt;sampleTagValue&lt;/sampleTag&gt;
                 &lt;/tags&gt;
