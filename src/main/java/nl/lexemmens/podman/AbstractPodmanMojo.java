@@ -252,7 +252,7 @@ public abstract class AbstractPodmanMojo extends AbstractMojo {
                 List<String> imageNamesByStage = singleImageConfiguration.getImageNamesByStage(stageImage.getKey());
 
                 if (imageNamesByStage.isEmpty()) {
-                    getLog().warn("No image name configured for build stage: " + stageImage.getKey() + "." +
+                    getLog().warn("No image name configured for build stage: " + stageImage.getKey() + ". " +
                             "Image " + stageImage.getValue() + " not added to container-catalog.txt!");
                 } else {
                     for (String imageName : imageNamesByStage) {
