@@ -33,6 +33,13 @@ public class PushMojo extends AbstractCatalogSupport {
     @Parameter(property = "podman.push.retries", defaultValue = "0", required = true)
     int retries;
 
+    /**
+     * Suppress informational output messages (which indicate which instruction is being processed, and the progress of the
+     * instruction). Print only the final error message or successful completion information, such as the image or container ID.
+     */
+    @Parameter(property = "podman.push.quiet", defaultValue = "false", required = false)
+    boolean quiet;
+
     @Override
     public void executeInternal(ServiceHub hub) throws MojoExecutionException {
         checkAuthentication(hub);
@@ -51,7 +58,7 @@ public class PushMojo extends AbstractCatalogSupport {
         if (cataloguedImages.isEmpty()) {
             getLog().info("Not pushing container images, because no container-catalog.txt file was found.");
         } else {
-            pushContainerImages(hub, cataloguedImages);
+            pushContainerImages(hub, cataloguedImages, quiet);
             getLog().info("All images have been successfully pushed to the registry");
         }
     }
@@ -61,20 +68,20 @@ public class PushMojo extends AbstractCatalogSupport {
         return skipPush;
     }
 
-    private void pushContainerImages(ServiceHub hub, List<String> images) throws MojoExecutionException {
+    private void pushContainerImages(ServiceHub hub, List<String> images, Boolean quiet) throws MojoExecutionException {
         getLog().info("Pushing container images to registry ...");
 
         for (String fullImage : images) {
-            pushImage(hub, fullImage);
+            pushImage(hub, fullImage, quiet);
         }
     }
 
-    private void pushImage(ServiceHub hub, String fullImageName) throws MojoExecutionException {
+    private void pushImage(ServiceHub hub, String fullImageName, Boolean quiet) throws MojoExecutionException {
         getLog().info("Pushing image: " + fullImageName + " to " + pushRegistry);
 
         for (int i = 0; i <= retries; i++) {
             try {
-                hub.getPodmanExecutorService().push(fullImageName);
+                hub.getPodmanExecutorService().push(fullImageName, quiet);
                 break;
             } catch (MojoExecutionException e) {
                 if (i != retries) {

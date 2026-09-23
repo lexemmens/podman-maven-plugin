@@ -11,6 +11,7 @@ import org.apache.maven.plugin.logging.Log;
 public class PodmanPushCommand extends AbstractPodmanCommand {
 
     private static final String SUBCOMMAND = "push";
+    private static final String QUIET_CMD = "--quiet";
 
     private PodmanPushCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
         super(log, podmanConfig, delegate, SUBCOMMAND, false);
@@ -31,6 +32,13 @@ public class PodmanPushCommand extends AbstractPodmanCommand {
             command.withOption(fullImageName, null);
             return this;
         }
+
+    public Builder setQuiet(Boolean quiet) {
+      if (quiet) {
+          command.withOption(QUIET_CMD, null);
+      }
+      return this;
+    }
 
         public Command build() {
             return command;

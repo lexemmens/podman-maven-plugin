@@ -141,8 +141,9 @@ public class PodmanExecutorService {
      * @param fullImageName The full name of the image including the registry
      * @throws MojoExecutionException In case the container image could not be pushed.
      */
-    public void push(String fullImageName) throws MojoExecutionException {
+    public void push(String fullImageName, Boolean quiet) throws MojoExecutionException {
         new PodmanPushCommand.Builder(log, podmanConfig, delegate)
+                .setQuiet(quiet)
                 .setFullImageName(fullImageName)
                 .build()
                 .execute();

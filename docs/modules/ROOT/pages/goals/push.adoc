@@ -29,6 +29,11 @@ NOTE: It is required to have the `build` goal executed in order to execute the `
 **Default value is**: 0
 |`podman.push.retries`
 
+|quiet
+|If set to true the plugin will not output its progress when pushing an image to the remote registry.
+
+**Default value is**: `false`
+|`podman.push.quiet`
 |===
 
 NOTE: When using the `deleteLocalImageAfterPush` option, be advised that any base images that may have been pulled as part of building the image continue to exist.

@@ -139,9 +139,20 @@ public class PodmanExecutorServiceTest {
 
         InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
-        podmanExecutorService.push("registry.example.com/sample/1.0.0");
+        podmanExecutorService.push("registry.example.com/sample/1.0.0", false);
 
         Assertions.assertEquals("podman push --tls-verify=true registry.example.com/sample/1.0.0", delegate.getCommandAsString());
+    }
+
+    @Test
+    public void testPushWithQuiet() throws MojoExecutionException {
+        PodmanConfiguration podmanConfig = new TestPodmanConfigurationBuilder().setTlsVerify(TRUE).initAndValidate(mavenProject, log).build();
+
+        InterceptorCommandExecutorDelegate delegate = new InterceptorCommandExecutorDelegate();
+        podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
+        podmanExecutorService.push("registry.example.com/sample/1.0.0", true);
+
+        Assertions.assertEquals("podman push --tls-verify=true --quiet registry.example.com/sample/1.0.0", delegate.getCommandAsString());
     }
 
     @Test

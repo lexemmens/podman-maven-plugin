@@ -152,14 +152,14 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(targetRegistry);
+        doNothing().when(podmanExecutorService).push(targetRegistry, false);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
         verify(log, times(1)).info("Registry authentication is skipped.");
         verify(log, times(0)).info("Pushing container images is skipped.");
         verify(log, times(0)).info("No tags specified. Will not push container images.");
-        verify(podmanExecutorService, times(1)).push(targetRegistry);
+        verify(podmanExecutorService, times(1)).push(targetRegistry, false);
     }
 
     @Test
@@ -180,7 +180,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(targetRegistry);
+        doNothing().when(podmanExecutorService).push(targetRegistry, false);
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
@@ -188,7 +188,7 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(0)).info("Registry authentication is skipped.");
         verify(log, times(0)).info("Pushing container images is skipped.");
         verify(log, times(0)).info("No tags specified. Will not push container images.");
-        verify(podmanExecutorService, times(1)).push(targetRegistry);
+        verify(podmanExecutorService, times(1)).push(targetRegistry, false);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(targetRegistry);
+        doNothing().when(podmanExecutorService).push(targetRegistry, false);
         when(serviceHub.getAuthenticationService()).thenReturn(authenticationService);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
@@ -218,7 +218,7 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(0)).info("Registry authentication is skipped.");
         verify(log, times(0)).info("Pushing container images is skipped.");
         verify(log, times(0)).info("No tags specified. Will not push container images.");
-        verify(podmanExecutorService, times(1)).push(targetRegistry);
+        verify(podmanExecutorService, times(1)).push(targetRegistry, false);
         verify(podmanExecutorService, times(1)).version();
     }
 
@@ -240,7 +240,7 @@ public class PushMojoTest extends AbstractMojoTest {
         when(mavenProject.getVersion()).thenReturn("1.0.0");
         when(serviceHubFactory.createServiceHub(isA(Log.class), isA(MavenProject.class), isA(MavenFileFilter.class), isA(PodmanConfiguration.class), isA(SkopeoConfiguration.class), isA(Settings.class), isA(SettingsDecrypter.class), isA(MavenProjectHelper.class))).thenReturn(serviceHub);
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
-        doNothing().when(podmanExecutorService).push(imageName);
+        doNothing().when(podmanExecutorService).push(imageName, false);
         doNothing().when(podmanExecutorService).removeLocalImage(imageName);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
@@ -249,7 +249,7 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(0)).info("Pushing container images is skipped.");
         verify(log, times(0)).info("No tags specified. Will not push container images.");
         verify(log, times(1)).info("Removing image " + imageName + " from the local repository");
-        verify(podmanExecutorService, times(1)).push(imageName);
+        verify(podmanExecutorService, times(1)).push(imageName, false);
         verify(podmanExecutorService, times(1)).removeLocalImage(imageName);
     }
 
@@ -272,7 +272,7 @@ public class PushMojoTest extends AbstractMojoTest {
         // Verify logging
         verify(log, times(1)).info("Pushing container images to registry ...");
         verify(log, times(1)).info("Pushing image: registry.example.com/sample:1.0.0 to registry.example.com");
-        verify(podmanExecutorService, times(1)).push("registry.example.com/sample:1.0.0");
+        verify(podmanExecutorService, times(1)).push("registry.example.com/sample:1.0.0", false);
         verify(log, times(1)).info("Successfully pushed container image registry.example.com/sample:1.0.0 to registry.example.com");
         verify(log, times(1)).info("All images have been successfully pushed to the registry");
     }
@@ -300,11 +300,11 @@ public class PushMojoTest extends AbstractMojoTest {
         verify(log, times(1)).info("Pushing container images to registry ...");
 
         verify(log, times(1)).info("Pushing image: registry.example.com/image-name-number-1:0.2.1 to registry.example.com");
-        verify(podmanExecutorService, times(1)).push("registry.example.com/image-name-number-1:0.2.1");
+        verify(podmanExecutorService, times(1)).push("registry.example.com/image-name-number-1:0.2.1", false);
         verify(log, times(1)).info("Successfully pushed container image registry.example.com/image-name-number-1:0.2.1 to registry.example.com");
 
         verify(log, times(1)).info("Pushing image: registry.example.com/image-name-number-2:0.2.1 to registry.example.com");
-        verify(podmanExecutorService, times(1)).push("registry.example.com/image-name-number-2:0.2.1");
+        verify(podmanExecutorService, times(1)).push("registry.example.com/image-name-number-2:0.2.1", false);
         verify(log, times(1)).info("Successfully pushed container image registry.example.com/image-name-number-2:0.2.1 to registry.example.com");
 
         verify(log, times(1)).info("All images have been successfully pushed to the registry");
@@ -329,14 +329,14 @@ public class PushMojoTest extends AbstractMojoTest {
         // Simulate failure
         doThrow(new MojoExecutionException("Execution failed"))
                 .doNothing()
-                .when(podmanExecutorService).push(targetRegistry);
+                .when(podmanExecutorService).push(targetRegistry, false);
 
         Assertions.assertDoesNotThrow(pushMojo::execute);
 
         verify(log, times(1)).info("Registry authentication is skipped.");
         verify(log, times(0)).info("Pushing container images is skipped.");
         verify(log, times(0)).info("No tags specified. Will not push container images.");
-        verify(podmanExecutorService, times(2)).push(targetRegistry);
+        verify(podmanExecutorService, times(2)).push(targetRegistry, false);
     }
 
     @Test
@@ -356,14 +356,14 @@ public class PushMojoTest extends AbstractMojoTest {
         when(serviceHub.getPodmanExecutorService()).thenReturn(podmanExecutorService);
 
         // Simulate failure
-        doThrow(new MojoExecutionException("Execution failed")).when(podmanExecutorService).push(targetRegistry);
+        doThrow(new MojoExecutionException("Execution failed")).when(podmanExecutorService).push(targetRegistry, false);
 
         Assertions.assertThrows(MojoExecutionException.class, pushMojo::execute);
 
         verify(log, times(1)).info("Registry authentication is skipped.");
         verify(log, times(0)).info("Pushing container images is skipped.");
         verify(log, times(0)).info("No tags specified. Will not push container images.");
-        verify(podmanExecutorService, times(2)).push(targetRegistry);
+        verify(podmanExecutorService, times(2)).push(targetRegistry, false);
     }
 
     private void configureMojo(SingleImageConfiguration image, boolean skipAuth, boolean skipAll, boolean skipPush, String targetRegistry, boolean deleteLocalImageAfterPush, boolean failOnMissingContainerFile, int retries) {
