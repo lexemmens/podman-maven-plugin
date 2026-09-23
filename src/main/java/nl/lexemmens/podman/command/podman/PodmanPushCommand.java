@@ -10,7 +10,7 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class PodmanPushCommand extends AbstractPodmanCommand {
 
-    private static final String SUBCOMMAND = "push";
+    private static final String SUBCOMMAND = "push --quiet";
 
     private PodmanPushCommand(Log log, PodmanConfiguration podmanConfig, CommandExecutorDelegate delegate) {
         super(log, podmanConfig, delegate, SUBCOMMAND, false);

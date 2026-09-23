@@ -141,7 +141,7 @@ public class PodmanExecutorServiceTest {
         podmanExecutorService = new PodmanExecutorService(log, podmanConfig, delegate);
         podmanExecutorService.push("registry.example.com/sample/1.0.0");
 
-        Assertions.assertEquals("podman push --tls-verify=true registry.example.com/sample/1.0.0", delegate.getCommandAsString());
+        Assertions.assertEquals("podman push --quiet --tls-verify=true registry.example.com/sample/1.0.0", delegate.getCommandAsString());
     }
 
     @Test
